@@ -17,7 +17,7 @@ export function ProtectedRoute() {
 export async function protectedLoader() {
   await enableMocking();
 
-  const token = await useSession.getState().refreshToken();
+  const token = useSession.getState().token;
 
   if (!token) {
     return redirect(ROUTES.LOGIN);

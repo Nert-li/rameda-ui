@@ -2,15 +2,17 @@ import { ApiSchemas } from "../../schema";
 import { http } from "../http";
 import { delay, HttpResponse } from "msw";
 import {
-  createRefreshTokenCookie,
   generateTokens,
-  verifyToken,
 } from "../session";
 
 const mockUsers: ApiSchemas["User"][] = [
   {
     id: "1",
     email: "admin@gmail.com",
+    first_name: "Admin",
+    last_name: "User",
+    phone_number: "+1234567890",
+    role: "admin",
   },
 ];
 
@@ -18,8 +20,8 @@ const userPasswords = new Map<string, string>();
 userPasswords.set("admin@gmail.com", "123456");
 
 export const authHandlers = [
-  http.post("/auth/login", async ({ request }) => {
-    const body = await request.json();
+  http.post("/users/sign_in", async ({ request }) => {
+    const { user: body } = await request.json();
 
     const user = mockUsers.find((u) => u.email === body.email);
     const storedPassword = userPasswords.get(body.email);
@@ -36,114 +38,23 @@ export const authHandlers = [
       );
     }
 
-    const { accessToken, refreshToken } = await generateTokens({
+    const { accessToken } = await generateTokens({
       userId: user.id,
       email: user.email,
     });
 
-    return HttpResponse.json(
-      {
-        accessToken: accessToken,
-        user,
+    return HttpResponse.json(user, {
+      status: 200,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
-      {
-        status: 200,
-        headers: {
-          "Set-Cookie": createRefreshTokenCookie(refreshToken),
-        },
-      },
-    );
-  }),
-
-  http.post("/auth/register", async ({ request }) => {
-    const body = await request.json();
-
-    await delay();
-
-    if (mockUsers.some((u) => u.email === body.email)) {
-      return HttpResponse.json(
-        {
-          message: "Пользователь уже существует",
-          code: "USER_EXISTS",
-        },
-        { status: 400 },
-      );
-    }
-
-    const newUser: ApiSchemas["User"] = {
-      id: String(mockUsers.length + 1),
-      email: body.email,
-    };
-
-    const { accessToken, refreshToken } = await generateTokens({
-      userId: newUser.id,
-      email: newUser.email,
     });
-
-    mockUsers.push(newUser);
-    userPasswords.set(body.email, body.password);
-
-    return HttpResponse.json(
-      {
-        accessToken: accessToken,
-        user: newUser,
-      },
-      {
-        status: 201,
-        headers: {
-          "Set-Cookie": createRefreshTokenCookie(refreshToken),
-        },
-      },
-    );
   }),
-  http.post("/auth/refresh", async ({ cookies }) => {
-    const refreshToken = cookies.refreshToken;
-
-    if (!refreshToken) {
-      return HttpResponse.json(
-        {
-          message: "Refresh token не найден",
-          code: "REFRESH_TOKEN_MISSING",
-        },
-        { status: 401 },
-      );
-    }
-
-    try {
-      const session = await verifyToken(refreshToken);
-      const user = mockUsers.find((u) => u.id === session.userId);
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      const { accessToken, refreshToken: newRefreshToken } =
-        await generateTokens({
-          userId: user.id,
-          email: user.email,
-        });
-
-      return HttpResponse.json(
-        {
-          accessToken,
-          user,
-        },
-        {
-          status: 200,
-          headers: {
-            "Set-Cookie": createRefreshTokenCookie(newRefreshToken),
-          },
-        },
-      );
-    } catch (error) {
-      console.error("Error refreshing token:", error);
-      return HttpResponse.json(
-        {
-          message: "Недействительный refresh token",
-          code: "INVALID_REFRESH_TOKEN",
-        },
-        { status: 401 },
-      );
-    }
+  http.delete("/users/sign_out", async () => {
+    await delay();
+    return HttpResponse.json(
+      { message: "Signed out successfully", code: "SIGNED_OUT" },
+      { status: 200 },
+    );
   }),
 ];

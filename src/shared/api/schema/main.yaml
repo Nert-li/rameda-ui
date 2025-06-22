@@ -14,17 +14,13 @@ components:
 
 paths:
 
-  /auth/login:
+  /users/sign_in:
     post:
-      $ref: "./endpoints/auth.yaml#/login"
+      $ref: "./endpoints/auth.yaml#/signIn"
 
-  /auth/register:
-    post:
-      $ref: "./endpoints/auth.yaml#/register"
-
-  /auth/refresh:
-    post:
-      $ref: "./endpoints/auth.yaml#/refresh"
+  /users/sign_out:
+    delete:
+      $ref: "./endpoints/auth.yaml#/signOut"
 
   /boards:
     get:
@@ -47,5 +43,19 @@ paths:
   /boards/{boardId}/rename:
     put:
       $ref: "./endpoints/boards.yaml#/renameBoard"
+
+  /buyers:
+    get:
+      $ref: "./endpoints/buyers.yaml#/getAllBuyers"
+    post:
+      $ref: "./endpoints/buyers.yaml#/createBuyer"
+
+  /buyers/{buyerId}:
+    get:
+      $ref: "./endpoints/buyers.yaml#/getBuyerById"
+    put:
+      $ref: "./endpoints/buyers.yaml#/updateBuyer"
+    delete:
+      $ref: "./endpoints/buyers.yaml#/deleteBuyer"
 
       

@@ -15,24 +15,11 @@ export const publicFetchClient = createFetchClient<ApiPaths>({
 export const publicRqClient = createClient(publicFetchClient);
 
 fetchClient.use({
-  async onRequest({ request }) {
-    const token = await useSession.getState().refreshToken();
+  onRequest({ request }) {
+    const token = useSession.getState().token;
 
     if (token) {
       request.headers.set("Authorization", `Bearer ${token}`);
-    } else {
-      return new Response(
-        JSON.stringify({
-          code: "NOT_AUTHOIZED",
-          message: "You are not authorized to access this resource",
-        } as ApiSchemas["Error"]),
-        {
-          status: 401,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
     }
   },
 });

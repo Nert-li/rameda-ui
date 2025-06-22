@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/auth/login": {
+    "/users/sign_in": {
         parameters: {
             query?: never;
             header?: never;
@@ -23,17 +23,19 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["LoginRequest"];
+                    "application/json": components["schemas"]["DeviseLoginRequest"];
                 };
             };
             responses: {
                 /** @description Login successful */
                 200: {
                     headers: {
+                        /** @description Bearer token for authentication */
+                        Authorization?: string;
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["AuthResponse"];
+                        "application/json": components["schemas"]["User"];
                     };
                 };
                 401: components["responses"]["UnauthorizedError"];
@@ -45,7 +47,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/register": {
+    "/users/sign_out": {
         parameters: {
             query?: never;
             header?: never;
@@ -54,72 +56,27 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Register new user */
-        post: {
+        post?: never;
+        /** Logout user */
+        delete: {
             parameters: {
                 query?: never;
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["RegisterRequest"];
-                };
-            };
-            responses: {
-                /** @description Registration successful */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AuthResponse"];
-                    };
-                };
-                400: components["responses"]["BadRequestError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Refresh access token */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: {
-                    refreshToken?: string;
-                };
-            };
             requestBody?: never;
             responses: {
-                /** @description Access token refreshed successfully */
+                /** @description Logout successful */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": components["schemas"]["AuthResponse"];
-                    };
+                    content?: never;
                 };
                 401: components["responses"]["UnauthorizedError"];
             };
         };
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -337,34 +294,191 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/buyers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all buyers for current user */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of buyers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuyersList"];
+                    };
+                };
+                401: components["responses"]["UnauthorizedError"];
+            };
+        };
+        put?: never;
+        /** Create a new buyer */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateBuyer"];
+                };
+            };
+            responses: {
+                /** @description Buyer created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            buyer?: components["schemas"]["Buyer"];
+                        };
+                    };
+                };
+                401: components["responses"]["UnauthorizedError"];
+                422: components["responses"]["BadRequestError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/buyers/{buyerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a buyer by id */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    buyerId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Buyer */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            buyer?: components["schemas"]["Buyer"];
+                        };
+                    };
+                };
+                401: components["responses"]["UnauthorizedError"];
+                404: components["responses"]["NotFoundError"];
+            };
+        };
+        /** Update a buyer */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    buyerId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateBuyer"];
+                };
+            };
+            responses: {
+                /** @description Buyer updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            buyer?: components["schemas"]["Buyer"];
+                        };
+                    };
+                };
+                401: components["responses"]["UnauthorizedError"];
+                404: components["responses"]["NotFoundError"];
+                422: components["responses"]["BadRequestError"];
+            };
+        };
+        post?: never;
+        /** Delete a buyer */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    buyerId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Buyer deleted successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                401: components["responses"]["UnauthorizedError"];
+                404: components["responses"]["NotFoundError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        LoginRequest: {
-            /** Format: email */
-            email: string;
-            /** Format: password */
-            password: string;
+        DeviseLoginRequest: {
+            user: {
+                /** Format: email */
+                email: string;
+                /** Format: password */
+                password: string;
+            };
         };
         User: {
             id: string;
             /** Format: email */
             email: string;
-        };
-        AuthResponse: {
-            accessToken: string;
-            user: components["schemas"]["User"];
+            first_name?: string;
+            last_name?: string;
+            phone_number?: string;
+            /** @enum {string} */
+            role?: "user" | "manager" | "admin";
         };
         Error: {
             message: string;
             code: string;
-        };
-        RegisterRequest: {
-            /** Format: email */
-            email: string;
-            /** Format: password */
-            password: string;
         };
         Board: {
             id: string;
@@ -388,6 +502,24 @@ export interface components {
         RenameBoard: {
             name: string;
         };
+        Buyer: {
+            id: number;
+            name: string;
+            userId: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        BuyersList: {
+            buyers: components["schemas"]["Buyer"][];
+        };
+        CreateBuyer: {
+            name: string;
+        };
+        UpdateBuyer: {
+            name?: string;
+        };
     };
     responses: {
         /** @description Unauthorized */
@@ -399,8 +531,8 @@ export interface components {
                 "application/json": components["schemas"]["Error"];
             };
         };
-        /** @description Bad request */
-        BadRequestError: {
+        /** @description Resource not found */
+        NotFoundError: {
             headers: {
                 [name: string]: unknown;
             };
@@ -408,8 +540,8 @@ export interface components {
                 "application/json": components["schemas"]["Error"];
             };
         };
-        /** @description Resource not found */
-        NotFoundError: {
+        /** @description Bad request */
+        BadRequestError: {
             headers: {
                 [name: string]: unknown;
             };

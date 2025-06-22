@@ -10,6 +10,15 @@ schemas:
       email:
         type: string
         format: email
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+      role:
+        type: string
+        enum: [user, manager, admin]
 
   LoginRequest:
     type: object
@@ -24,79 +33,51 @@ schemas:
         type: string
         format: password
 
-  RegisterRequest:
+  DeviseLoginRequest:
     type: object
     required:
-      - email
-      - password
-    properties:
-      email:
-        type: string
-        format: email
-      password:
-        type: string
-        format: password
-
-  AuthResponse:
-    type: object
-    required:
-      - accessToken
       - user
     properties:
-      accessToken:
-        type: string
       user:
-        $ref: '#/schemas/User'
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            format: email
+          password:
+            type: string
+            format: password
 
-login:
+signIn:
   summary: Login user
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '#/schemas/LoginRequest'
+          $ref: '#/schemas/DeviseLoginRequest'
   responses:
     '200':
       description: Login successful
+      headers:
+        Authorization:
+          description: 'Bearer token for authentication'
+          schema:
+            type: string
       content:
         application/json:
           schema:
-            $ref: '#/schemas/AuthResponse'
+            $ref: '#/schemas/User'
     '401':
       $ref: '../shared/responses.yaml#/UnauthorizedError'
 
-register:
-  summary: Register new user
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: '#/schemas/RegisterRequest'
-  responses:
-    '201':
-      description: Registration successful
-      content:
-        application/json:
-          schema:
-            $ref: '#/schemas/AuthResponse'
-    '400':
-      $ref: '../shared/responses.yaml#/BadRequestError'
-
-refresh:
-  summary: Refresh access token
-  parameters:
-  - in: cookie
-    name: refreshToken
-    schema:
-      type: string
+signOut:
+  summary: Logout user
   responses:
     '200':
-      description: Access token refreshed successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/schemas/AuthResponse'
+      description: Logout successful
     '401':
       $ref: '../shared/responses.yaml#/UnauthorizedError'
