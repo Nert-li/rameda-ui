@@ -52,4 +52,16 @@ paths:
     get:
       $ref: "./endpoints/clicks.yaml#/getAllClicks"
 
+  /promo_codes:
+    get:
+      $ref: "./endpoints/promo-codes.yaml#/getAllPromoCodes"
+
+  /offers:
+    get:
+      $ref: "./endpoints/offers.yaml#/getAllOffers"
+
+  /conversions:
+    get:
+      $ref: "./endpoints/conversions.yaml#/getAllConversions"
+
 

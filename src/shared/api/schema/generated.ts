@@ -328,6 +328,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/promo_codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all promo codes */
+        get: operations["getAllPromoCodes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all offers */
+        get: operations["getAllOffers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/conversions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all conversions */
+        get: operations["getAllConversions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -431,6 +482,55 @@ export interface components {
             /** Format: date-time */
             updated_at?: string;
         };
+        PromoCodeRecord: {
+            id?: number;
+            name?: string;
+            description?: string | null;
+            /** Format: date-time */
+            expires_at?: string | null;
+            /** Format: float */
+            discount_percent?: number;
+            is_active?: boolean;
+            is_expired?: boolean;
+            offer?: {
+                id?: number;
+                name?: string;
+                aasm_status?: string;
+            };
+            conversions_count?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
+        OfferRecord: {
+            id?: number;
+            name?: string;
+            aasm_status?: string;
+            buyers_count?: number;
+            clicks_count?: number;
+            promo_codes_count?: number;
+            active_promo_codes_count?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
+        ConversionRecord: {
+            id?: number;
+            aasm_state?: string;
+            /** Format: float */
+            cost?: number;
+            convertible_type?: string;
+            convertible_id?: number;
+            convertible_info?: Record<string, never>;
+            sub_ids?: Record<string, never>;
+            is_high_value?: boolean;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
     };
     responses: {
         /** @description Unauthorized */
@@ -510,6 +610,99 @@ export interface operations {
                         clicks?: components["schemas"]["ClickRecord"][];
                         total_count?: number;
                         filtered_count?: number;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+        };
+    };
+    getAllPromoCodes: {
+        parameters: {
+            query?: {
+                offer_id?: number;
+                status?: "active" | "expired";
+                high_discount?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of promo codes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        promo_codes?: components["schemas"]["PromoCodeRecord"][];
+                        total_count?: number;
+                        active_count?: number;
+                        expired_count?: number;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+        };
+    };
+    getAllOffers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of offers */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        offers?: components["schemas"]["OfferRecord"][];
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+        };
+    };
+    getAllConversions: {
+        parameters: {
+            query?: {
+                aasm_state?: "pending" | "approved" | "rejected" | "confirmed" | "paid" | "cancelled";
+                convertible_type?: "Click" | "PromoCode";
+                convertible_id?: number;
+                min_cost?: number;
+                max_cost?: number;
+                high_value?: boolean;
+                date_from?: string;
+                date_to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of conversions */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        conversions?: components["schemas"]["ConversionRecord"][];
+                        pagination?: {
+                            current_page?: number;
+                            next_page?: number | null;
+                            prev_page?: number | null;
+                            total_pages?: number;
+                            total_count?: number;
+                        };
+                        stats?: Record<string, never>;
                     };
                 };
             };

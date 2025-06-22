@@ -31,6 +31,18 @@ export const router = createBrowserRouter([
             lazy: () => import("@/features/clicks/clicks.page"),
           },
           {
+            path: ROUTES.PROMO_CODES,
+            lazy: () => import("@/features/promo-codes/promo-codes.page"),
+          },
+          {
+            path: ROUTES.OFFERS,
+            lazy: () => import("@/features/offers/offers.page"),
+          },
+          {
+            path: ROUTES.CONVERSIONS,
+            lazy: () => import("@/features/conversions/conversions.page"),
+          },
+          {
             path: ROUTES.BOARDS,
             lazy: () => import("@/features/boards-list/boards-list.page"),
           },

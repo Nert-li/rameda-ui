@@ -10,6 +10,9 @@ export const ROUTES = {
   RECENT_BOARDS: "/boards/recent",
   USERS: "/users",
   CLICKS: "/clicks",
+  PROMO_CODES: "/promo-codes",
+  OFFERS: "/offers",
+  CONVERSIONS: "/conversions",
 } as const;
 
 export type PathParams = {

@@ -62,41 +62,4 @@ export const columns: ColumnDef<User>[] = [
             )
         },
     },
-    {
-        accessorKey: "role",
-        header: "Role",
-    },
-    {
-        accessorKey: "account_status",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Status
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-    },
-    {
-        accessorKey: "last_online",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Last Online
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => {
-            const lastOnline = row.getValue("last_online")
-            if (!lastOnline) return <span className="text-muted-foreground">-</span>
-            return new Date(lastOnline as string).toLocaleString()
-        },
-    },
 ] 

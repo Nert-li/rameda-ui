@@ -1,0 +1,45 @@
+getAllOffers:
+  summary: Get all offers
+  operationId: getAllOffers
+  tags:
+    - Offers
+  responses:
+    "200":
+      description: A list of offers
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              offers:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OfferRecord"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+components:
+  schemas:
+    OfferRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        aasm_status:
+          type: string
+        buyers_count:
+          type: integer
+        clicks_count:
+          type: integer
+        promo_codes_count:
+          type: integer
+        active_promo_codes_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time 
