@@ -18,28 +18,183 @@ getAllOffers:
     "401":
       $ref: "../shared/responses.yaml#/UnauthorizedError"
 
+getOffer:
+  summary: Get offer by ID
+  operationId: getOffer
+  tags:
+    - Offers
+  parameters:
+    - name: offerId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Offer details
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              offer:
+                $ref: "#/components/schemas/OfferRecord"
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+createOffer:
+  summary: Create a new offer
+  operationId: createOffer
+  tags:
+    - Offers
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            offer:
+              $ref: "#/components/schemas/OfferInput"
+          required:
+            - offer
+  responses:
+    "201":
+      description: Offer created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              offer:
+                $ref: "#/components/schemas/OfferRecord"
+              message:
+                type: string
+    "422":
+      $ref: "../shared/responses.yaml#/ValidationError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+updateOffer:
+  summary: Update an offer
+  operationId: updateOffer
+  tags:
+    - Offers
+  parameters:
+    - name: offerId
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            offer:
+              $ref: "#/components/schemas/OfferInput"
+          required:
+            - offer
+  responses:
+    "200":
+      description: Offer updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              offer:
+                $ref: "#/components/schemas/OfferRecord"
+              message:
+                type: string
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "422":
+      $ref: "../shared/responses.yaml#/ValidationError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+deleteOffer:
+  summary: Delete an offer
+  operationId: deleteOffer
+  tags:
+    - Offers
+  parameters:
+    - name: offerId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Offer deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
 components:
   schemas:
     OfferRecord:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         name:
           type: string
         aasm_status:
           type: string
-        buyers_count:
-          type: integer
+        ads_manager_id:
+          type: string
+          nullable: true
+        ads_manager_title:
+          type: string
+          nullable: true
+        buyer_id:
+          type: string
+          nullable: true
+        buyer_name:
+          type: string
+          nullable: true
         clicks_count:
           type: integer
         promo_codes_count:
           type: integer
         active_promo_codes_count:
           type: integer
+        reports_count:
+          type: integer
+        total_spend:
+          type: number
+          format: float
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
-          format: date-time 
+          format: date-time
+
+    OfferInput:
+      type: object
+      properties:
+        name:
+          type: string
+        aasm_status:
+          type: string
+        ads_manager_id:
+          type: string
+          nullable: true
+      required:
+        - name
+        - aasm_status 

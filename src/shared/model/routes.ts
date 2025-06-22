@@ -10,6 +10,8 @@ export const ROUTES = {
   OFFERS: "/offers",
   CONVERSIONS: "/conversions",
   ADS_MANAGERS: "/ads-managers",
+  REPORTS: "/reports",
+  ADS_MANAGER_REPORTS: "/ads-managers/:adsManagerId/reports",
 } as const;
 
 export const PAGE_TITLES: Record<string, string> = {
@@ -19,6 +21,8 @@ export const PAGE_TITLES: Record<string, string> = {
   [ROUTES.OFFERS]: "Offers",
   [ROUTES.CONVERSIONS]: "Conversions",
   [ROUTES.ADS_MANAGERS]: "Ads Managers",
+  [ROUTES.REPORTS]: "Reports",
+  [ROUTES.ADS_MANAGER_REPORTS]: "Ads Manager Reports",
 };
 
 export type PathParams = {

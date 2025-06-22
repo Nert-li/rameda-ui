@@ -1,8 +1,80 @@
 openapi: 3.0.0
 info:
-  title: Miro-like Collaborative Whiteboard API
-  description: API for a collaborative whiteboard application similar to Miro
+  title: Rameda API
   version: 1.0.0
+  description: API for Rameda application
+
+paths:
+  # Auth endpoints
+  # /auth/login:
+  #   post:
+  #     $ref: "endpoints/auth.yaml#/login"
+  # /auth/register:
+  #   post:
+  #     $ref: "endpoints/auth.yaml#/register"
+
+  # Users endpoints
+  /users:
+    get:
+      $ref: "endpoints/users.yaml#/getAllUsers"
+
+  # Promo codes endpoints
+  /promo_codes:
+    get:
+      $ref: "endpoints/promo-codes.yaml#/getAllPromoCodes"
+
+  # Offers endpoints
+  /offers:
+    get:
+      $ref: "endpoints/offers.yaml#/getAllOffers"
+    post:
+      $ref: "endpoints/offers.yaml#/createOffer"
+  /offers/{offerId}:
+    get:
+      $ref: "endpoints/offers.yaml#/getOffer"
+    put:
+      $ref: "endpoints/offers.yaml#/updateOffer"
+    delete:
+      $ref: "endpoints/offers.yaml#/deleteOffer"
+
+  # Conversions endpoints
+  /conversions:
+    get:
+      $ref: "endpoints/conversions.yaml#/getAllConversions"
+
+  # Clicks endpoints
+  /clicks:
+    get:
+      $ref: "endpoints/clicks.yaml#/getAllClicks"
+
+  # Ads Managers endpoints
+  /ads_managers:
+    get:
+      $ref: "endpoints/ads-managers.yaml#/getAllAdsManagers"
+    post:
+      $ref: "endpoints/ads-managers.yaml#/createAdsManager"
+  /ads_managers/{adsManagerId}:
+    get:
+      $ref: "endpoints/ads-managers.yaml#/getAdsManager"
+    put:
+      $ref: "endpoints/ads-managers.yaml#/updateAdsManager"
+    delete:
+      $ref: "endpoints/ads-managers.yaml#/deleteAdsManager"
+  /ads_managers/{adsManagerId}/offers:
+    get:
+      $ref: "endpoints/ads-managers.yaml#/getAdsManagerOffers"
+  /ads_managers/{adsManagerId}/reports:
+    get:
+      $ref: "endpoints/reports.yaml#/getAllReports"
+    post:
+      $ref: "endpoints/reports.yaml#/createReport"
+  /ads_managers/{adsManagerId}/reports/{reportId}:
+    get:
+      $ref: "endpoints/reports.yaml#/getReport"
+    put:
+      $ref: "endpoints/reports.yaml#/updateReport"
+    delete:
+      $ref: "endpoints/reports.yaml#/deleteReport"
 
 components:
   securitySchemes:
@@ -10,68 +82,64 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-
-paths:
-
-  /users/sign_in:
-    post:
-      $ref: "./endpoints/auth.yaml#/signIn"
-
-  /users/sign_out:
-    delete:
-      $ref: "./endpoints/auth.yaml#/signOut"
-
-  /users:
-    get:
-      $ref: "./endpoints/users.yaml#/getAllUsers"
-
-  /clicks:
-    get:
-      $ref: "./endpoints/clicks.yaml#/getAllClicks"
-
-  /promo_codes:
-    get:
-      $ref: "./endpoints/promo-codes.yaml#/getAllPromoCodes"
-
-  /offers:
-    get:
-      $ref: "./endpoints/offers.yaml#/getAllOffers"
-
-  /conversions:
-    get:
-      $ref: "./endpoints/conversions.yaml#/getAllConversions"
-
-  /ads_managers:
-    get:
-      $ref: "./endpoints/ads-managers.yaml#/getAllAdsManagers"
-    post:
-      $ref: "./endpoints/ads-managers.yaml#/createAdsManager"
-
-  /ads_managers/{adsManagerId}:
-    get:
-      $ref: "./endpoints/ads-managers.yaml#/getAdsManager"
-    put:
-      $ref: "./endpoints/ads-managers.yaml#/updateAdsManager"
-    delete:
-      $ref: "./endpoints/ads-managers.yaml#/deleteAdsManager"
-
-  /ads_managers/{adsManagerId}/offers:
-    get:
-      $ref: "./endpoints/ads-managers.yaml#/getAdsManagerOffers"
-
-  /ads_managers/{adsManagerId}/reports:
-    get:
-      $ref: "./endpoints/reports.yaml#/getAllReports"
-    post:
-      $ref: "./endpoints/reports.yaml#/createReport"
-
-  /ads_managers/{adsManagerId}/reports/{reportId}:
-    get:
-      $ref: "./endpoints/reports.yaml#/getReport"
-    put:
-      $ref: "./endpoints/reports.yaml#/updateReport"
-    delete:
-      $ref: "./endpoints/reports.yaml#/deleteReport"
+  schemas:
+    UserRecord:
+      $ref: "endpoints/users.yaml#/components/schemas/UserRecord"
+    PromoCodeRecord:
+      $ref: "endpoints/promo-codes.yaml#/components/schemas/PromoCodeRecord"
+    OfferRecord:
+      $ref: "endpoints/offers.yaml#/components/schemas/OfferRecord"
+    OfferInput:
+      $ref: "endpoints/offers.yaml#/components/schemas/OfferInput"
+    ClickRecord:
+      $ref: "endpoints/clicks.yaml#/components/schemas/ClickRecord"
+    ConversionRecord:
+      $ref: "endpoints/conversions.yaml#/components/schemas/ConversionRecord"
+    AdsManagerRecord:
+      $ref: "endpoints/ads-managers.yaml#/components/schemas/AdsManagerRecord"
+    AdsManagerInput:
+      $ref: "endpoints/ads-managers.yaml#/components/schemas/AdsManagerInput"
+    OfferSummary:
+      $ref: "endpoints/ads-managers.yaml#/components/schemas/OfferSummary"
+    ReportRecord:
+      $ref: "endpoints/reports.yaml#/components/schemas/ReportRecord"
+    ReportInput:
+      $ref: "endpoints/reports.yaml#/components/schemas/ReportInput"
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              code:
+                type: string
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              code:
+                type: string
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationErrorResponse"
 
 

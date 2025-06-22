@@ -1,23 +1,20 @@
 import * as React from "react"
 import {
   IconCamera,
+  IconChartLine,
   IconDashboard,
   IconFileAi,
   IconFileDescription,
+  IconFileText,
   IconInnerShadowTop,
   IconSettings,
-  IconChartLine,
+  IconUsers,
+  IconGift,
+  IconPointer,
+  IconTicket,
+  IconTarget,
 } from "@tabler/icons-react"
 
-import {
-  UsersIcon,
-  GiftIcon,
-  MousePointerClickIcon,
-  TicketPercentIcon,
-  GoalIcon,
-} from "lucide-react";
-
-import { NavDocuments } from "@/shared/ui/nav-documents"
 import { NavMain } from "@/shared/ui/nav-main"
 import { NavSecondary } from "@/shared/ui/nav-secondary"
 import { NavUser } from "@/shared/ui/nav-user"
@@ -47,32 +44,27 @@ const data = {
     {
       title: "Users",
       url: ROUTES.USERS,
-      icon: UsersIcon,
+      icon: IconUsers,
     },
     {
       title: "Clicks",
       url: ROUTES.CLICKS,
-      icon: MousePointerClickIcon,
+      icon: IconPointer,
     },
     {
       title: "Promo Codes",
       url: ROUTES.PROMO_CODES,
-      icon: TicketPercentIcon,
+      icon: IconTicket,
     },
     {
       title: "Offers",
       url: ROUTES.OFFERS,
-      icon: GiftIcon,
+      icon: IconGift,
     },
     {
       title: "Conversions",
       url: ROUTES.CONVERSIONS,
-      icon: GoalIcon,
-    },
-    {
-      title: "Ads Managers",
-      url: ROUTES.ADS_MANAGERS,
-      icon: IconChartLine,
+      icon: IconTarget,
     },
   ],
   navClouds: [
@@ -131,6 +123,16 @@ const data = {
     },
   ],
   documents: [
+    {
+      title: "Ads Managers",
+      url: ROUTES.ADS_MANAGERS,
+      icon: IconChartLine,
+    },
+    {
+      title: "Reports",
+      url: ROUTES.REPORTS,
+      icon: IconFileText,
+    },
   ],
 }
 
@@ -153,8 +155,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavMain items={data.navMain} label="Main" />
+        <NavMain items={data.documents} label="Ads Monitoring" />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

@@ -4,84 +4,6 @@
  */
 
 export interface paths {
-    "/users/sign_in": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Login user */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["DeviseLoginRequest"];
-                };
-            };
-            responses: {
-                /** @description Login successful */
-                200: {
-                    headers: {
-                        /** @description Bearer token for authentication */
-                        Authorization?: string;
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["User"];
-                    };
-                };
-                401: components["responses"]["UnauthorizedError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/sign_out": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Logout user */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Logout successful */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                401: components["responses"]["UnauthorizedError"];
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users": {
         parameters: {
             query?: never;
@@ -91,23 +13,6 @@ export interface paths {
         };
         /** Get all users */
         get: operations["getAllUsers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/clicks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all clicks */
-        get: operations["getAllClicks"];
         put?: never;
         post?: never;
         delete?: never;
@@ -143,8 +48,28 @@ export interface paths {
         /** Get all offers */
         get: operations["getAllOffers"];
         put?: never;
-        post?: never;
+        /** Create a new offer */
+        post: operations["createOffer"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/offers/{offerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get offer by ID */
+        get: operations["getOffer"];
+        /** Update an offer */
+        put: operations["updateOffer"];
+        post?: never;
+        /** Delete an offer */
+        delete: operations["deleteOffer"];
         options?: never;
         head?: never;
         patch?: never;
@@ -159,6 +84,23 @@ export interface paths {
         };
         /** Get all conversions */
         get: operations["getAllConversions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clicks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all clicks */
+        get: operations["getAllClicks"];
         put?: never;
         post?: never;
         delete?: never;
@@ -262,28 +204,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        DeviseLoginRequest: {
-            user: {
-                /** Format: email */
-                email: string;
-                /** Format: password */
-                password: string;
-            };
-        };
-        User: {
-            id: string;
-            /** Format: email */
-            email: string;
-            first_name?: string;
-            last_name?: string;
-            phone_number?: string;
-            /** @enum {string} */
-            role?: "user" | "manager" | "admin";
-        };
-        Error: {
-            message: string;
-            code: string;
-        };
         UserRecord: {
             id?: number;
             /** Format: email */
@@ -304,6 +224,51 @@ export interface components {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
+        };
+        PromoCodeRecord: {
+            id?: number;
+            name?: string;
+            description?: string | null;
+            /** Format: date-time */
+            expires_at?: string | null;
+            /** Format: float */
+            discount_percent?: number;
+            is_active?: boolean;
+            is_expired?: boolean;
+            offer?: {
+                id?: number;
+                name?: string;
+                aasm_status?: string;
+            };
+            conversions_count?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
+        OfferRecord: {
+            id?: string;
+            name?: string;
+            aasm_status?: string;
+            ads_manager_id?: string | null;
+            ads_manager_title?: string | null;
+            buyer_id?: string | null;
+            buyer_name?: string | null;
+            clicks_count?: number;
+            promo_codes_count?: number;
+            active_promo_codes_count?: number;
+            reports_count?: number;
+            /** Format: float */
+            total_spend?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
+        OfferInput: {
+            name: string;
+            aasm_status: string;
+            ads_manager_id?: string | null;
         };
         ClickRecord: {
             id?: number;
@@ -334,40 +299,6 @@ export interface components {
             sub_id13?: string | null;
             sub_id14?: string | null;
             sub_id15?: string | null;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-        };
-        PromoCodeRecord: {
-            id?: number;
-            name?: string;
-            description?: string | null;
-            /** Format: date-time */
-            expires_at?: string | null;
-            /** Format: float */
-            discount_percent?: number;
-            is_active?: boolean;
-            is_expired?: boolean;
-            offer?: {
-                id?: number;
-                name?: string;
-                aasm_status?: string;
-            };
-            conversions_count?: number;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-        };
-        OfferRecord: {
-            id?: number;
-            name?: string;
-            aasm_status?: string;
-            buyers_count?: number;
-            clicks_count?: number;
-            promo_codes_count?: number;
-            active_promo_codes_count?: number;
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */
@@ -407,9 +338,6 @@ export interface components {
             title: string;
             id_rc?: string | null;
         };
-        ValidationErrorResponse: {
-            errors?: string[];
-        };
         OfferSummary: {
             id?: string;
             name?: string;
@@ -439,6 +367,13 @@ export interface components {
             /** Format: date */
             report_date: string;
         };
+        ValidationErrorResponse: {
+            errors?: string[];
+        };
+        Error: {
+            message: string;
+            code: string;
+        };
     };
     responses: {
         /** @description Unauthorized */
@@ -447,7 +382,22 @@ export interface components {
                 [name: string]: unknown;
             };
             content: {
-                "application/json": components["schemas"]["Error"];
+                "application/json": {
+                    message?: string;
+                    code?: string;
+                };
+            };
+        };
+        /** @description Resource not found */
+        NotFoundError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    message?: string;
+                    code?: string;
+                };
             };
         };
         /** @description Validation error */
@@ -459,8 +409,17 @@ export interface components {
                 "application/json": components["schemas"]["ValidationErrorResponse"];
             };
         };
+        /** @description Unauthorized */
+        responses_UnauthorizedError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
         /** @description Resource not found */
-        NotFoundError: {
+        responses_NotFoundError: {
             headers: {
                 [name: string]: unknown;
             };
@@ -497,40 +456,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
-        };
-    };
-    getAllClicks: {
-        parameters: {
-            query?: {
-                offer_id?: number;
-                country?: string;
-                leads?: boolean;
-                seals?: boolean;
-                unique?: boolean;
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description A list of clicks */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        clicks?: components["schemas"]["ClickRecord"][];
-                        total_count?: number;
-                        filtered_count?: number;
-                    };
-                };
-            };
-            401: components["responses"]["UnauthorizedError"];
+            401: components["responses"]["responses_UnauthorizedError"];
         };
     };
     getAllPromoCodes: {
@@ -560,7 +486,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
+            401: components["responses"]["responses_UnauthorizedError"];
         };
     };
     getAllOffers: {
@@ -583,7 +509,124 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+        };
+    };
+    createOffer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    offer: components["schemas"]["OfferInput"];
+                };
+            };
+        };
+        responses: {
+            /** @description Offer created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        offer?: components["schemas"]["OfferRecord"];
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["responses_UnauthorizedError"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    getOffer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Offer details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        offer?: components["schemas"]["OfferRecord"];
+                    };
+                };
+            };
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
+        };
+    };
+    updateOffer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    offer: components["schemas"]["OfferInput"];
+                };
+            };
+        };
+        responses: {
+            /** @description Offer updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        offer?: components["schemas"]["OfferRecord"];
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    deleteOffer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Offer deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
         };
     };
     getAllConversions: {
@@ -623,7 +666,40 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+        };
+    };
+    getAllClicks: {
+        parameters: {
+            query?: {
+                offer_id?: number;
+                country?: string;
+                leads?: boolean;
+                seals?: boolean;
+                unique?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of clicks */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clicks?: components["schemas"]["ClickRecord"][];
+                        total_count?: number;
+                        filtered_count?: number;
+                    };
+                };
+            };
+            401: components["responses"]["responses_UnauthorizedError"];
         };
     };
     getAllAdsManagers: {
@@ -648,7 +724,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
+            401: components["responses"]["responses_UnauthorizedError"];
         };
     };
     createAdsManager: {
@@ -678,7 +754,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
+            401: components["responses"]["responses_UnauthorizedError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -704,8 +780,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
-            404: components["responses"]["NotFoundError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
         };
     };
     updateAdsManager: {
@@ -737,8 +813,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
-            404: components["responses"]["NotFoundError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -764,8 +840,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
-            404: components["responses"]["NotFoundError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
         };
     };
     getAdsManagerOffers: {
@@ -790,8 +866,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
-            404: components["responses"]["NotFoundError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
         };
     };
     getAllReports: {
@@ -818,7 +894,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
+            401: components["responses"]["responses_UnauthorizedError"];
         };
     };
     createReport: {
@@ -850,7 +926,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
+            401: components["responses"]["responses_UnauthorizedError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -877,8 +953,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
-            404: components["responses"]["NotFoundError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
         };
     };
     updateReport: {
@@ -911,8 +987,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
-            404: components["responses"]["NotFoundError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -939,8 +1015,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["UnauthorizedError"];
-            404: components["responses"]["NotFoundError"];
+            401: components["responses"]["responses_UnauthorizedError"];
+            404: components["responses"]["responses_NotFoundError"];
         };
     };
 }

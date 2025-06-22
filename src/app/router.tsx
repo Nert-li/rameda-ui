@@ -42,6 +42,14 @@ export const router = createBrowserRouter([
             path: ROUTES.ADS_MANAGERS,
             lazy: () => import("@/features/ads-managers/ads-managers.page"),
           },
+          {
+            path: ROUTES.REPORTS,
+            lazy: () => import("@/features/reports/reports-overview.page"),
+          },
+          {
+            path: ROUTES.ADS_MANAGER_REPORTS,
+            lazy: () => import("@/features/reports/reports.page"),
+          },
         ],
       },
 
