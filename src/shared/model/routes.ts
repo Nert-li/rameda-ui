@@ -15,6 +15,17 @@ export const ROUTES = {
   CONVERSIONS: "/conversions",
 } as const;
 
+export const PAGE_TITLES: Record<string, string> = {
+  [ROUTES.USERS]: "Users",
+  [ROUTES.CLICKS]: "Clicks",
+  [ROUTES.PROMO_CODES]: "Promo Codes",
+  [ROUTES.OFFERS]: "Offers",
+  [ROUTES.CONVERSIONS]: "Conversions",
+  [ROUTES.BOARDS]: "Boards",
+  [ROUTES.FAVORITE_BOARDS]: "Favorite Boards",
+  [ROUTES.RECENT_BOARDS]: "Recent Boards",
+};
+
 export type PathParams = {
   [ROUTES.BOARD]: {
     boardId: string;

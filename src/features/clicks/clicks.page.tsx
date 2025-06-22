@@ -19,7 +19,7 @@ export function Component() {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto py-10">
+            <div className="container mx-auto">
                 <div className="space-y-6">
                     <Skeleton className="h-8 w-1/4 rounded-lg" />
 
@@ -56,9 +56,8 @@ export function Component() {
     }
 
     return (
-        <div className="container mx-auto py-10">
-            <h1 className="text-2xl font-bold mb-4">Clicks</h1>
-            <div className="flex items-center space-x-4 mb-4">
+        <div className="container mx-auto">
+            <div className="flex items-center space-x-4 mt-4">
                 <div className="flex items-center space-x-2">
                     <Switch
                         id="leads-filter"

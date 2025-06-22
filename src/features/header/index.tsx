@@ -1,7 +1,7 @@
 import { useSession } from "@/shared/model/session";
 import { Button } from "@/shared/ui/kit/button";
 import { Link, useLocation } from "react-router-dom";
-import { ROUTES } from "@/shared/model/routes";
+import { PAGE_TITLES, ROUTES } from "@/shared/model/routes";
 import { ThemeToggle } from "./theme-toggle";
 import {
   UsersIcon,
@@ -9,6 +9,7 @@ import {
   MousePointerClickIcon,
   TicketPercentIcon,
   GoalIcon,
+  ChevronRight,
 } from "lucide-react";
 
 export function AppHeader() {
@@ -19,10 +20,20 @@ export function AppHeader() {
     return null;
   }
 
+  const pageTitle = PAGE_TITLES[pathname];
+
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/40 shadow-sm py-3 px-4">
+    <header className="sticky top-0 z-50 bg-background/95 border-b border-border/40 shadow-sm py-3 px-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="text-xl font-semibold">Rameda</div>
+        <div className="flex items-center gap-2">
+          <div className="text-xl font-semibold">Rameda</div>
+          {pageTitle && (
+            <>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <div className="text-lg font-semibold text-muted-foreground">{pageTitle}</div>
+            </>
+          )}
+        </div>
 
         <div className="flex items-center gap-2">
           <Button asChild variant={pathname === ROUTES.USERS ? "default" : "outline"} className="h-auto font-normal text-sm px-3 py-1.5">

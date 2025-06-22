@@ -18,7 +18,7 @@ export const router = createBrowserRouter([
         element: (
           <>
             <AppHeader />
-            <main className="min-h-screen bg-muted/20">
+            <main className="flex-1 overflow-y-auto bg-muted/20">
               <ProtectedRoute />
             </main>
           </>
