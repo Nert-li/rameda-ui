@@ -18,7 +18,9 @@ export const router = createBrowserRouter([
         element: (
           <>
             <AppHeader />
-            <ProtectedRoute />
+            <main className="min-h-screen bg-muted/20">
+              <ProtectedRoute />
+            </main>
           </>
         ),
         children: [

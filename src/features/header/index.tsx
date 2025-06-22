@@ -1,11 +1,19 @@
 import { useSession } from "@/shared/model/session";
 import { Button } from "@/shared/ui/kit/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ROUTES } from "@/shared/model/routes";
 import { ThemeToggle } from "./theme-toggle";
+import {
+  UsersIcon,
+  GiftIcon,
+  MousePointerClickIcon,
+  TicketPercentIcon,
+  GoalIcon,
+} from "lucide-react";
 
 export function AppHeader() {
   const { session, logout } = useSession();
+  const { pathname } = useLocation();
 
   if (!session) {
     return null;
@@ -16,12 +24,37 @@ export function AppHeader() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="text-xl font-semibold">Rameda</div>
 
-        <div className="flex items-center gap-4">
-          <Link to={ROUTES.USERS} className="text-sm hover:underline">Users</Link>
-          <Link to={ROUTES.OFFERS} className="text-sm hover:underline">Offers</Link>
-          <Link to={ROUTES.CLICKS} className="text-sm hover:underline">Clicks</Link>
-          <Link to={ROUTES.PROMO_CODES} className="text-sm hover:underline">Promo Codes</Link>
-          <Link to={ROUTES.CONVERSIONS} className="text-sm hover:underline">Conversions</Link>
+        <div className="flex items-center gap-2">
+          <Button asChild variant={pathname === ROUTES.USERS ? "default" : "outline"} className="h-auto font-normal text-sm px-3 py-1.5">
+            <Link to={ROUTES.USERS} className="flex items-center gap-2">
+              <UsersIcon className="h-4 w-4" />
+              Users
+            </Link>
+          </Button>
+          <Button asChild variant={pathname === ROUTES.OFFERS ? "default" : "outline"} className="h-auto font-normal text-sm px-3 py-1.5">
+            <Link to={ROUTES.OFFERS} className="flex items-center gap-2">
+              <GiftIcon className="h-4 w-4" />
+              Offers
+            </Link>
+          </Button>
+          <Button asChild variant={pathname === ROUTES.CLICKS ? "default" : "outline"} className="h-auto font-normal text-sm px-3 py-1.5">
+            <Link to={ROUTES.CLICKS} className="flex items-center gap-2">
+              <MousePointerClickIcon className="h-4 w-4" />
+              Clicks
+            </Link>
+          </Button>
+          <Button asChild variant={pathname === ROUTES.PROMO_CODES ? "default" : "outline"} className="h-auto font-normal text-sm px-3 py-1.5">
+            <Link to={ROUTES.PROMO_CODES} className="flex items-center gap-2">
+              <TicketPercentIcon className="h-4 w-4" />
+              Promo Codes
+            </Link>
+          </Button>
+          <Button asChild variant={pathname === ROUTES.CONVERSIONS ? "default" : "outline"} className="h-auto font-normal text-sm px-3 py-1.5">
+            <Link to={ROUTES.CONVERSIONS} className="flex items-center gap-2">
+              <GoalIcon className="h-4 w-4" />
+              Conversions
+            </Link>
+          </Button>
           <ThemeToggle />
           <span className="text-sm text-muted-foreground">{session.email}</span>
           <Button
