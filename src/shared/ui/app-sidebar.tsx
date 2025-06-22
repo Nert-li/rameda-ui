@@ -47,6 +47,11 @@ const data = {
       icon: IconUsers,
     },
     {
+      title: "Offers",
+      url: ROUTES.OFFERS,
+      icon: IconGift,
+    },
+    {
       title: "Clicks",
       url: ROUTES.CLICKS,
       icon: IconPointer,
@@ -55,11 +60,6 @@ const data = {
       title: "Promo Codes",
       url: ROUTES.PROMO_CODES,
       icon: IconTicket,
-    },
-    {
-      title: "Offers",
-      url: ROUTES.OFFERS,
-      icon: IconGift,
     },
     {
       title: "Conversions",
