@@ -294,161 +294,18 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/buyers": {
+    "/users": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get all buyers for current user */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description List of buyers */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["BuyersList"];
-                    };
-                };
-                401: components["responses"]["UnauthorizedError"];
-            };
-        };
+        /** Get all users */
+        get: operations["getAllUsers"];
         put?: never;
-        /** Create a new buyer */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateBuyer"];
-                };
-            };
-            responses: {
-                /** @description Buyer created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            buyer?: components["schemas"]["Buyer"];
-                        };
-                    };
-                };
-                401: components["responses"]["UnauthorizedError"];
-                422: components["responses"]["BadRequestError"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/buyers/{buyerId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get a buyer by id */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    buyerId: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Buyer */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            buyer?: components["schemas"]["Buyer"];
-                        };
-                    };
-                };
-                401: components["responses"]["UnauthorizedError"];
-                404: components["responses"]["NotFoundError"];
-            };
-        };
-        /** Update a buyer */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    buyerId: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateBuyer"];
-                };
-            };
-            responses: {
-                /** @description Buyer updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            buyer?: components["schemas"]["Buyer"];
-                        };
-                    };
-                };
-                401: components["responses"]["UnauthorizedError"];
-                404: components["responses"]["NotFoundError"];
-                422: components["responses"]["BadRequestError"];
-            };
-        };
         post?: never;
-        /** Delete a buyer */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    buyerId: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Buyer deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                401: components["responses"]["UnauthorizedError"];
-                404: components["responses"]["NotFoundError"];
-            };
-        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -502,23 +359,26 @@ export interface components {
         RenameBoard: {
             name: string;
         };
-        Buyer: {
-            id: number;
-            name: string;
-            userId: number;
+        UserRecord: {
+            id?: number;
+            /** Format: email */
+            email?: string;
+            first_name?: string | null;
+            last_name?: string | null;
+            phone_number?: string | null;
+            country?: string | null;
+            role?: string;
+            account_status?: string;
+            buyer_name?: string | null;
+            offers_count?: number | null;
             /** Format: date-time */
-            createdAt: string;
+            last_online?: string | null;
             /** Format: date-time */
-            updatedAt: string;
-        };
-        BuyersList: {
-            buyers: components["schemas"]["Buyer"][];
-        };
-        CreateBuyer: {
-            name: string;
-        };
-        UpdateBuyer: {
-            name?: string;
+            confirmed_at?: string | null;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
         };
     };
     responses: {
@@ -540,15 +400,6 @@ export interface components {
                 "application/json": components["schemas"]["Error"];
             };
         };
-        /** @description Bad request */
-        BadRequestError: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["Error"];
-            };
-        };
     };
     parameters: never;
     requestBodies: never;
@@ -556,4 +407,29 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    getAllUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        users?: components["schemas"]["UserRecord"][];
+                        total_count?: number;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+        };
+    };
+}

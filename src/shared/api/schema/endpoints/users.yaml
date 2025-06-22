@@ -1,0 +1,68 @@
+getAllUsers:
+  summary: Get all users
+  operationId: getAllUsers
+  tags:
+    - Users
+  responses:
+    "200":
+      description: A list of users
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              users:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserRecord"
+              total_count:
+                type: integer
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+components:
+  schemas:
+    UserRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        phone_number:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        role:
+          type: string
+        account_status:
+          type: string
+        buyer_name:
+          type: string
+          nullable: true
+        offers_count:
+          type: integer
+          nullable: true
+        last_online:
+          type: string
+          format: date-time
+          nullable: true
+        confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time 

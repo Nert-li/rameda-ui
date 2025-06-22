@@ -23,6 +23,10 @@ export const router = createBrowserRouter([
         ),
         children: [
           {
+            path: ROUTES.USERS,
+            lazy: () => import("@/features/users/users.page"),
+          },
+          {
             path: ROUTES.BOARDS,
             lazy: () => import("@/features/boards-list/boards-list.page"),
           },
@@ -40,10 +44,6 @@ export const router = createBrowserRouter([
             path: ROUTES.BOARD,
             lazy: () => import("@/features/board/board.page"),
           },
-          {
-            path: ROUTES.BUYERS,
-            lazy: () => import("@/features/buyers/buyers.page"),
-          },
         ],
       },
 
@@ -57,7 +57,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTES.HOME,
-        loader: () => redirect(ROUTES.BOARDS),
+        loader: () => redirect(ROUTES.USERS),
       },
     ],
   },

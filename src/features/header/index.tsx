@@ -2,6 +2,7 @@ import { useSession } from "@/shared/model/session";
 import { Button } from "@/shared/ui/kit/button";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/shared/model/routes";
+import { ThemeToggle } from "./theme-toggle";
 
 export function AppHeader() {
   const { session, logout } = useSession();
@@ -16,8 +17,8 @@ export function AppHeader() {
         <div className="text-xl font-semibold">Miro Copy</div>
 
         <div className="flex items-center gap-4">
-          <Link to={ROUTES.BOARDS} className="text-sm hover:underline">Boards</Link>
-          <Link to={ROUTES.BUYERS} className="text-sm hover:underline">Buyers</Link>
+          <Link to={ROUTES.USERS} className="text-sm hover:underline">Users</Link>
+          <ThemeToggle />
           <span className="text-sm text-muted-foreground">{session.email}</span>
           <Button
             variant="outline"
