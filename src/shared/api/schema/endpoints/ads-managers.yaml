@@ -148,9 +148,9 @@ deleteAdsManager:
     "401":
       $ref: "../shared/responses.yaml#/UnauthorizedError"
 
-getAdsManagerOffers:
-  summary: Get offers for ads manager
-  operationId: getAdsManagerOffers
+getAdsManagerOffer:
+  summary: Get offer for ads manager
+  operationId: getAdsManagerOffer
   tags:
     - AdsManagers
   parameters:
@@ -161,16 +161,15 @@ getAdsManagerOffers:
         type: string
   responses:
     "200":
-      description: Offers summary for ads manager
+      description: Offer summary for ads manager
       content:
         application/json:
           schema:
             type: object
             properties:
-              offers:
-                type: array
-                items:
-                  $ref: "#/components/schemas/OfferSummary"
+              offer:
+                $ref: "#/components/schemas/OfferSummary"
+                nullable: true
     "404":
       $ref: "../shared/responses.yaml#/NotFoundError"
     "401":
@@ -192,11 +191,17 @@ components:
           type: string
         buyer_name:
           type: string
-        offer_names:
+        offer_name:
           type: string
-          description: "Comma-separated list of offer names"
-        offers_count:
-          type: integer
+          nullable: true
+          description: "Name of the single assigned offer"
+        offer_id:
+          type: string
+          nullable: true
+          description: "ID of the single assigned offer"
+        has_offer:
+          type: boolean
+          description: "Whether ads manager has an assigned offer"
         reports_count:
           type: integer
         total_spend:

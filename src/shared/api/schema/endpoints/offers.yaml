@@ -155,9 +155,11 @@ components:
           type: string
         aasm_status:
           type: string
+        offer_type:
+          type: string
+          enum: [clo, no_clo]
         ads_manager_id:
           type: string
-          nullable: true
         ads_manager_title:
           type: string
           nullable: true
@@ -167,15 +169,24 @@ components:
         buyer_name:
           type: string
           nullable: true
+        registrations_count:
+          type: integer
+        first_deposits_count:
+          type: integer
+        first_deposits_sum:
+          type: number
+          format: float
+        revenue:
+          type: number
+          format: float
         clicks_count:
           type: integer
         promo_codes_count:
           type: integer
-        active_promo_codes_count:
-          type: integer
-        reports_count:
-          type: integer
-        total_spend:
+        spend:
+          type: number
+          format: float
+        roi:
           type: number
           format: float
         created_at:
@@ -194,7 +205,11 @@ components:
           type: string
         ads_manager_id:
           type: string
-          nullable: true
+        offer_type:
+          type: string
+          enum: [clo, no_clo]
       required:
         - name
-        - aasm_status 
+        - aasm_status
+        - ads_manager_id
+        - offer_type 

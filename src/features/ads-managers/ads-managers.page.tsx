@@ -112,7 +112,7 @@ export const Component = () => {
                     <div className="mb-8">
                         <AdsManagerMetrics
                             totalAdsManagers={adsManagers.length}
-                            totalOffers={adsManagers.reduce((sum, am) => sum + (am.offers_count || 0), 0)}
+                            totalOffers={adsManagers.filter(am => am.has_offer).length}
                             totalSpend={adsManagers.reduce((sum, am) => sum + Number(am.total_spend || 0), 0)}
                             totalReports={adsManagers.reduce((sum, am) => sum + (am.reports_count || 0), 0)}
                             isLoading={isLoading}
@@ -161,9 +161,9 @@ export const Component = () => {
                                                 <CardDescription className="text-sm">
                                                     {adsManager.buyer_name} • ID: {adsManager.id_rc}
                                                 </CardDescription>
-                                                {adsManager.offer_names && (
+                                                {adsManager.offer_name && (
                                                     <CardDescription className="text-xs text-muted-foreground line-clamp-1">
-                                                        Offers: {adsManager.offer_names}
+                                                        Offer: {adsManager.offer_name}
                                                     </CardDescription>
                                                 )}
                                             </div>
@@ -235,8 +235,8 @@ export const Component = () => {
                                         {/* General Stats */}
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
-                                                <p className="text-muted-foreground">Offers</p>
-                                                <p className="font-medium">{adsManager.offers_count || 0}</p>
+                                                <p className="text-muted-foreground">Has Offer</p>
+                                                <p className="font-medium">{adsManager.has_offer ? "Yes" : "No"}</p>
                                             </div>
                                             <div>
                                                 <p className="text-muted-foreground">Reports</p>

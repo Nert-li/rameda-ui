@@ -30,8 +30,77 @@ export const columns: ColumnDef<Report>[] = [
         accessorKey: "spend",
         header: "Spend",
         cell: ({ row }) => (
-            <span className="font-mono text-green-600">
+            <span className="font-mono text-red-600">
                 ${Number(row.getValue("spend") || 0).toFixed(2)}
+            </span>
+        ),
+    },
+    {
+        accessorKey: "revenue",
+        header: "Revenue",
+        cell: ({ row }) => (
+            <span className="font-mono text-green-600">
+                ${Number(row.getValue("revenue") || 0).toFixed(2)}
+            </span>
+        ),
+    },
+    {
+        accessorKey: "profit",
+        header: "Profit",
+        cell: ({ row }) => {
+            const profit = Number(row.getValue("profit") || 0);
+            return (
+                <span className={`font-mono ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    ${profit.toFixed(2)}
+                </span>
+            );
+        },
+    },
+    {
+        accessorKey: "roi",
+        header: "ROI",
+        cell: ({ row }) => {
+            const roi = Number(row.getValue("roi") || 0);
+            return (
+                <span className={`font-mono ${roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {roi.toFixed(2)}%
+                </span>
+            );
+        },
+    },
+    {
+        accessorKey: "cr",
+        header: "CR",
+        cell: ({ row }) => (
+            <span className="font-mono text-blue-600">
+                {Number(row.getValue("cr") || 0).toFixed(2)}%
+            </span>
+        ),
+    },
+    {
+        accessorKey: "cpm",
+        header: "CPM",
+        cell: ({ row }) => (
+            <span className="font-mono text-purple-600">
+                ${Number(row.getValue("cpm") || 0).toFixed(2)}
+            </span>
+        ),
+    },
+    {
+        accessorKey: "ctr",
+        header: "CTR",
+        cell: ({ row }) => (
+            <span className="font-mono text-orange-600">
+                {Number(row.getValue("ctr") || 0).toFixed(2)}%
+            </span>
+        ),
+    },
+    {
+        accessorKey: "cpc",
+        header: "CPC",
+        cell: ({ row }) => (
+            <span className="font-mono text-indigo-600">
+                ${Number(row.getValue("cpc") || 0).toFixed(2)}
             </span>
         ),
     },

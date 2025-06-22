@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        loader: protectedLoader,
+        // loader: protectedLoader,
         element: (
           <div className="flex flex-1 flex-col"><ProtectedRoute /></div>
         ),

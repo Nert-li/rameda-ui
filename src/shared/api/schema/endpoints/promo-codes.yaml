@@ -73,8 +73,17 @@ components:
               type: string
             aasm_status:
               type: string
-        conversions_count:
-          type: integer
+        buyer:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+            name:
+              type: string
+        country:
+          type: string
         created_at:
           type: string
           format: date-time

@@ -10,6 +10,9 @@ export const columns: ColumnDef<Offer>[] = [
     {
         accessorKey: "name",
         header: "Name",
+        cell: ({ row }) => (
+            <span className="font-medium">{row.getValue("name")}</span>
+        ),
     },
     {
         accessorKey: "aasm_status",
@@ -21,19 +24,89 @@ export const columns: ColumnDef<Offer>[] = [
         },
     },
     {
-        accessorKey: "buyers_count",
-        header: "Buyers",
+        accessorKey: "registrations_count",
+        header: "Reg Count",
+        cell: ({ row }) => {
+            const count = row.getValue("registrations_count") as number;
+            return <span className="font-mono">{count || 0}</span>
+        },
+    },
+    {
+        accessorKey: "first_deposits_count",
+        header: "FD Count",
+        cell: ({ row }) => {
+            const count = row.getValue("first_deposits_count") as number;
+            return <span className="font-mono">{count || 0}</span>
+        },
+    },
+    {
+        accessorKey: "first_deposits_sum",
+        header: "FD Sum",
+        cell: ({ row }) => {
+            const sum = row.getValue("first_deposits_sum") as number;
+            const formatted = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+            }).format(sum || 0);
+            return <span className="font-mono">{formatted}</span>
+        },
+    },
+    {
+        accessorKey: "revenue",
+        header: "Revenue",
+        cell: ({ row }) => {
+            const revenue = row.getValue("revenue") as number;
+            const formatted = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+            }).format(revenue || 0);
+            return <span className="font-mono font-medium text-green-600">{formatted}</span>
+        },
     },
     {
         accessorKey: "clicks_count",
         header: "Clicks",
+        cell: ({ row }) => {
+            const count = row.getValue("clicks_count") as number;
+            return <span className="font-mono">{count || 0}</span>
+        },
     },
     {
         accessorKey: "promo_codes_count",
         header: "Promo Codes",
+        cell: ({ row }) => {
+            const count = row.getValue("promo_codes_count") as number;
+            return <span className="font-mono">{count || 0}</span>
+        },
     },
     {
-        accessorKey: "active_promo_codes_count",
-        header: "Active Promos",
-    }
+        accessorKey: "spend",
+        header: "Spend",
+        cell: ({ row }) => {
+            const spend = row.getValue("spend") as number;
+            const formatted = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+            }).format(spend || 0);
+            return <span className="font-mono text-red-600">{formatted}</span>
+        },
+    },
+    {
+        accessorKey: "roi",
+        header: "ROI",
+        cell: ({ row }) => {
+            const revenue = row.getValue("revenue") as number || 0;
+            const spend = row.getValue("spend") as number || 0;
+
+            if (spend === 0) {
+                return <span className="text-muted-foreground">-</span>
+            }
+
+            const roi = ((revenue - spend) / spend) * 100;
+            const formatted = `${roi.toFixed(1)}%`;
+            const color = roi >= 0 ? "text-green-600" : "text-red-600";
+
+            return <span className={`font-mono font-medium ${color}`}>{formatted}</span>
+        },
+    },
 ] 

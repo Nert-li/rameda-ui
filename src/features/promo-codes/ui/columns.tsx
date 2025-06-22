@@ -56,6 +56,30 @@ export const columns: ColumnDef<PromoCode>[] = [
         },
     },
     {
+        accessorKey: "buyer",
+        header: "Buyer",
+        cell: ({ row }) => {
+            const buyer = row.original.buyer
+            return buyer ? (
+                <span className="font-medium">{buyer.email}</span>
+            ) : (
+                <span className="text-muted-foreground">-</span>
+            )
+        },
+    },
+    {
+        accessorKey: "country",
+        header: "Country",
+        cell: ({ row }) => {
+            const country = row.original.country
+            return country ? (
+                <span className="font-medium">{country}</span>
+            ) : (
+                <span className="text-muted-foreground">-</span>
+            )
+        },
+    },
+    {
         accessorKey: "is_active",
         header: "Status",
         cell: ({ row }) => {
@@ -73,9 +97,5 @@ export const columns: ColumnDef<PromoCode>[] = [
             }
             return new Date(expiresAt as string).toLocaleDateString()
         },
-    },
-    {
-        accessorKey: "conversions_count",
-        header: "Conversions",
     },
 ] 

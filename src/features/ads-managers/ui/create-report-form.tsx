@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useCreateReport } from "@/features/ads-managers/model/use-create-report";
-import { useAdsManagerOffers } from "@/features/ads-managers/model/use-ads-manager-offers";
+import { useAdsManagerOffer } from "@/features/ads-managers/model/use-ads-manager-offer";
 import { Button } from "@/shared/ui/kit/button";
 import { Input } from "@/shared/ui/kit/input";
 import { Label } from "@/shared/ui/kit/label";
@@ -24,7 +24,7 @@ export const CreateReportForm: React.FC<CreateReportFormProps> = ({
     onSuccess
 }) => {
     const { createReport, isPending } = useCreateReport();
-    const { offers, isLoading: isOffersLoading } = useAdsManagerOffers(adsManagerId);
+    const { offer, isLoading: isOfferLoading } = useAdsManagerOffer(adsManagerId);
 
     const {
         register,
@@ -35,6 +35,7 @@ export const CreateReportForm: React.FC<CreateReportFormProps> = ({
     } = useForm<ReportFormData>({
         defaultValues: {
             report_date: new Date().toISOString().split('T')[0], // Today's date
+            offer_id: offer?.id || "",
         },
     });
 
@@ -61,21 +62,21 @@ export const CreateReportForm: React.FC<CreateReportFormProps> = ({
         );
     };
 
-    if (isOffersLoading) {
+    if (isOfferLoading) {
         return (
             <div className="flex items-center justify-center p-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                <span className="ml-2">Loading offers...</span>
+                <span className="ml-2">Loading offer...</span>
             </div>
         );
     }
 
-    if (!offers || offers.length === 0) {
+    if (!offer) {
         return (
             <div className="text-center p-8">
-                <p className="text-muted-foreground">No offers available for this ads manager.</p>
+                <p className="text-muted-foreground">No offer available for this ads manager.</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                    Please assign offers to this ads manager first.
+                    Please assign an offer to this ads manager first.
                 </p>
             </div>
         );
@@ -104,17 +105,15 @@ export const CreateReportForm: React.FC<CreateReportFormProps> = ({
                                         <SelectValue placeholder="Select an offer" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {offers.map((offer) => (
-                                            <SelectItem key={offer.id} value={offer.id!}>
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium">{offer.name}</span>
-                                                    <span className="text-sm text-muted-foreground">
-                                                        Clicks: {offer.clicks_count || 0} |
-                                                        Conversions: {offer.conversions_count || 0}
-                                                    </span>
-                                                </div>
-                                            </SelectItem>
-                                        ))}
+                                        <SelectItem key={offer.id} value={offer.id!}>
+                                            <div className="flex flex-col">
+                                                <span className="font-medium">{offer.name}</span>
+                                                <span className="text-sm text-muted-foreground">
+                                                    Clicks: {offer.clicks_count || 0} |
+                                                    Conversions: {offer.conversions_count || 0}
+                                                </span>
+                                            </div>
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             )}

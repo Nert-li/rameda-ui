@@ -220,6 +220,48 @@ components:
           format: float
         formatted_spend:
           type: string
+        revenue:
+          type: number
+          format: float
+          description: "Revenue from conversions for the report date"
+        formatted_revenue:
+          type: string
+        profit:
+          type: number
+          format: float
+          description: "Profit (revenue - spend) for the report date"
+        formatted_profit:
+          type: string
+        roi:
+          type: number
+          format: float
+          description: "ROI percentage for the report date"
+        formatted_roi:
+          type: string
+        cr:
+          type: number
+          format: float
+          description: "Conversion Rate percentage for the report date"
+        formatted_cr:
+          type: string
+        cpm:
+          type: number
+          format: float
+          description: "Cost Per Mille for the report date"
+        formatted_cpm:
+          type: string
+        ctr:
+          type: number
+          format: float
+          description: "Click Through Rate percentage for the report date"
+        formatted_ctr:
+          type: string
+        cpc:
+          type: number
+          format: float
+          description: "Cost Per Click for the report date"
+        formatted_cpc:
+          type: string
         report_date:
           type: string
           format: date

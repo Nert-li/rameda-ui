@@ -65,9 +65,9 @@ paths:
       $ref: "endpoints/ads-managers.yaml#/updateAdsManager"
     delete:
       $ref: "endpoints/ads-managers.yaml#/deleteAdsManager"
-  /ads_managers/{adsManagerId}/offers:
+  /ads_managers/{adsManagerId}/offer:
     get:
-      $ref: "endpoints/ads-managers.yaml#/getAdsManagerOffers"
+      $ref: "endpoints/ads-managers.yaml#/getAdsManagerOffer"
   /ads_managers/{adsManagerId}/reports:
     get:
       $ref: "endpoints/reports.yaml#/getAllReports"

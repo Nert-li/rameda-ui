@@ -95,11 +95,19 @@ export const columns: ColumnDef<Conversion>[] = [
         },
     },
     {
-        accessorKey: "offer_id",
-        header: "Offer ID",
+        accessorKey: "buyer_id",
+        header: "Buyer ID",
         cell: ({ row }) => {
-            const offerId = row.getValue("offer_id") as string;
-            return <div className="font-mono text-sm">{offerId}</div>
+            const buyerId = row.getValue("buyer_id") as string;
+            return <div className="font-mono text-sm">{buyerId || "-"}</div>
+        },
+    },
+    {
+        accessorKey: "offer_name",
+        header: "Offer Name",
+        cell: ({ row }) => {
+            const offerName = row.getValue("offer_name") as string;
+            return <div className="font-medium">{offerName || "-"}</div>
         },
     },
     {

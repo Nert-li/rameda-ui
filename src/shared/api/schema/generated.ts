@@ -163,15 +163,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ads_managers/{adsManagerId}/offers": {
+    "/ads_managers/{adsManagerId}/offer": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get offers for ads manager */
-        get: operations["getAdsManagerOffers"];
+        /** Get offer for ads manager */
+        get: operations["getAdsManagerOffer"];
         put?: never;
         post?: never;
         delete?: never;
@@ -257,7 +257,12 @@ export interface components {
                 name?: string;
                 aasm_status?: string;
             };
-            conversions_count?: number;
+            buyer?: {
+                id?: string;
+                email?: string;
+                name?: string;
+            };
+            country?: string;
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */
@@ -267,16 +272,24 @@ export interface components {
             id?: string;
             name?: string;
             aasm_status?: string;
-            ads_manager_id?: string | null;
+            /** @enum {string} */
+            offer_type?: "clo" | "no_clo";
+            ads_manager_id?: string;
             ads_manager_title?: string | null;
             buyer_id?: string | null;
             buyer_name?: string | null;
+            registrations_count?: number;
+            first_deposits_count?: number;
+            /** Format: float */
+            first_deposits_sum?: number;
+            /** Format: float */
+            revenue?: number;
             clicks_count?: number;
             promo_codes_count?: number;
-            active_promo_codes_count?: number;
-            reports_count?: number;
             /** Format: float */
-            total_spend?: number;
+            spend?: number;
+            /** Format: float */
+            roi?: number;
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */
@@ -285,7 +298,9 @@ export interface components {
         OfferInput: {
             name: string;
             aasm_status: string;
-            ads_manager_id?: string | null;
+            ads_manager_id: string;
+            /** @enum {string} */
+            offer_type: "clo" | "no_clo";
         };
         ClickRecord: {
             id?: number;
@@ -327,6 +342,8 @@ export interface components {
             phone?: string | null;
             full_name?: string;
             convertible_info?: Record<string, never>;
+            buyer_id?: string | null;
+            offer_name?: string | null;
             click_subid?: string | null;
             click_country?: string | null;
             click_city?: string | null;
@@ -360,9 +377,12 @@ export interface components {
             id_rc?: string | null;
             buyer_id?: string;
             buyer_name?: string;
-            /** @description Comma-separated list of offer names */
-            offer_names?: string;
-            offers_count?: number;
+            /** @description Name of the single assigned offer */
+            offer_name?: string | null;
+            /** @description ID of the single assigned offer */
+            offer_id?: string | null;
+            /** @description Whether ads manager has an assigned offer */
+            has_offer?: boolean;
             reports_count?: number;
             /** Format: float */
             total_spend?: number;
@@ -407,6 +427,48 @@ export interface components {
             /** Format: float */
             spend?: number;
             formatted_spend?: string;
+            /**
+             * Format: float
+             * @description Revenue from conversions for the report date
+             */
+            revenue?: number;
+            formatted_revenue?: string;
+            /**
+             * Format: float
+             * @description Profit (revenue - spend) for the report date
+             */
+            profit?: number;
+            formatted_profit?: string;
+            /**
+             * Format: float
+             * @description ROI percentage for the report date
+             */
+            roi?: number;
+            formatted_roi?: string;
+            /**
+             * Format: float
+             * @description Conversion Rate percentage for the report date
+             */
+            cr?: number;
+            formatted_cr?: string;
+            /**
+             * Format: float
+             * @description Cost Per Mille for the report date
+             */
+            cpm?: number;
+            formatted_cpm?: string;
+            /**
+             * Format: float
+             * @description Click Through Rate percentage for the report date
+             */
+            ctr?: number;
+            formatted_ctr?: string;
+            /**
+             * Format: float
+             * @description Cost Per Click for the report date
+             */
+            cpc?: number;
+            formatted_cpc?: string;
             /** Format: date */
             report_date?: string;
             formatted_date?: string;
@@ -933,7 +995,7 @@ export interface operations {
             404: components["responses"]["responses_NotFoundError"];
         };
     };
-    getAdsManagerOffers: {
+    getAdsManagerOffer: {
         parameters: {
             query?: never;
             header?: never;
@@ -944,14 +1006,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Offers summary for ads manager */
+            /** @description Offer summary for ads manager */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        offers?: components["schemas"]["OfferSummary"][];
+                        offer?: components["schemas"]["OfferSummary"];
                     };
                 };
             };

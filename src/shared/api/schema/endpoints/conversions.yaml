@@ -121,6 +121,12 @@ components:
           type: string
         convertible_info:
           type: object
+        buyer_id:
+          type: string
+          nullable: true
+        offer_name:
+          type: string
+          nullable: true
         # Click-specific fields (only present when convertible_type is Click)
         click_subid:
           type: string
