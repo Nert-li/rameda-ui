@@ -48,4 +48,8 @@ paths:
     get:
       $ref: "./endpoints/users.yaml#/getAllUsers"
 
+  /clicks:
+    get:
+      $ref: "./endpoints/clicks.yaml#/getAllClicks"
+
 

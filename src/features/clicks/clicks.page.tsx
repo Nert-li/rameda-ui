@@ -1,0 +1,75 @@
+import { useClicksList } from "@/features/clicks/model/use-clicks-list";
+import { ClicksTable } from "./ui/clicks-table";
+import { columns } from "./ui/columns";
+import { Skeleton } from "@/shared/ui/kit/skeleton";
+import { useState } from "react";
+import { Input } from "@/shared/ui/kit/input";
+import { Label } from "@/shared/ui/kit/label";
+import { Switch } from "@/shared/ui/kit/switch";
+
+export function Component() {
+    const [filters, setFilters] = useState({
+        leads: false,
+        seals: false,
+        unique: false,
+        country: '',
+    });
+
+    const { clicks, isLoading } = useClicksList(filters);
+
+    if (isLoading) {
+        return (
+            <div className="container mx-auto py-10">
+                <Skeleton className="h-32" />
+            </div>
+        );
+    }
+
+    if (!clicks) {
+        return (
+            <div className="container mx-auto py-10 text-center text-muted-foreground">
+                No clicks found.
+            </div>
+        );
+    }
+
+    return (
+        <div className="container mx-auto py-10">
+            <h1 className="text-2xl font-bold mb-4">Clicks</h1>
+            <div className="flex items-center space-x-4 mb-4">
+                <div className="flex items-center space-x-2">
+                    <Switch
+                        id="leads-filter"
+                        checked={filters.leads}
+                        onCheckedChange={(checked) => setFilters(f => ({ ...f, leads: checked }))}
+                    />
+                    <Label htmlFor="leads-filter">Leads</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Switch
+                        id="seals-filter"
+                        checked={filters.seals}
+                        onCheckedChange={(checked) => setFilters(f => ({ ...f, seals: checked }))}
+                    />
+                    <Label htmlFor="seals-filter">Seals</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Switch
+                        id="unique-filter"
+                        checked={filters.unique}
+                        onCheckedChange={(checked) => setFilters(f => ({ ...f, unique: checked }))}
+                    />
+                    <Label htmlFor="unique-filter">Unique</Label>
+                </div>
+                <div>
+                    <Input
+                        placeholder="Country"
+                        value={filters.country}
+                        onChange={(e) => setFilters(f => ({ ...f, country: e.target.value }))}
+                    />
+                </div>
+            </div>
+            <ClicksTable columns={columns} data={clicks} />
+        </div>
+    );
+} 

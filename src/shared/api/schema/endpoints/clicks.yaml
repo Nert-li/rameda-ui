@@ -1,0 +1,149 @@
+getAllClicks:
+  summary: Get all clicks
+  operationId: getAllClicks
+  tags:
+    - Clicks
+  parameters:
+    - name: offer_id
+      in: query
+      required: false
+      schema:
+        type: integer
+    - name: country
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: leads
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: seals
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: unique
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+    - name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+  responses:
+    "200":
+      description: A list of clicks
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              clicks:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClickRecord"
+              total_count:
+                type: integer
+              filtered_count:
+                type: integer
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+components:
+  schemas:
+    ClickRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        subid:
+          type: string
+          nullable: true
+        ip:
+          type: string
+          nullable: true
+        user_agent:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        is_lead:
+          type: boolean
+        is_seal:
+          type: boolean
+        offer_type:
+          type: string
+          nullable: true
+        is_uniq:
+          type: boolean
+        offer_id:
+          type: integer
+        offer_name:
+          type: string
+        buyer_name:
+          type: string
+          nullable: true
+        conversion_id:
+          type: integer
+          nullable: true
+        sub_id1:
+          type: string
+          nullable: true
+        sub_id2:
+          type: string
+          nullable: true
+        sub_id3:
+          type: string
+          nullable: true
+        sub_id4:
+          type: string
+          nullable: true
+        sub_id5:
+          type: string
+          nullable: true
+        sub_id6:
+          type: string
+          nullable: true
+        sub_id7:
+          type: string
+          nullable: true
+        sub_id8:
+          type: string
+          nullable: true
+        sub_id9:
+          type: string
+          nullable: true
+        sub_id10:
+          type: string
+          nullable: true
+        sub_id11:
+          type: string
+          nullable: true
+        sub_id12:
+          type: string
+          nullable: true
+        sub_id13:
+          type: string
+          nullable: true
+        sub_id14:
+          type: string
+          nullable: true
+        sub_id15:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time 

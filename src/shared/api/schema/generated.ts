@@ -311,6 +311,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clicks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all clicks */
+        get: operations["getAllClicks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -380,6 +397,40 @@ export interface components {
             /** Format: date-time */
             updated_at?: string;
         };
+        ClickRecord: {
+            id?: number;
+            subid?: string | null;
+            ip?: string | null;
+            user_agent?: string | null;
+            country?: string | null;
+            is_lead?: boolean;
+            is_seal?: boolean;
+            offer_type?: string | null;
+            is_uniq?: boolean;
+            offer_id?: number;
+            offer_name?: string;
+            buyer_name?: string | null;
+            conversion_id?: number | null;
+            sub_id1?: string | null;
+            sub_id2?: string | null;
+            sub_id3?: string | null;
+            sub_id4?: string | null;
+            sub_id5?: string | null;
+            sub_id6?: string | null;
+            sub_id7?: string | null;
+            sub_id8?: string | null;
+            sub_id9?: string | null;
+            sub_id10?: string | null;
+            sub_id11?: string | null;
+            sub_id12?: string | null;
+            sub_id13?: string | null;
+            sub_id14?: string | null;
+            sub_id15?: string | null;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
     };
     responses: {
         /** @description Unauthorized */
@@ -426,6 +477,39 @@ export interface operations {
                     "application/json": {
                         users?: components["schemas"]["UserRecord"][];
                         total_count?: number;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+        };
+    };
+    getAllClicks: {
+        parameters: {
+            query?: {
+                offer_id?: number;
+                country?: string;
+                leads?: boolean;
+                seals?: boolean;
+                unique?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of clicks */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clicks?: components["schemas"]["ClickRecord"][];
+                        total_count?: number;
+                        filtered_count?: number;
                     };
                 };
             };

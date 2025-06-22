@@ -9,6 +9,7 @@ export const ROUTES = {
   FAVORITE_BOARDS: "/boards/favorite",
   RECENT_BOARDS: "/boards/recent",
   USERS: "/users",
+  CLICKS: "/clicks",
 } as const;
 
 export type PathParams = {
