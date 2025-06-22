@@ -1,51 +1,55 @@
-import React from 'react';
 import { UniversalDataTable } from "@/shared/ui/universal-data-table";
 import { Badge } from "@/shared/ui/kit/badge";
 import { Button } from "@/shared/ui/kit/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAdsManagersList } from "@/features/ads-managers/model/use-ads-managers-list";
 import { rqClient } from "@/shared/api/instance";
-import { createColumnHelper } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { components } from "@/shared/api/schema/generated";
 
 type Report = components["schemas"]["ReportRecord"];
 
-const columnHelper = createColumnHelper<Report>();
-
-const columns = [
-    columnHelper.accessor("id", {
+const columns: ColumnDef<Report>[] = [
+    {
+        accessorKey: "id",
         header: "ID",
-        cell: (info) => info.getValue()?.slice(0, 8) + "...",
-    }),
-    columnHelper.accessor("offer_name", {
+        cell: ({ row }) => {
+            const id = row.getValue("id") as string;
+            return id ? id.slice(0, 8) + "..." : "N/A";
+        },
+    },
+    {
+        accessorKey: "offer_name",
         header: "Offer",
-        cell: (info) => (
-            <span className="font-medium">{info.getValue()}</span>
+        cell: ({ row }) => (
+            <span className="font-medium">{row.getValue("offer_name")}</span>
         ),
-    }),
-    columnHelper.accessor("spend", {
+    },
+    {
+        accessorKey: "spend",
         header: "Spend",
-        cell: (info) => (
+        cell: ({ row }) => (
             <span className="font-mono text-green-600">
-                ${Number(info.getValue() || 0).toFixed(2)}
+                ${Number(row.getValue("spend") || 0).toFixed(2)}
             </span>
         ),
-    }),
-    columnHelper.accessor("report_date", {
+    },
+    {
+        accessorKey: "report_date",
         header: "Date",
-        cell: (info) => {
-            const date = info.getValue();
-            return date ? new Date(date).toLocaleDateString() : "N/A";
+        cell: ({ row }) => {
+            const date = row.getValue("report_date");
+            return date ? new Date(date as string).toLocaleDateString() : "N/A";
         },
-    }),
-    columnHelper.accessor("created_at", {
+    },
+    {
+        accessorKey: "created_at",
         header: "Created",
-        cell: (info) => {
-            const date = info.getValue();
-            return date ? new Date(date).toLocaleDateString() : "N/A";
+        cell: ({ row }) => {
+            const date = row.getValue("created_at");
+            return date ? new Date(date as string).toLocaleDateString() : "N/A";
         },
-    }),
+    },
 ];
 
 function useReportsList(adsManagerId: string) {
@@ -57,6 +61,13 @@ function useReportsList(adsManagerId: string) {
         reports: data?.reports || [],
         isLoading,
         isError,
+    };
+}
+
+function useAdsManagersList() {
+    const { data } = rqClient.useQuery("get", "/ads_managers");
+    return {
+        adsManagers: data?.ads_managers || [],
     };
 }
 

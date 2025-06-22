@@ -109,6 +109,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all reports across all ads managers */
+        get: operations["getAllReportsGlobal"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads_managers": {
         parameters: {
             query?: never;
@@ -383,6 +400,8 @@ export interface components {
         ReportRecord: {
             id?: string;
             ads_manager_id?: string;
+            /** @description Title of the ads manager */
+            ads_manager_title?: string;
             offer_id?: string;
             offer_name?: string;
             /** Format: float */
@@ -740,6 +759,31 @@ export interface operations {
                         clicks?: components["schemas"]["ClickRecord"][];
                         total_count?: number;
                         filtered_count?: number;
+                        stats?: Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["responses_UnauthorizedError"];
+        };
+    };
+    getAllReportsGlobal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of all reports */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        reports?: components["schemas"]["ReportRecord"][];
+                        pagination?: Record<string, never>;
                         stats?: Record<string, never>;
                     };
                 };

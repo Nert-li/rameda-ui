@@ -47,6 +47,11 @@ paths:
     get:
       $ref: "endpoints/clicks.yaml#/getAllClicks"
 
+  # Reports endpoints
+  /reports:
+    get:
+      $ref: "endpoints/reports.yaml#/getAllReportsGlobal"
+
   # Ads Managers endpoints
   /ads_managers:
     get:
