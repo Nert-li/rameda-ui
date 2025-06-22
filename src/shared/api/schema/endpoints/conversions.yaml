@@ -9,7 +9,7 @@ getAllConversions:
       required: false
       schema:
         type: string
-        enum: [pending, approved, rejected, confirmed, paid, cancelled]
+        enum: [register, sell, rebill, cancel]
     - name: convertible_type
       in: query
       required: false
@@ -36,6 +36,16 @@ getAllConversions:
       required: false
       schema:
         type: boolean
+    - name: email
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: name
+      in: query
+      required: false
+      schema:
+        type: string
     - name: date_from
       in: query
       required: false
@@ -89,17 +99,83 @@ components:
           type: integer
         aasm_state:
           type: string
+          enum: [register, sell, rebill, cancel]
         cost:
           type: number
           format: float
         convertible_type:
           type: string
+          enum: [Click, PromoCode]
         convertible_id:
           type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        full_name:
+          type: string
         convertible_info:
           type: object
-        sub_ids:
-          type: object
+        # Click-specific fields (only present when convertible_type is Click)
+        click_subid:
+          type: string
+          nullable: true
+        click_country:
+          type: string
+          nullable: true
+        click_city:
+          type: string
+          nullable: true
+        click_ad_campaign_id:
+          type: string
+          nullable: true
+        click_creative_id:
+          type: string
+          nullable: true
+        click_offer_type:
+          type: string
+          nullable: true
+        click_os:
+          type: string
+          nullable: true
+        click_source:
+          type: string
+          nullable: true
+        # PromoCode-specific fields (only present when convertible_type is PromoCode)
+        promo_code_name:
+          type: string
+          nullable: true
+        promo_code_discount:
+          type: number
+          format: float
+          nullable: true
+        promo_code_expires_at:
+          type: string
+          format: date
+          nullable: true
+        promo_code_offer_type:
+          type: string
+          nullable: true
+        # Common fields
+        offer_id:
+          type: string
+        time_to_sell:
+          type: number
+          format: float
+          nullable: true
+        time_to_rebill:
+          type: number
+          format: float
+          nullable: true
+        revenue:
+          type: number
+          format: float
+          nullable: true
         is_high_value:
           type: boolean
         created_at:

@@ -278,27 +278,18 @@ export interface components {
             country?: string | null;
             is_lead?: boolean;
             is_seal?: boolean;
-            offer_type?: string | null;
             is_uniq?: boolean;
             offer_id?: number;
             offer_name?: string;
+            /** @enum {string} */
+            offer_type?: "clo" | "no_clo";
             buyer_name?: string | null;
             conversion_id?: number | null;
-            sub_id1?: string | null;
-            sub_id2?: string | null;
-            sub_id3?: string | null;
-            sub_id4?: string | null;
-            sub_id5?: string | null;
-            sub_id6?: string | null;
-            sub_id7?: string | null;
-            sub_id8?: string | null;
-            sub_id9?: string | null;
-            sub_id10?: string | null;
-            sub_id11?: string | null;
-            sub_id12?: string | null;
-            sub_id13?: string | null;
-            sub_id14?: string | null;
-            sub_id15?: string | null;
+            ad_campaign_id?: string | null;
+            creative_id?: string | null;
+            os?: string | null;
+            city?: string | null;
+            source?: string | null;
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */
@@ -306,13 +297,40 @@ export interface components {
         };
         ConversionRecord: {
             id?: number;
-            aasm_state?: string;
+            /** @enum {string} */
+            aasm_state?: "register" | "sell" | "rebill" | "cancel";
             /** Format: float */
             cost?: number;
-            convertible_type?: string;
+            /** @enum {string} */
+            convertible_type?: "Click" | "PromoCode";
             convertible_id?: number;
+            first_name?: string;
+            last_name?: string;
+            email?: string;
+            phone?: string | null;
+            full_name?: string;
             convertible_info?: Record<string, never>;
-            sub_ids?: Record<string, never>;
+            click_subid?: string | null;
+            click_country?: string | null;
+            click_city?: string | null;
+            click_ad_campaign_id?: string | null;
+            click_creative_id?: string | null;
+            click_offer_type?: string | null;
+            click_os?: string | null;
+            click_source?: string | null;
+            promo_code_name?: string | null;
+            /** Format: float */
+            promo_code_discount?: number | null;
+            /** Format: date */
+            promo_code_expires_at?: string | null;
+            promo_code_offer_type?: string | null;
+            offer_id?: string;
+            /** Format: float */
+            time_to_sell?: number | null;
+            /** Format: float */
+            time_to_rebill?: number | null;
+            /** Format: float */
+            revenue?: number | null;
             is_high_value?: boolean;
             /** Format: date-time */
             created_at?: string;
@@ -632,12 +650,14 @@ export interface operations {
     getAllConversions: {
         parameters: {
             query?: {
-                aasm_state?: "pending" | "approved" | "rejected" | "confirmed" | "paid" | "cancelled";
+                aasm_state?: "register" | "sell" | "rebill" | "cancel";
                 convertible_type?: "Click" | "PromoCode";
                 convertible_id?: number;
                 min_cost?: number;
                 max_cost?: number;
                 high_value?: boolean;
+                email?: string;
+                name?: string;
                 date_from?: string;
                 date_to?: string;
             };
@@ -674,6 +694,12 @@ export interface operations {
             query?: {
                 offer_id?: number;
                 country?: string;
+                offer_type?: "clo" | "no_clo";
+                os?: string;
+                city?: string;
+                source?: string;
+                ad_campaign_id?: string;
+                creative_id?: string;
                 leads?: boolean;
                 seals?: boolean;
                 unique?: boolean;
@@ -696,6 +722,7 @@ export interface operations {
                         clicks?: components["schemas"]["ClickRecord"][];
                         total_count?: number;
                         filtered_count?: number;
+                        stats?: Record<string, never>;
                     };
                 };
             };

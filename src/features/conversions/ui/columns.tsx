@@ -22,11 +22,60 @@ export const columns: ColumnDef<Conversion>[] = [
         },
     },
     {
-        accessorKey: "click_subid",
-        header: "SubID",
+        accessorKey: "convertible_type",
+        header: "Type",
         cell: ({ row }) => {
-            const subid = row.getValue("click_subid") as string;
-            return <div>{subid || "-"}</div>
+            const type = row.getValue("convertible_type") as string;
+            return <div>{type === "Click" ? "Click" : "Promo"}</div>
+        },
+    },
+    {
+        accessorKey: "click_subid",
+        header: "Subid",
+        cell: ({ row }) => {
+            const conversion = row.original;
+            if (conversion.convertible_type === "Click") {
+                return <div>{conversion.click_subid || "-"}</div>
+            } else {
+                return <div>-</div>
+            }
+        },
+    },
+    {
+        accessorKey: "promo_code_name",
+        header: "Promo Code",
+        cell: ({ row }) => {
+            const conversion = row.original;
+            if (conversion.convertible_type === "PromoCode") {
+                return <div>{conversion.promo_code_name || "-"}</div>
+            } else {
+                return <div>-</div>
+            }
+        },
+    },
+    {
+        accessorKey: "full_name",
+        header: "Name",
+        cell: ({ row }) => {
+            const firstName = row.original.first_name;
+            const lastName = row.original.last_name;
+            return <div>{`${firstName} ${lastName}`}</div>
+        },
+    },
+    {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ row }) => {
+            const email = row.getValue("email") as string;
+            return <div className="truncate max-w-[200px]">{email}</div>
+        },
+    },
+    {
+        accessorKey: "phone",
+        header: "Phone",
+        cell: ({ row }) => {
+            const phone = row.getValue("phone") as string;
+            return <div>{phone || "-"}</div>
         },
     },
     {
@@ -50,33 +99,25 @@ export const columns: ColumnDef<Conversion>[] = [
         header: "Offer ID",
         cell: ({ row }) => {
             const offerId = row.getValue("offer_id") as string;
-            return <div>{offerId || "-"}</div>
+            return <div className="font-mono text-sm">{offerId}</div>
         },
     },
     {
         accessorKey: "cost",
         header: "Cost (Sell Price)",
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("cost"))
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(amount)
-
-            return <div className="font-medium">{formatted}</div>
+            const cost = row.getValue("cost") as number;
+            const numCost = Number(cost || 0);
+            return <div>${numCost.toFixed(2)}</div>
         },
     },
     {
         accessorKey: "revenue",
-        header: "Revenue (Rebills)",
+        header: "Revenue (Rebills Sum)",
         cell: ({ row }) => {
-            const revenue = row.getValue("revenue") as number || 0;
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(revenue)
-
-            return <div className="font-medium text-green-600">{formatted}</div>
+            const revenue = row.getValue("revenue") as number;
+            const numRevenue = Number(revenue || 0);
+            return <div>${numRevenue.toFixed(2)}</div>
         },
     },
     {
@@ -100,11 +141,7 @@ export const columns: ColumnDef<Conversion>[] = [
         header: "Offer Type",
         cell: ({ row }) => {
             const offerType = row.getValue("click_offer_type") as string;
-            let variant: "default" | "secondary" = "secondary";
-            if (offerType === "clo") {
-                variant = "default";
-            }
-            return <Badge variant={variant}>{offerType || "-"}</Badge>
+            return <div>{offerType || "-"}</div>
         },
     },
     {
@@ -128,7 +165,8 @@ export const columns: ColumnDef<Conversion>[] = [
         header: "Time to Sell (h)",
         cell: ({ row }) => {
             const timeToSell = row.getValue("time_to_sell") as number;
-            return <div>{timeToSell ? `${timeToSell}h` : "-"}</div>
+            const numTimeToSell = Number(timeToSell);
+            return <div>{timeToSell && !isNaN(numTimeToSell) ? `${numTimeToSell.toFixed(1)}h` : "-"}</div>
         },
     },
     {
@@ -136,7 +174,8 @@ export const columns: ColumnDef<Conversion>[] = [
         header: "Time to Rebill (h)",
         cell: ({ row }) => {
             const timeToRebill = row.getValue("time_to_rebill") as number;
-            return <div>{timeToRebill ? `${timeToRebill}h` : "-"}</div>
+            const numTimeToRebill = Number(timeToRebill);
+            return <div>{timeToRebill && !isNaN(numTimeToRebill) ? `${numTimeToRebill.toFixed(1)}h` : "-"}</div>
         },
     },
     {

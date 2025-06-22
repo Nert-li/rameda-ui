@@ -14,6 +14,37 @@ getAllClicks:
       required: false
       schema:
         type: string
+    - name: offer_type
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [clo, no_clo]
+    - name: os
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: city
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: source
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: ad_campaign_id
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: creative_id
+      in: query
+      required: false
+      schema:
+        type: string
     - name: leads
       in: query
       required: false
@@ -55,6 +86,8 @@ getAllClicks:
                 type: integer
               filtered_count:
                 type: integer
+              stats:
+                type: object
     "401":
       $ref: "../shared/responses.yaml#/UnauthorizedError"
 
@@ -81,64 +114,34 @@ components:
           type: boolean
         is_seal:
           type: boolean
-        offer_type:
-          type: string
-          nullable: true
         is_uniq:
           type: boolean
         offer_id:
           type: integer
         offer_name:
           type: string
+        offer_type:
+          type: string
+          enum: [clo, no_clo]
         buyer_name:
           type: string
           nullable: true
         conversion_id:
           type: integer
           nullable: true
-        sub_id1:
+        ad_campaign_id:
           type: string
           nullable: true
-        sub_id2:
+        creative_id:
           type: string
           nullable: true
-        sub_id3:
+        os:
           type: string
           nullable: true
-        sub_id4:
+        city:
           type: string
           nullable: true
-        sub_id5:
-          type: string
-          nullable: true
-        sub_id6:
-          type: string
-          nullable: true
-        sub_id7:
-          type: string
-          nullable: true
-        sub_id8:
-          type: string
-          nullable: true
-        sub_id9:
-          type: string
-          nullable: true
-        sub_id10:
-          type: string
-          nullable: true
-        sub_id11:
-          type: string
-          nullable: true
-        sub_id12:
-          type: string
-          nullable: true
-        sub_id13:
-          type: string
-          nullable: true
-        sub_id14:
-          type: string
-          nullable: true
-        sub_id15:
+        source:
           type: string
           nullable: true
         created_at:
