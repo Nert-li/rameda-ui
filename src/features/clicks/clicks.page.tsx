@@ -46,7 +46,7 @@ export function Component() {
     }
 
     return (
-        <div className="container mx-auto">
+        <div className="p-2">
             <ClicksTable columns={columns} data={clicks} />
         </div>
     );

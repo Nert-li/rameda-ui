@@ -45,7 +45,7 @@ export function Component() {
     }
 
     return (
-        <div className="container mx-auto">
+        <div className="p-2">
             <PromoCodesTable columns={columns} data={promoCodes} />
         </div>
     );

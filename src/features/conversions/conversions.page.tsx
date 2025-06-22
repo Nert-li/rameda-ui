@@ -45,7 +45,7 @@ export function Component() {
     }
 
     return (
-        <div className="container mx-auto">
+        <div className="p-2">
             <ConversionsTable columns={columns} data={conversions} />
         </div>
     );
