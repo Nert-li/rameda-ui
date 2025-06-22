@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "api": "npx openapi-typescript ./src/shared/api/schema/main.yaml -o ./src/shared/api/schema/generated.ts"
+    "dev": "bun run vite",
+    "build": "bun run tsc -b && bun run vite build",
+    "lint": "bun run eslint .",
+    "preview": "bun run vite preview",
+    "api": "bunx openapi-typescript ./src/shared/api/schema/main.yaml -o ./src/shared/api/schema/generated.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
