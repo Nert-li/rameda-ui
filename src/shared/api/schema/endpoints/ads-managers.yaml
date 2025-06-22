@@ -192,6 +192,9 @@ components:
           type: string
         buyer_name:
           type: string
+        offer_names:
+          type: string
+          description: "Comma-separated list of offer names"
         offers_count:
           type: integer
         reports_count:
@@ -199,6 +202,23 @@ components:
         total_spend:
           type: number
           format: float
+        daily_registrations:
+          type: integer
+          description: "Number of registrations today"
+        daily_deposits:
+          type: integer
+          description: "Number of deposits (first deposits) today"
+        daily_fd_sum:
+          type: number
+          format: float
+          description: "Sum of first deposits today"
+        daily_revenue:
+          type: number
+          format: float
+          description: "Total revenue (FD + rebills) today"
+        daily_clicks:
+          type: integer
+          description: "Number of clicks today"
         created_at:
           type: string
           format: date-time

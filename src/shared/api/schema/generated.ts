@@ -343,10 +343,28 @@ export interface components {
             id_rc?: string | null;
             buyer_id?: string;
             buyer_name?: string;
+            /** @description Comma-separated list of offer names */
+            offer_names?: string;
             offers_count?: number;
             reports_count?: number;
             /** Format: float */
             total_spend?: number;
+            /** @description Number of registrations today */
+            daily_registrations?: number;
+            /** @description Number of deposits (first deposits) today */
+            daily_deposits?: number;
+            /**
+             * Format: float
+             * @description Sum of first deposits today
+             */
+            daily_fd_sum?: number;
+            /**
+             * Format: float
+             * @description Total revenue (FD + rebills) today
+             */
+            daily_revenue?: number;
+            /** @description Number of clicks today */
+            daily_clicks?: number;
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */

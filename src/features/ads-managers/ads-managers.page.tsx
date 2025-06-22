@@ -161,6 +161,11 @@ export const Component = () => {
                                                 <CardDescription className="text-sm">
                                                     {adsManager.buyer_name} • ID: {adsManager.id_rc}
                                                 </CardDescription>
+                                                {adsManager.offer_names && (
+                                                    <CardDescription className="text-xs text-muted-foreground line-clamp-1">
+                                                        Offers: {adsManager.offer_names}
+                                                    </CardDescription>
+                                                )}
                                             </div>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -198,6 +203,36 @@ export const Component = () => {
                                         </div>
                                     </CardHeader>
                                     <CardContent>
+                                        {/* Daily Stats */}
+                                        <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                                            <h4 className="text-sm font-medium mb-2 text-center">Today's Performance</h4>
+                                            <div className="grid grid-cols-2 gap-3 text-xs">
+                                                <div className="text-center">
+                                                    <p className="text-muted-foreground">Clicks</p>
+                                                    <p className="font-bold text-blue-600">{adsManager.daily_clicks || 0}</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-muted-foreground">Regs</p>
+                                                    <p className="font-bold text-green-600">{adsManager.daily_registrations || 0}</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-muted-foreground">Deposits</p>
+                                                    <p className="font-bold text-orange-600">{adsManager.daily_deposits || 0}</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-muted-foreground">FD Sum</p>
+                                                    <p className="font-bold text-purple-600">${Number(adsManager.daily_fd_sum || 0).toFixed(0)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 pt-2 border-t border-muted text-center">
+                                                <p className="text-muted-foreground text-xs">Revenue</p>
+                                                <p className="font-bold text-lg text-emerald-600">
+                                                    ${Number(adsManager.daily_revenue || 0).toFixed(2)}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* General Stats */}
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
                                                 <p className="text-muted-foreground">Offers</p>
