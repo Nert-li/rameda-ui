@@ -9,20 +9,6 @@ export type Click = components["schemas"]["ClickRecord"]
 
 export const columns: ColumnDef<Click>[] = [
     {
-        accessorKey: "id",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    ID
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-    },
-    {
         accessorKey: "subid",
         header: "SubID",
     },
@@ -39,12 +25,20 @@ export const columns: ColumnDef<Click>[] = [
         header: "Buyer",
     },
     {
-        accessorKey: "conversion_id",
-        header: "Conversion ID",
+        accessorKey: "ad_campaign_id",
+        header: "Campaign ID",
     },
     {
-        accessorKey: "ip",
-        header: "IP",
+        accessorKey: "creative_id",
+        header: "Creative ID",
+    },
+    {
+        accessorKey: "source",
+        header: "Source",
+    },
+    {
+        accessorKey: "os",
+        header: "OS",
     },
     {
         accessorKey: "country",
@@ -59,6 +53,18 @@ export const columns: ColumnDef<Click>[] = [
                 </Button>
             )
         },
+    },
+    {
+        accessorKey: "city",
+        header: "City",
+    },
+    {
+        accessorKey: "ip",
+        header: "IP",
+    },
+    {
+        accessorKey: "conversion_id",
+        header: "Conversion ID",
     },
     {
         accessorKey: "is_lead",
@@ -103,19 +109,4 @@ export const columns: ColumnDef<Click>[] = [
             return new Date(createdAt as string).toLocaleString()
         },
     },
-    { accessorKey: "sub_id1", header: "sub_id1" },
-    { accessorKey: "sub_id2", header: "sub_id2" },
-    { accessorKey: "sub_id3", header: "sub_id3" },
-    { accessorKey: "sub_id4", header: "sub_id4" },
-    { accessorKey: "sub_id5", header: "sub_id5" },
-    { accessorKey: "sub_id6", header: "sub_id6" },
-    { accessorKey: "sub_id7", header: "sub_id7" },
-    { accessorKey: "sub_id8", header: "sub_id8" },
-    { accessorKey: "sub_id9", header: "sub_id9" },
-    { accessorKey: "sub_id10", header: "sub_id10" },
-    { accessorKey: "sub_id11", header: "sub_id11" },
-    { accessorKey: "sub_id12", header: "sub_id12" },
-    { accessorKey: "sub_id13", header: "sub_id13" },
-    { accessorKey: "sub_id14", header: "sub_id14" },
-    { accessorKey: "sub_id15", header: "sub_id15" },
 ] 
