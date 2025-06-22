@@ -1,0 +1,230 @@
+getAllAdsManagers:
+  summary: Get all ads managers
+  operationId: getAllAdsManagers
+  tags:
+    - AdsManagers
+  responses:
+    "200":
+      description: A list of ads managers
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ads_managers:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdsManagerRecord"
+              pagination:
+                type: object
+              stats:
+                type: object
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+getAdsManager:
+  summary: Get ads manager by ID
+  operationId: getAdsManager
+  tags:
+    - AdsManagers
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Ads Manager details
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ads_manager:
+                $ref: "#/components/schemas/AdsManagerRecord"
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+createAdsManager:
+  summary: Create a new ads manager
+  operationId: createAdsManager
+  tags:
+    - AdsManagers
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            ads_manager:
+              $ref: "#/components/schemas/AdsManagerInput"
+          required:
+            - ads_manager
+  responses:
+    "201":
+      description: Ads Manager created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ads_manager:
+                $ref: "#/components/schemas/AdsManagerRecord"
+              message:
+                type: string
+    "422":
+      $ref: "../shared/responses.yaml#/ValidationError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+updateAdsManager:
+  summary: Update an ads manager
+  operationId: updateAdsManager
+  tags:
+    - AdsManagers
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            ads_manager:
+              $ref: "#/components/schemas/AdsManagerInput"
+          required:
+            - ads_manager
+  responses:
+    "200":
+      description: Ads Manager updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ads_manager:
+                $ref: "#/components/schemas/AdsManagerRecord"
+              message:
+                type: string
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "422":
+      $ref: "../shared/responses.yaml#/ValidationError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+deleteAdsManager:
+  summary: Delete an ads manager
+  operationId: deleteAdsManager
+  tags:
+    - AdsManagers
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Ads Manager deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+getAdsManagerOffers:
+  summary: Get offers for ads manager
+  operationId: getAdsManagerOffers
+  tags:
+    - AdsManagers
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Offers summary for ads manager
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              offers:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OfferSummary"
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+components:
+  schemas:
+    AdsManagerRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        id_rc:
+          type: string
+          nullable: true
+        buyer_id:
+          type: string
+        buyer_name:
+          type: string
+        offers_count:
+          type: integer
+        reports_count:
+          type: integer
+        total_spend:
+          type: number
+          format: float
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AdsManagerInput:
+      type: object
+      properties:
+        title:
+          type: string
+        id_rc:
+          type: string
+          nullable: true
+      required:
+        - title
+
+    OfferSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        clicks_count:
+          type: integer
+        conversions_count:
+          type: integer 

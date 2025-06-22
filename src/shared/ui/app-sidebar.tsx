@@ -6,6 +6,7 @@ import {
   IconFileDescription,
   IconInnerShadowTop,
   IconSettings,
+  IconChartLine,
 } from "@tabler/icons-react"
 
 import {
@@ -67,6 +68,11 @@ const data = {
       title: "Conversions",
       url: ROUTES.CONVERSIONS,
       icon: GoalIcon,
+    },
+    {
+      title: "Ads Managers",
+      url: ROUTES.ADS_MANAGERS,
+      icon: IconChartLine,
     },
   ],
   navClouds: [

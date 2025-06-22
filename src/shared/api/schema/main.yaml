@@ -42,4 +42,36 @@ paths:
     get:
       $ref: "./endpoints/conversions.yaml#/getAllConversions"
 
+  /ads_managers:
+    get:
+      $ref: "./endpoints/ads-managers.yaml#/getAllAdsManagers"
+    post:
+      $ref: "./endpoints/ads-managers.yaml#/createAdsManager"
+
+  /ads_managers/{adsManagerId}:
+    get:
+      $ref: "./endpoints/ads-managers.yaml#/getAdsManager"
+    put:
+      $ref: "./endpoints/ads-managers.yaml#/updateAdsManager"
+    delete:
+      $ref: "./endpoints/ads-managers.yaml#/deleteAdsManager"
+
+  /ads_managers/{adsManagerId}/offers:
+    get:
+      $ref: "./endpoints/ads-managers.yaml#/getAdsManagerOffers"
+
+  /ads_managers/{adsManagerId}/reports:
+    get:
+      $ref: "./endpoints/reports.yaml#/getAllReports"
+    post:
+      $ref: "./endpoints/reports.yaml#/createReport"
+
+  /ads_managers/{adsManagerId}/reports/{reportId}:
+    get:
+      $ref: "./endpoints/reports.yaml#/getReport"
+    put:
+      $ref: "./endpoints/reports.yaml#/updateReport"
+    delete:
+      $ref: "./endpoints/reports.yaml#/deleteReport"
+
 

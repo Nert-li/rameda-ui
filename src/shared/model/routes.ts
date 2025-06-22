@@ -9,6 +9,7 @@ export const ROUTES = {
   PROMO_CODES: "/promo-codes",
   OFFERS: "/offers",
   CONVERSIONS: "/conversions",
+  ADS_MANAGERS: "/ads-managers",
 } as const;
 
 export const PAGE_TITLES: Record<string, string> = {
@@ -17,6 +18,7 @@ export const PAGE_TITLES: Record<string, string> = {
   [ROUTES.PROMO_CODES]: "Promo Codes",
   [ROUTES.OFFERS]: "Offers",
   [ROUTES.CONVERSIONS]: "Conversions",
+  [ROUTES.ADS_MANAGERS]: "Ads Managers",
 };
 
 export type PathParams = {
@@ -34,6 +36,9 @@ export type PathParams = {
   },
   [ROUTES.CONVERSIONS]: {
     conversionId: string;
+  },
+  [ROUTES.ADS_MANAGERS]: {
+    adsManagerId: string;
   }
 };
 

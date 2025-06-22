@@ -1,0 +1,222 @@
+getAllReports:
+  summary: Get all reports for ads manager
+  operationId: getAllReports
+  tags:
+    - Reports
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: A list of reports
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reports:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReportRecord"
+              pagination:
+                type: object
+              stats:
+                type: object
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+getReport:
+  summary: Get report by ID
+  operationId: getReport
+  tags:
+    - Reports
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: reportId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Report details
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              report:
+                $ref: "#/components/schemas/ReportRecord"
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+createReport:
+  summary: Create a new report
+  operationId: createReport
+  tags:
+    - Reports
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            report:
+              $ref: "#/components/schemas/ReportInput"
+          required:
+            - report
+  responses:
+    "201":
+      description: Report created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              report:
+                $ref: "#/components/schemas/ReportRecord"
+              message:
+                type: string
+    "422":
+      $ref: "../shared/responses.yaml#/ValidationError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+updateReport:
+  summary: Update a report
+  operationId: updateReport
+  tags:
+    - Reports
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: reportId
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            report:
+              $ref: "#/components/schemas/ReportInput"
+          required:
+            - report
+  responses:
+    "200":
+      description: Report updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              report:
+                $ref: "#/components/schemas/ReportRecord"
+              message:
+                type: string
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "422":
+      $ref: "../shared/responses.yaml#/ValidationError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+deleteReport:
+  summary: Delete a report
+  operationId: deleteReport
+  tags:
+    - Reports
+  parameters:
+    - name: adsManagerId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: reportId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Report deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+components:
+  schemas:
+    ReportRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        ads_manager_id:
+          type: string
+        offer_id:
+          type: string
+        offer_name:
+          type: string
+        spend:
+          type: number
+          format: float
+        formatted_spend:
+          type: string
+        report_date:
+          type: string
+          format: date
+        formatted_date:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ReportInput:
+      type: object
+      properties:
+        offer_id:
+          type: string
+        spend:
+          type: number
+          format: float
+        report_date:
+          type: string
+          format: date
+      required:
+        - offer_id
+        - spend
+        - report_date 

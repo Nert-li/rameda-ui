@@ -19,6 +19,13 @@ BadRequestError:
       schema:
         $ref: "#/schemas/Error"
 
+ValidationError:
+  description: Validation error
+  content:
+    application/json:
+      schema:
+        $ref: "#/schemas/ValidationErrorResponse"
+
 schemas:
   Error:
     type: object
@@ -30,3 +37,11 @@ schemas:
         type: string
       code:
         type: string
+
+  ValidationErrorResponse:
+    type: object
+    properties:
+      errors:
+        type: array
+        items:
+          type: string

@@ -167,6 +167,97 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads_managers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all ads managers */
+        get: operations["getAllAdsManagers"];
+        put?: never;
+        /** Create a new ads manager */
+        post: operations["createAdsManager"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads_managers/{adsManagerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get ads manager by ID */
+        get: operations["getAdsManager"];
+        /** Update an ads manager */
+        put: operations["updateAdsManager"];
+        post?: never;
+        /** Delete an ads manager */
+        delete: operations["deleteAdsManager"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads_managers/{adsManagerId}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get offers for ads manager */
+        get: operations["getAdsManagerOffers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads_managers/{adsManagerId}/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all reports for ads manager */
+        get: operations["getAllReports"];
+        put?: never;
+        /** Create a new report */
+        post: operations["createReport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads_managers/{adsManagerId}/reports/{reportId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get report by ID */
+        get: operations["getReport"];
+        /** Update a report */
+        put: operations["updateReport"];
+        post?: never;
+        /** Delete a report */
+        delete: operations["deleteReport"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -297,10 +388,79 @@ export interface components {
             /** Format: date-time */
             updated_at?: string;
         };
+        AdsManagerRecord: {
+            id?: string;
+            title?: string;
+            id_rc?: string | null;
+            buyer_id?: string;
+            buyer_name?: string;
+            offers_count?: number;
+            reports_count?: number;
+            /** Format: float */
+            total_spend?: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
+        AdsManagerInput: {
+            title: string;
+            id_rc?: string | null;
+        };
+        ValidationErrorResponse: {
+            errors?: string[];
+        };
+        OfferSummary: {
+            id?: string;
+            name?: string;
+            clicks_count?: number;
+            conversions_count?: number;
+        };
+        ReportRecord: {
+            id?: string;
+            ads_manager_id?: string;
+            offer_id?: string;
+            offer_name?: string;
+            /** Format: float */
+            spend?: number;
+            formatted_spend?: string;
+            /** Format: date */
+            report_date?: string;
+            formatted_date?: string;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+        };
+        ReportInput: {
+            offer_id: string;
+            /** Format: float */
+            spend: number;
+            /** Format: date */
+            report_date: string;
+        };
     };
     responses: {
         /** @description Unauthorized */
         UnauthorizedError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description Validation error */
+        ValidationError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ValidationErrorResponse"];
+            };
+        };
+        /** @description Resource not found */
+        NotFoundError: {
             headers: {
                 [name: string]: unknown;
             };
@@ -464,6 +624,323 @@ export interface operations {
                 };
             };
             401: components["responses"]["UnauthorizedError"];
+        };
+    };
+    getAllAdsManagers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of ads managers */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        ads_managers?: components["schemas"]["AdsManagerRecord"][];
+                        pagination?: Record<string, never>;
+                        stats?: Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+        };
+    };
+    createAdsManager: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    ads_manager: components["schemas"]["AdsManagerInput"];
+                };
+            };
+        };
+        responses: {
+            /** @description Ads Manager created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        ads_manager?: components["schemas"]["AdsManagerRecord"];
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    getAdsManager: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ads Manager details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        ads_manager?: components["schemas"]["AdsManagerRecord"];
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
+        };
+    };
+    updateAdsManager: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    ads_manager: components["schemas"]["AdsManagerInput"];
+                };
+            };
+        };
+        responses: {
+            /** @description Ads Manager updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        ads_manager?: components["schemas"]["AdsManagerRecord"];
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    deleteAdsManager: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ads Manager deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
+        };
+    };
+    getAdsManagerOffers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Offers summary for ads manager */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        offers?: components["schemas"]["OfferSummary"][];
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
+        };
+    };
+    getAllReports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of reports */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        reports?: components["schemas"]["ReportRecord"][];
+                        pagination?: Record<string, never>;
+                        stats?: Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+        };
+    };
+    createReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    report: components["schemas"]["ReportInput"];
+                };
+            };
+        };
+        responses: {
+            /** @description Report created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        report?: components["schemas"]["ReportRecord"];
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    getReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+                reportId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Report details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        report?: components["schemas"]["ReportRecord"];
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
+        };
+    };
+    updateReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+                reportId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    report: components["schemas"]["ReportInput"];
+                };
+            };
+        };
+        responses: {
+            /** @description Report updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        report?: components["schemas"]["ReportRecord"];
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    deleteReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adsManagerId: string;
+                reportId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Report deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
         };
     };
 }

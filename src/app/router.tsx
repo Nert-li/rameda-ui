@@ -3,9 +3,6 @@ import { createBrowserRouter, redirect } from "react-router-dom";
 import { App } from "./app";
 import { Providers } from "./providers";
 import { protectedLoader, ProtectedRoute } from "./protected-route";
-import { AppSidebar } from "@/shared/ui/app-sidebar";
-import { SidebarInset } from "@/shared/ui/kit/sidebar";
-import { SiteHeader } from "@/shared/ui/site-header";
 
 export const router = createBrowserRouter([
   {
@@ -18,13 +15,7 @@ export const router = createBrowserRouter([
       {
         loader: protectedLoader,
         element: (
-          <>
-            <AppSidebar variant="inset" />
-            <SidebarInset>
-              <SiteHeader />
-              <div className="flex flex-1 flex-col"><ProtectedRoute /></div>
-            </SidebarInset>
-          </>
+          <div className="flex flex-1 flex-col"><ProtectedRoute /></div>
         ),
         children: [
           {
@@ -46,6 +37,10 @@ export const router = createBrowserRouter([
           {
             path: ROUTES.CONVERSIONS,
             lazy: () => import("@/features/conversions/conversions.page"),
+          },
+          {
+            path: ROUTES.ADS_MANAGERS,
+            lazy: () => import("@/features/ads-managers/ads-managers.page"),
           },
         ],
       },
