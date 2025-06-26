@@ -104,20 +104,7 @@ getAllClicks:
               filtered_count:
                 type: integer
               pagination:
-                type: object
-                properties:
-                  current_page:
-                    type: integer
-                  next_page:
-                    type: integer
-                    nullable: true
-                  prev_page:
-                    type: integer
-                    nullable: true
-                  total_pages:
-                    type: integer
-                  total_count:
-                    type: integer
+                $ref: "../shared/responses.yaml#/schemas/Pagination"
               stats:
                 type: object
                 properties:

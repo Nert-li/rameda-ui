@@ -7,11 +7,20 @@ interface ClicksTableProps {
         handleSort: (field: string) => void
         sorting: { field: string | null; direction: 'asc' | 'desc' }
     }
+    pagination?: {
+        currentPage: number
+        totalPages: number
+        totalCount: number
+        pageSize: number
+        onPageChange: (page: number) => void
+        onPageSizeChange: (pageSize: number) => void
+    }
 }
 
 export function ClicksTable({
     data,
     sorting,
+    pagination,
 }: ClicksTableProps) {
     const columns = sorting
         ? getColumns(sorting.handleSort, sorting.sorting)
@@ -21,6 +30,7 @@ export function ClicksTable({
         <UniversalDataTable
             columns={columns}
             data={data}
+            pagination={pagination}
             searchPlaceholder="Filter clicks..."
         />
     )

@@ -4,15 +4,19 @@ import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
 interface UseClicksListParams {
     sortParams?: Record<string, string>;
     filters?: Record<string, string>;
+    page?: number;
+    limit?: number;
 }
 
 export const useClicksList = (params: UseClicksListParams = {}) => {
-    const { sortParams = {}, filters = {} } = params;
+    const { sortParams = {}, filters = {}, page, limit } = params;
 
-    // Объединяем параметры сортировки и фильтрации
+    // Объединяем параметры сортировки, фильтрации и пагинации
     const queryParams = {
         ...sortParams,
-        ...filters
+        ...filters,
+        ...(page && { page }),
+        ...(limit && { limit })
     };
 
     const { data, isLoading, isError, refetch } = rqClient.useQuery(
@@ -37,13 +41,15 @@ export const useClicksList = (params: UseClicksListParams = {}) => {
 };
 
 // Хук с интегрированной сортировкой
-export const useClicksListWithSorting = () => {
+export const useClicksListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
     const serverSorting = useServerSorting({
-        defaultSort: { field: 'created_at', direction: 'desc' }
+        defaultField: 'created_at',
+        defaultDirection: 'desc'
     });
 
     const clicksQuery = useClicksList({
-        sortParams: serverSorting.getSortParams()
+        sortParams: serverSorting.getSortParams(),
+        ...paginationParams
     });
 
     return {

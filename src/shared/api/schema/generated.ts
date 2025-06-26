@@ -487,6 +487,14 @@ export interface components {
         ValidationErrorResponse: {
             errors?: string[];
         };
+        Pagination: {
+            current_page: number;
+            next_page?: number | null;
+            prev_page?: number | null;
+            total_pages: number;
+            total_count: number;
+            page_size: number;
+        };
         Error: {
             message: string;
             code: string;
@@ -499,10 +507,7 @@ export interface components {
                 [name: string]: unknown;
             };
             content: {
-                "application/json": {
-                    message?: string;
-                    code?: string;
-                };
+                "application/json": components["schemas"]["Error"];
             };
         };
         /** @description Resource not found */
@@ -511,10 +516,16 @@ export interface components {
                 [name: string]: unknown;
             };
             content: {
-                "application/json": {
-                    message?: string;
-                    code?: string;
-                };
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description Bad request */
+        BadRequestError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
             };
         };
         /** @description Validation error */
@@ -524,24 +535,6 @@ export interface components {
             };
             content: {
                 "application/json": components["schemas"]["ValidationErrorResponse"];
-            };
-        };
-        /** @description Unauthorized */
-        responses_UnauthorizedError: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["Error"];
-            };
-        };
-        /** @description Resource not found */
-        responses_NotFoundError: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["Error"];
             };
         };
     };
@@ -577,13 +570,7 @@ export interface operations {
                     "application/json": {
                         users?: components["schemas"]["UserRecord"][];
                         total_count?: number;
-                        pagination?: {
-                            current_page?: number;
-                            next_page?: number | null;
-                            prev_page?: number | null;
-                            total_pages?: number;
-                            total_count?: number;
-                        };
+                        pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             total_count?: number;
                             by_role?: Record<string, never>;
@@ -601,7 +588,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
         };
     };
     getAllPromoCodes: {
@@ -631,13 +618,7 @@ export interface operations {
                         total_count?: number;
                         active_count?: number;
                         expired_count?: number;
-                        pagination?: {
-                            current_page?: number;
-                            next_page?: number | null;
-                            prev_page?: number | null;
-                            total_pages?: number;
-                            total_count?: number;
-                        };
+                        pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             total_count?: number;
                             active_count?: number;
@@ -655,7 +636,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
         };
     };
     getAllOffers: {
@@ -682,13 +663,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         offers?: components["schemas"]["OfferRecord"][];
-                        pagination?: {
-                            current_page?: number;
-                            next_page?: number | null;
-                            prev_page?: number | null;
-                            total_pages?: number;
-                            total_count?: number;
-                        };
+                        pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             total_count?: number;
                             active_count?: number;
@@ -706,7 +681,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
         };
     };
     createOffer: {
@@ -736,7 +711,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -762,8 +737,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
         };
     };
     updateOffer: {
@@ -795,8 +770,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -822,8 +797,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
         };
     };
     getAllConversions: {
@@ -857,13 +832,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         conversions?: components["schemas"]["ConversionRecord"][];
-                        pagination?: {
-                            current_page?: number;
-                            next_page?: number | null;
-                            prev_page?: number | null;
-                            total_pages?: number;
-                            total_count?: number;
-                        };
+                        pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             total_count?: number;
                             /** Format: float */
@@ -883,7 +852,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
         };
     };
     getAllClicks: {
@@ -921,13 +890,7 @@ export interface operations {
                         clicks?: components["schemas"]["ClickRecord"][];
                         total_count?: number;
                         filtered_count?: number;
-                        pagination?: {
-                            current_page?: number;
-                            next_page?: number | null;
-                            prev_page?: number | null;
-                            total_pages?: number;
-                            total_count?: number;
-                        };
+                        pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             total_count?: number;
                             leads_count?: number;
@@ -945,7 +908,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
         };
     };
     getAllReportsGlobal: {
@@ -969,13 +932,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         reports?: components["schemas"]["ReportRecord"][];
-                        pagination?: {
-                            current_page?: number;
-                            next_page?: number | null;
-                            prev_page?: number | null;
-                            total_pages?: number;
-                            total_count?: number;
-                        };
+                        pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             /** Format: float */
                             total_spend?: number;
@@ -995,7 +952,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
         };
     };
     getAllAdsManagers: {
@@ -1019,13 +976,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         ads_managers?: components["schemas"]["AdsManagerRecord"][];
-                        pagination?: {
-                            current_page?: number;
-                            next_page?: number | null;
-                            prev_page?: number | null;
-                            total_pages?: number;
-                            total_count?: number;
-                        };
+                        pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             total_count?: number;
                             with_offers?: number;
@@ -1044,7 +995,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
         };
     };
     createAdsManager: {
@@ -1074,7 +1025,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -1100,8 +1051,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
         };
     };
     updateAdsManager: {
@@ -1133,8 +1084,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -1160,8 +1111,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
         };
     };
     getAdsManagerOffer: {
@@ -1186,8 +1137,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
         };
     };
     getAllReports: {
@@ -1213,13 +1164,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         reports?: components["schemas"]["ReportRecord"][];
-                        pagination?: {
-                            current_page?: number;
-                            next_page?: number | null;
-                            prev_page?: number | null;
-                            total_pages?: number;
-                            total_count?: number;
-                        };
+                        pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             /** Format: float */
                             total_spend?: number;
@@ -1239,7 +1184,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
         };
     };
     createReport: {
@@ -1271,7 +1216,7 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
+            401: components["responses"]["UnauthorizedError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -1298,8 +1243,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
         };
     };
     updateReport: {
@@ -1332,8 +1277,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
             422: components["responses"]["ValidationError"];
         };
     };
@@ -1360,8 +1305,8 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["responses_UnauthorizedError"];
-            404: components["responses"]["responses_NotFoundError"];
+            401: components["responses"]["UnauthorizedError"];
+            404: components["responses"]["NotFoundError"];
         };
     };
 }

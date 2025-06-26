@@ -1,9 +1,25 @@
 import { usePromoCodesListWithSorting } from "@/features/promo-codes/model/use-promo-codes-list";
 import { PromoCodesTable } from "./ui/promo-codes-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
+import { useState } from "react";
 
 export function Component() {
-    const { promoCodes, isLoading, sorting } = usePromoCodesListWithSorting();
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(25);
+
+    const { promoCodes, isLoading, sorting, pagination } = usePromoCodesListWithSorting({ page, limit });
+
+    const paginationForUI = pagination ? {
+        currentPage: pagination.current_page,
+        totalPages: pagination.total_pages,
+        totalCount: pagination.total_count,
+        pageSize: pagination.page_size,
+        onPageChange: setPage,
+        onPageSizeChange: (newLimit: number) => {
+            setLimit(newLimit);
+            setPage(1);
+        }
+    } : undefined;
 
     if (isLoading) {
         return (
@@ -44,8 +60,8 @@ export function Component() {
     }
 
     return (
-        <div className="p-2">
-            <PromoCodesTable data={promoCodes} sorting={sorting} />
-        </div>
+        <div className="p-2" >
+            <PromoCodesTable data={promoCodes} sorting={sorting} pagination={paginationForUI} />
+        </div >
     );
 } 

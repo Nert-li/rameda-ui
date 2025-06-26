@@ -111,40 +111,19 @@ components:
     ReportInput:
       $ref: "endpoints/reports.yaml#/components/schemas/ReportInput"
     ValidationErrorResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
+      $ref: "shared/responses.yaml#/schemas/ValidationErrorResponse"
+    Pagination:
+      $ref: "shared/responses.yaml#/schemas/Pagination"
+    Error:
+      $ref: "shared/responses.yaml#/schemas/Error"
   responses:
     UnauthorizedError:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              code:
-                type: string
+      $ref: "shared/responses.yaml#/UnauthorizedError"
     NotFoundError:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              code:
-                type: string
+      $ref: "shared/responses.yaml#/NotFoundError"
+    BadRequestError:
+      $ref: "shared/responses.yaml#/BadRequestError"
     ValidationError:
-      description: Validation error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ValidationErrorResponse"
+      $ref: "shared/responses.yaml#/ValidationError"
 
 

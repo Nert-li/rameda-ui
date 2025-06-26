@@ -4,15 +4,19 @@ import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
 interface UseConversionsListParams {
     sortParams?: Record<string, string>;
     filters?: Record<string, string>;
+    page?: number;
+    limit?: number;
 }
 
 export const useConversionsList = (params: UseConversionsListParams = {}) => {
-    const { sortParams = {}, filters = {} } = params;
+    const { sortParams = {}, filters = {}, page, limit } = params;
 
-    // Объединяем параметры сортировки и фильтрации
+    // Объединяем параметры сортировки, фильтрации и пагинации
     const queryParams = {
         ...sortParams,
-        ...filters
+        ...filters,
+        ...(page && { page }),
+        ...(limit && { limit })
     };
 
     const { data, isLoading, isError, refetch } = rqClient.useQuery(
@@ -36,13 +40,15 @@ export const useConversionsList = (params: UseConversionsListParams = {}) => {
     };
 };
 
-export const useConversionsListWithSorting = () => {
+export const useConversionsListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
     const serverSorting = useServerSorting({
-        defaultSort: { field: 'created_at', direction: 'desc' }
+        defaultField: 'created_at',
+        defaultDirection: 'desc'
     });
 
     const conversionsQuery = useConversionsList({
-        sortParams: serverSorting.getSortParams()
+        sortParams: serverSorting.getSortParams(),
+        ...paginationParams
     });
 
     return {

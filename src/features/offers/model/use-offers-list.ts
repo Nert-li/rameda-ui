@@ -4,15 +4,19 @@ import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
 interface UseOffersListParams {
     sortParams?: Record<string, string>;
     filters?: Record<string, string>;
+    page?: number;
+    limit?: number;
 }
 
 export const useOffersList = (params: UseOffersListParams = {}) => {
-    const { sortParams = {}, filters = {} } = params;
+    const { sortParams = {}, filters = {}, page, limit } = params;
 
-    // Объединяем параметры сортировки и фильтрации
+    // Объединяем параметры сортировки, фильтрации и пагинации
     const queryParams = {
         ...sortParams,
-        ...filters
+        ...filters,
+        ...(page && { page }),
+        ...(limit && { limit })
     };
 
     const { data, isLoading, isError, refetch } = rqClient.useQuery(
@@ -37,13 +41,15 @@ export const useOffersList = (params: UseOffersListParams = {}) => {
 };
 
 // Хук с интегрированной сортировкой
-export const useOffersListWithSorting = () => {
+export const useOffersListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
     const serverSorting = useServerSorting({
-        defaultSort: { field: 'created_at', direction: 'desc' }
+        defaultField: 'created_at',
+        defaultDirection: 'desc'
     });
 
     const offersQuery = useOffersList({
-        sortParams: serverSorting.getSortParams()
+        sortParams: serverSorting.getSortParams(),
+        ...paginationParams
     });
 
     return {

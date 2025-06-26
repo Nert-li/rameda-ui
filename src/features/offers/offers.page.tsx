@@ -1,9 +1,25 @@
 import { useOffersListWithSorting } from "@/features/offers/model/use-offers-list";
 import { OffersTable } from "./ui/offers-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
+import { useState } from "react";
 
 export function Component() {
-    const { offers, isLoading, sorting } = useOffersListWithSorting();
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(25);
+
+    const { offers, isLoading, sorting, pagination } = useOffersListWithSorting({ page, limit });
+
+    const paginationForUI = pagination ? {
+        currentPage: pagination.current_page,
+        totalPages: pagination.total_pages,
+        totalCount: pagination.total_count,
+        pageSize: pagination.page_size,
+        onPageChange: setPage,
+        onPageSizeChange: (newLimit: number) => {
+            setLimit(newLimit);
+            setPage(1);
+        }
+    } : undefined;
 
     if (isLoading) {
         return (
@@ -45,7 +61,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <OffersTable data={offers} sorting={sorting} />
+            <OffersTable data={offers} sorting={sorting} pagination={paginationForUI} />
         </div>
     );
 } 

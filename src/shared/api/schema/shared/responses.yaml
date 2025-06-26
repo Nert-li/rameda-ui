@@ -45,3 +45,31 @@ schemas:
         type: array
         items:
           type: string
+
+  Pagination:
+    type: object
+    required:
+      - current_page
+      - total_pages
+      - total_count
+      - page_size
+    properties:
+      current_page:
+        type: integer
+        minimum: 1
+      next_page:
+        type: integer
+        nullable: true
+      prev_page:
+        type: integer
+        nullable: true
+      total_pages:
+        type: integer
+        minimum: 1
+      total_count:
+        type: integer
+        minimum: 0
+      page_size:
+        type: integer
+        minimum: 1
+        maximum: 100

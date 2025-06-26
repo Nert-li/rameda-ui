@@ -1,9 +1,26 @@
+import { useState } from "react";
 import { useConversionsListWithSorting } from "@/features/conversions/model/use-conversions-list";
 import { ConversionsTable } from "./ui/conversions-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 
 export function Component() {
-    const { conversions, isLoading, sorting } = useConversionsListWithSorting();
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(25);
+
+    const { conversions, isLoading, sorting, pagination } = useConversionsListWithSorting({ page, limit });
+
+    // Преобразуем API pagination в UI формат
+    const paginationForUI = pagination ? {
+        currentPage: pagination.current_page,
+        totalPages: pagination.total_pages,
+        totalCount: pagination.total_count,
+        pageSize: pagination.page_size,
+        onPageChange: setPage,
+        onPageSizeChange: (newLimit: number) => {
+            setLimit(newLimit);
+            setPage(1); // Сбрасываем на первую страницу при изменении размера
+        }
+    } : undefined;
 
     if (isLoading) {
         return (
@@ -45,7 +62,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <ConversionsTable data={conversions} sorting={sorting} />
+            <ConversionsTable data={conversions} sorting={sorting} pagination={paginationForUI} />
         </div>
     );
 } 

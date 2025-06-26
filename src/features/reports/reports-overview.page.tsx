@@ -4,11 +4,27 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useReportsListWithSorting } from "./model/reports-list";
 import { ReportsTable } from "./ui/reports-table";
+import { useState } from "react";
 
 
 export const Component = () => {
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(25);
+
     const navigate = useNavigate();
-    const { reports, stats, isLoading, isError, sorting } = useReportsListWithSorting();
+    const { reports, stats, isLoading, isError, sorting, pagination } = useReportsListWithSorting({ page, limit });
+
+    const paginationForUI = pagination ? {
+        currentPage: pagination.current_page,
+        totalPages: pagination.total_pages,
+        totalCount: pagination.total_count,
+        pageSize: pagination.page_size,
+        onPageChange: setPage,
+        onPageSizeChange: (newLimit: number) => {
+            setLimit(newLimit);
+            setPage(1);
+        }
+    } : undefined;
 
     if (isLoading) {
         return (
@@ -37,7 +53,7 @@ export const Component = () => {
     }
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full" >
             <div className="flex items-center justify-between p-6 border-b">
                 <div className="flex items-center gap-4">
                     <Button
@@ -69,8 +85,9 @@ export const Component = () => {
                 <ReportsTable
                     data={reports}
                     sorting={sorting}
+                    pagination={paginationForUI}
                 />
             </div>
-        </div>
+        </div >
     );
 }; 

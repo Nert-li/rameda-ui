@@ -8,11 +8,20 @@ interface PromoCodesTableProps {
         handleSort: (field: string) => void
         sorting: { field: string | null; direction: 'asc' | 'desc' }
     }
+    pagination?: {
+        currentPage: number
+        totalPages: number
+        totalCount: number
+        pageSize: number
+        onPageChange: (page: number) => void
+        onPageSizeChange: (pageSize: number) => void
+    }
 }
 
 export function PromoCodesTable({
     data,
     sorting,
+    pagination,
 }: PromoCodesTableProps) {
     const columns = sorting
         ? getColumns(sorting.handleSort, sorting.sorting)
@@ -21,8 +30,9 @@ export function PromoCodesTable({
     return (
         <UniversalDataTable
             columns={columns}
-            searchPlaceholder="Filter promo codes..."
             data={data}
+            searchPlaceholder="Filter promo codes..."
+            pagination={pagination}
         />
     )
 } 

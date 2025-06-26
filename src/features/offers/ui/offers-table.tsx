@@ -7,11 +7,20 @@ interface OffersTableProps {
         handleSort: (field: string) => void
         sorting: { field: string | null; direction: 'asc' | 'desc' }
     }
+    pagination?: {
+        currentPage: number
+        totalPages: number
+        totalCount: number
+        pageSize: number
+        onPageChange: (page: number) => void
+        onPageSizeChange: (pageSize: number) => void
+    }
 }
 
 export function OffersTable({
     data,
     sorting,
+    pagination,
 }: OffersTableProps) {
     // Создаем колонки с сортировкой если они переданы
     const columns = sorting
@@ -22,6 +31,7 @@ export function OffersTable({
         <UniversalDataTable
             columns={columns}
             data={data}
+            pagination={pagination}
             searchPlaceholder="Filter by name..."
         />
     )

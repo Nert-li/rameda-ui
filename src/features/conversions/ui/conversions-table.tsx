@@ -7,11 +7,20 @@ interface ConversionsTableProps {
         handleSort: (field: string) => void
         sorting: { field: string | null; direction: 'asc' | 'desc' }
     }
+    pagination?: {
+        currentPage: number
+        totalPages: number
+        totalCount: number
+        pageSize: number
+        onPageChange: (page: number) => void
+        onPageSizeChange: (pageSize: number) => void
+    }
 }
 
 export function ConversionsTable({
     data,
     sorting,
+    pagination,
 }: ConversionsTableProps) {
     const columns = sorting
         ? getColumns(sorting.handleSort, sorting.sorting)
@@ -22,6 +31,7 @@ export function ConversionsTable({
             columns={columns}
             data={data}
             searchPlaceholder="Filter conversions..."
+            pagination={pagination}
         />
     )
 } 

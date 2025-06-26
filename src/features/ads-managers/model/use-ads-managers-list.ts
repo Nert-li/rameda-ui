@@ -4,15 +4,19 @@ import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
 interface UseAdsManagersListParams {
     sortParams?: Record<string, string>;
     filters?: Record<string, string>;
+    page?: number;
+    limit?: number;
 }
 
 export const useAdsManagersList = (params: UseAdsManagersListParams = {}) => {
-    const { sortParams = {}, filters = {} } = params;
+    const { sortParams = {}, filters = {}, page, limit } = params;
 
-    // Объединяем параметры сортировки и фильтрации
+    // Объединяем параметры сортировки, фильтрации и пагинации
     const queryParams = {
         ...sortParams,
-        ...filters
+        ...filters,
+        ...(page && { page }),
+        ...(limit && { limit })
     };
 
     const { data, isLoading, isError, refetch } = rqClient.useQuery(
@@ -37,13 +41,15 @@ export const useAdsManagersList = (params: UseAdsManagersListParams = {}) => {
 };
 
 // Хук с интегрированной сортировкой
-export const useAdsManagersListWithSorting = () => {
+export const useAdsManagersListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
     const serverSorting = useServerSorting({
-        defaultSort: { field: 'created_at', direction: 'desc' }
+        defaultField: 'created_at',
+        defaultDirection: 'desc'
     });
 
     const adsManagersQuery = useAdsManagersList({
-        sortParams: serverSorting.getSortParams()
+        sortParams: serverSorting.getSortParams(),
+        ...paginationParams
     });
 
     return {

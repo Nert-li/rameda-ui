@@ -1,9 +1,25 @@
 import { useUsersListWithSorting } from "@/features/users/model/use-users-list";
 import { UsersTable } from "./ui/users-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
+import { useState } from "react";
 
 export function Component() {
-    const { users, isLoading, sorting } = useUsersListWithSorting();
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(25);
+
+    const { users, isLoading, sorting, pagination } = useUsersListWithSorting({ page, limit });
+
+    const paginationForUI = pagination ? {
+        currentPage: pagination.current_page,
+        totalPages: pagination.total_pages,
+        totalCount: pagination.total_count,
+        pageSize: pagination.page_size,
+        onPageChange: setPage,
+        onPageSizeChange: (newLimit: number) => {
+            setLimit(newLimit);
+            setPage(1);
+        }
+    } : undefined;
 
     if (isLoading) {
         return (
@@ -44,8 +60,8 @@ export function Component() {
     }
 
     return (
-        <div className="p-2">
-            <UsersTable data={users} sorting={sorting} />
-        </div>
+        <div className="p-2" >
+            <UsersTable data={users} sorting={sorting} pagination={paginationForUI} />
+        </div >
     );
 } 

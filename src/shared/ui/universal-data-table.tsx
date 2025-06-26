@@ -1,5 +1,3 @@
-
-
 import * as React from "react"
 import {
     IconChevronDown,
@@ -12,15 +10,12 @@ import {
 import {
     ColumnDef,
     ColumnFiltersState,
-    SortingState,
     VisibilityState,
     flexRender,
     getCoreRowModel,
     getFacetedRowModel,
     getFacetedUniqueValues,
     getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
 
@@ -56,18 +51,17 @@ interface UniversalDataTableProps<TData, TValue> {
     searchPlaceholder?: string
     enableGlobalFilter?: boolean
     enableColumnVisibility?: boolean
-    enablePagination?: boolean
     enableRowSelection?: boolean
-    pageSize?: number
     additionalFilters?: React.ReactNode
     className?: string
     isLoading?: boolean
-    serverSide?: {
-        sorting?: {
-            enabled: boolean
-            onSortChange?: (field: string, direction: 'asc' | 'desc') => void
-            currentSort?: { field: string; direction: 'asc' | 'desc' }
-        }
+    pagination?: {
+        currentPage: number
+        totalPages: number
+        totalCount: number
+        pageSize: number
+        onPageChange: (page: number) => void
+        onPageSizeChange: (pageSize: number) => void
     }
 }
 
@@ -77,53 +71,50 @@ export function UniversalDataTable<TData, TValue>({
     searchPlaceholder = "Search...",
     enableGlobalFilter = true,
     enableColumnVisibility = true,
-    enablePagination = true,
     enableRowSelection = false,
-    pageSize = 10,
     additionalFilters,
     className,
     isLoading = false,
-    serverSide,
+    pagination,
 }: UniversalDataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = React.useState<SortingState>([])
+    // Значения по умолчанию для пагинации
+    const defaultPagination = {
+        currentPage: 1,
+        totalPages: 1,
+        totalCount: 0,
+        pageSize: 10,
+        onPageChange: () => { },
+        onPageSizeChange: () => { },
+    }
+
+    const paginationData = pagination || defaultPagination
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [globalFilter, setGlobalFilter] = React.useState("")
     const [rowSelection, setRowSelection] = React.useState({})
-    const [pagination, setPagination] = React.useState({
-        pageIndex: 0,
-        pageSize: pageSize,
-    })
-
-    // Определяем, включена ли серверная сортировка
-    const isServerSideSortingEnabled = serverSide?.sorting?.enabled || false
 
     const table = useReactTable({
         data,
         columns,
         state: {
-            sorting: isServerSideSortingEnabled ? [] : sorting, // Отключаем локальную сортировку
             columnVisibility,
             rowSelection: enableRowSelection ? rowSelection : {},
             columnFilters,
             globalFilter,
-            pagination: enablePagination ? pagination : undefined,
         },
         enableRowSelection: enableRowSelection,
         onRowSelectionChange: setRowSelection,
-        onSortingChange: isServerSideSortingEnabled ? undefined : setSorting, // Отключаем для серверной
         onColumnFiltersChange: setColumnFilters,
         onColumnVisibilityChange: setColumnVisibility,
         onGlobalFilterChange: setGlobalFilter,
-        onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: isServerSideSortingEnabled ? getCoreRowModel() : getSortedRowModel(), // Отключаем клиентскую сортировку
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         globalFilterFn: "includesString",
-        manualSorting: isServerSideSortingEnabled, // Включаем ручную сортировку для серверной
+        manualSorting: true, // Серверная сортировка
+        manualPagination: true, // Серверная пагинация
+        pageCount: paginationData.totalPages, // Общее количество страниц с сервера
     })
 
     return (
@@ -237,88 +228,83 @@ export function UniversalDataTable<TData, TValue>({
                     </Table>
                 </div>
 
-                {/* Advanced Pagination */}
-                {enablePagination && (
-                    <div className="flex items-center justify-between px-4">
-                        {enableRowSelection && (
-                            <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-                                {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                                {table.getFilteredRowModel().rows.length} row(s) selected.
-                            </div>
-                        )}
-                        <div className="flex w-full items-center gap-8 lg:w-fit">
-                            <div className="hidden items-center gap-2 lg:flex">
-                                <Label htmlFor="rows-per-page" className="text-sm font-medium">
-                                    Rows per page
-                                </Label>
-                                <Select
-                                    value={`${table.getState().pagination.pageSize}`}
-                                    onValueChange={(value) => {
-                                        table.setPageSize(Number(value))
-                                    }}
-                                >
-                                    <SelectTrigger className="w-20" id="rows-per-page">
-                                        <SelectValue
-                                            placeholder={table.getState().pagination.pageSize}
-                                        />
-                                    </SelectTrigger>
-                                    <SelectContent side="top">
-                                        {[10, 20, 30, 40, 50].map((pageSize) => (
-                                            <SelectItem key={pageSize} value={`${pageSize}`}>
-                                                {pageSize}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="flex w-fit items-center justify-center text-sm font-medium">
-                                Page {table.getState().pagination.pageIndex + 1} of{" "}
-                                {table.getPageCount()}
-                            </div>
-                            <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                                <Button
-                                    variant="outline"
-                                    className="hidden h-8 w-8 p-0 lg:flex"
-                                    onClick={() => table.setPageIndex(0)}
-                                    disabled={!table.getCanPreviousPage()}
-                                >
-                                    <span className="sr-only">Go to first page</span>
-                                    <IconChevronsLeft />
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="size-8"
-                                    size="icon"
-                                    onClick={() => table.previousPage()}
-                                    disabled={!table.getCanPreviousPage()}
-                                >
-                                    <span className="sr-only">Go to previous page</span>
-                                    <IconChevronLeft />
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="size-8"
-                                    size="icon"
-                                    onClick={() => table.nextPage()}
-                                    disabled={!table.getCanNextPage()}
-                                >
-                                    <span className="sr-only">Go to next page</span>
-                                    <IconChevronRight />
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="hidden size-8 lg:flex"
-                                    size="icon"
-                                    onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                                    disabled={!table.getCanNextPage()}
-                                >
-                                    <span className="sr-only">Go to last page</span>
-                                    <IconChevronsRight />
-                                </Button>
-                            </div>
+                {/* Server-side Pagination */}
+                <div className="flex items-center justify-between px-4">
+                    <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+                        Showing {((paginationData.currentPage - 1) * paginationData.pageSize) + 1} to{" "}
+                        {Math.min(paginationData.currentPage * paginationData.pageSize, paginationData.totalCount)} of{" "}
+                        {paginationData.totalCount} entries
+                    </div>
+
+                    <div className="flex w-full items-center gap-8 lg:w-fit">
+                        <div className="hidden items-center gap-2 lg:flex">
+                            <Label htmlFor="rows-per-page" className="text-sm font-medium">
+                                Rows per page
+                            </Label>
+                            <Select
+                                value={`${paginationData.pageSize}`}
+                                onValueChange={(value) => paginationData.onPageSizeChange(Number(value))}
+                            >
+                                <SelectTrigger className="w-20" id="rows-per-page">
+                                    <SelectValue placeholder={paginationData.pageSize} />
+                                </SelectTrigger>
+                                <SelectContent side="top">
+                                    {[25, 50, 100].map((pageSize) => (
+                                        <SelectItem key={pageSize} value={`${pageSize}`}>
+                                            {pageSize}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="flex w-fit items-center justify-center text-sm font-medium">
+                            Page {paginationData.currentPage} of {paginationData.totalPages}
+                        </div>
+
+                        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+                            <Button
+                                variant="outline"
+                                className="hidden h-8 w-8 p-0 lg:flex"
+                                onClick={() => paginationData.onPageChange(1)}
+                                disabled={paginationData.currentPage === 1}
+                            >
+                                <span className="sr-only">Go to first page</span>
+                                <IconChevronsLeft />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="size-8"
+                                size="icon"
+                                onClick={() => paginationData.onPageChange(paginationData.currentPage - 1)}
+                                disabled={paginationData.currentPage === 1}
+                            >
+                                <span className="sr-only">Go to previous page</span>
+                                <IconChevronLeft />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="size-8"
+                                size="icon"
+                                onClick={() => paginationData.onPageChange(paginationData.currentPage + 1)}
+                                disabled={paginationData.currentPage === paginationData.totalPages}
+                            >
+                                <span className="sr-only">Go to next page</span>
+                                <IconChevronRight />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="hidden size-8 lg:flex"
+                                size="icon"
+                                onClick={() => paginationData.onPageChange(paginationData.totalPages)}
+                                disabled={paginationData.currentPage === paginationData.totalPages}
+                            >
+                                <span className="sr-only">Go to last page</span>
+                                <IconChevronsRight />
+                            </Button>
                         </div>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     )
