@@ -18,7 +18,7 @@ schemas:
         type: string
       role:
         type: string
-        enum: [user, manager, admin]
+        enum: [buyer, manager, admin]
 
   LoginRequest:
     type: object
@@ -51,8 +51,128 @@ schemas:
             type: string
             format: password
 
-signIn:
+  RegisterRequest:
+    type: object
+    required:
+      - user
+    properties:
+      user:
+        type: object
+        required:
+          - email
+          - password
+          - password_confirmation
+        properties:
+          email:
+            type: string
+            format: email
+          password:
+            type: string
+            format: password
+            minLength: 6
+          password_confirmation:
+            type: string
+            format: password
+            minLength: 6
+          first_name:
+            type: string
+          last_name:
+            type: string
+          phone_number:
+            type: string
+          country:
+            type: string
+
+  AuthResponse:
+    type: object
+    required:
+      - user
+    properties:
+      user:
+        $ref: '#/schemas/User'
+
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        type: string
+
+# Login endpoint
+login:
   summary: Login user
+  tags:
+    - Authentication
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '#/schemas/DeviseLoginRequest'
+  responses:
+    '200':
+      description: Login successful
+      headers:
+        Authorization:
+          description: 'Bearer token for authentication'
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/User'
+    '401':
+      description: Invalid credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/ErrorResponse'
+
+# Register endpoint  
+register:
+  summary: Register new user
+  tags:
+    - Authentication
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '#/schemas/RegisterRequest'
+  responses:
+    '201':
+      description: Registration successful
+      headers:
+        Authorization:
+          description: 'Bearer token for authentication'
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/User'
+    '422':
+      description: Validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '../shared/responses.yaml#/schemas/ValidationErrorResponse'
+
+# Logout endpoint
+logout:
+  summary: Logout user
+  tags:
+    - Authentication
+  security:
+    - bearerAuth: []
+  responses:
+    '204':
+      description: Logout successful
+    '401':
+      $ref: '../shared/responses.yaml#/UnauthorizedError'
+
+# Legacy endpoints for compatibility
+signIn:
+  summary: Login user (legacy)
   requestBody:
     required: true
     content:
@@ -75,7 +195,7 @@ signIn:
       $ref: '../shared/responses.yaml#/UnauthorizedError'
 
 signOut:
-  summary: Logout user
+  summary: Logout user (legacy)
   responses:
     '200':
       description: Logout successful

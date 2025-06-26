@@ -6,17 +6,30 @@ info:
 
 paths:
   # Auth endpoints
-  # /auth/login:
-  #   post:
-  #     $ref: "endpoints/auth.yaml#/login"
-  # /auth/register:
-  #   post:
-  #     $ref: "endpoints/auth.yaml#/register"
+  /auth/login:
+    post:
+      $ref: "endpoints/auth.yaml#/login"
+  /auth/register:
+    post:
+      $ref: "endpoints/auth.yaml#/register"
+  /auth/logout:
+    delete:
+      $ref: "endpoints/auth.yaml#/logout"
+  
+  # Devise endpoints (legacy compatibility)
+  /users/sign_in:
+    post:
+      $ref: "endpoints/auth.yaml#/signIn"
+  /users/sign_out:
+    delete:
+      $ref: "endpoints/auth.yaml#/signOut"
 
   # Users endpoints
   /users:
     get:
       $ref: "endpoints/users.yaml#/getAllUsers"
+    post:
+      $ref: "endpoints/auth.yaml#/register"
 
   # Promo codes endpoints
   /promo_codes:
@@ -88,6 +101,21 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    # Auth schemas
+    User:
+      $ref: "endpoints/auth.yaml#/schemas/User"
+    LoginRequest:
+      $ref: "endpoints/auth.yaml#/schemas/LoginRequest"
+    DeviseLoginRequest:
+      $ref: "endpoints/auth.yaml#/schemas/DeviseLoginRequest"
+    RegisterRequest:
+      $ref: "endpoints/auth.yaml#/schemas/RegisterRequest"
+    AuthResponse:
+      $ref: "endpoints/auth.yaml#/schemas/AuthResponse"
+    ErrorResponse:
+      $ref: "endpoints/auth.yaml#/schemas/ErrorResponse"
+    
+    # Other schemas
     UserRecord:
       $ref: "endpoints/users.yaml#/components/schemas/UserRecord"
     PromoCodeRecord:
