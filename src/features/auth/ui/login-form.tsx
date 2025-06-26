@@ -19,14 +19,14 @@ import { ROUTES } from "@/shared/model/routes"
 const loginSchema = z.object({
   email: z
     .string({
-      required_error: "Email обязателен",
+      required_error: "Email is required",
     })
-    .email("Неверный email"),
+    .email("Invalid email"),
   password: z
     .string({
-      required_error: "Пароль обязателен",
+      required_error: "Password is required",
     })
-    .min(6, "Пароль должен быть не менее 6 символов"),
+    .min(6, "Password must be at least 6 characters"),
 })
 
 export function LoginForm({
@@ -45,9 +45,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Добро пожаловать</CardTitle>
+          <CardTitle className="text-xl">Welcome</CardTitle>
           <CardDescription>
-            Войдите через Google или используйте свой аккаунт
+            Sign in with Google or use your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -61,12 +61,12 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  Войти через Google
+                  Sign in with Google
                 </Button>
               </div>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
-                  Или продолжите с
+                  Or continue with
                 </span>
               </div>
               <div className="grid gap-6">
@@ -85,12 +85,12 @@ export function LoginForm({
                 </div>
                 <div className="grid gap-3">
                   <div className="flex items-center">
-                    <Label htmlFor="password">Пароль</Label>
+                    <Label htmlFor="password">Password</Label>
                     <a
                       href="#"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
-                      Забыли пароль?
+                      Forgot password?
                     </a>
                   </div>
                   <Input
@@ -110,13 +110,13 @@ export function LoginForm({
                 )}
 
                 <Button type="submit" className="w-full" disabled={isPending}>
-                  {isPending ? "Вход..." : "Войти"}
+                  {isPending ? "Signing in..." : "Sign In"}
                 </Button>
               </div>
               <div className="text-center text-sm">
-                Нет аккаунта?{" "}
+                Don't have an account?{" "}
                 <Link to={ROUTES.REGISTER} className="underline underline-offset-4">
-                  Зарегистрироваться
+                  Sign Up
                 </Link>
               </div>
             </div>
@@ -124,13 +124,13 @@ export function LoginForm({
         </CardContent>
       </Card>
       <div className="text-muted-foreground text-center text-xs text-balance">
-        Нажимая "Войти", вы соглашаетесь с нашими{" "}
+        By clicking "Sign In", you agree to our{" "}
         <a href="#" className="underline underline-offset-4 hover:text-primary">
-          Условиями использования
+          Terms of Service
         </a>{" "}
-        и{" "}
+        and{" "}
         <a href="#" className="underline underline-offset-4 hover:text-primary">
-          Политикой конфиденциальности
+          Privacy Policy
         </a>.
       </div>
     </div>

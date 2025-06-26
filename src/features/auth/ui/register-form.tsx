@@ -20,23 +20,23 @@ const registerSchema = z
   .object({
     email: z
       .string({
-        required_error: "Email обязателен",
+        required_error: "Email is required",
       })
-      .email("Неверный email"),
+      .email("Invalid email"),
     password: z
       .string({
-        required_error: "Пароль обязателен",
+        required_error: "Password is required",
       })
-      .min(6, "Пароль должен быть не менее 6 символов"),
+      .min(6, "Password must be at least 6 characters"),
     password_confirmation: z
       .string({
-        required_error: "Подтверждение пароля обязательно",
+        required_error: "Password confirmation is required",
       })
-      .min(6, "Пароль должен быть не менее 6 символов"),
+      .min(6, "Password must be at least 6 characters"),
   })
   .refine((data) => data.password === data.password_confirmation, {
     path: ["password_confirmation"],
-    message: "Пароли не совпадают",
+    message: "Passwords do not match",
   })
 
 export function RegisterForm({
@@ -61,9 +61,9 @@ export function RegisterForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Создать аккаунт</CardTitle>
+          <CardTitle className="text-xl">Create Account</CardTitle>
           <CardDescription>
-            Зарегистрируйтесь через Google или создайте новый аккаунт
+            Sign up with Google or create a new account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -77,12 +77,12 @@ export function RegisterForm({
                       fill="currentColor"
                     />
                   </svg>
-                  Регистрация через Google
+                  Sign up with Google
                 </Button>
               </div>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
-                  Или создайте аккаунт
+                  Or create an account
                 </span>
               </div>
               <div className="grid gap-6">
@@ -101,7 +101,7 @@ export function RegisterForm({
                 </div>
 
                 <div className="grid gap-3">
-                  <Label htmlFor="password">Пароль</Label>
+                  <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
                     type="password"
@@ -115,7 +115,7 @@ export function RegisterForm({
                 </div>
 
                 <div className="grid gap-3">
-                  <Label htmlFor="password_confirmation">Подтвердите пароль</Label>
+                  <Label htmlFor="password_confirmation">Confirm Password</Label>
                   <Input
                     id="password_confirmation"
                     type="password"
@@ -133,13 +133,13 @@ export function RegisterForm({
                 )}
 
                 <Button type="submit" className="w-full" disabled={isPending}>
-                  {isPending ? "Регистрация..." : "Зарегистрироваться"}
+                  {isPending ? "Registering..." : "Sign Up"}
                 </Button>
               </div>
               <div className="text-center text-sm">
-                Уже есть аккаунт?{" "}
+                Already have an account?{" "}
                 <Link to={ROUTES.LOGIN} className="underline underline-offset-4">
-                  Войти
+                  Sign In
                 </Link>
               </div>
             </div>
@@ -147,13 +147,13 @@ export function RegisterForm({
         </CardContent>
       </Card>
       <div className="text-muted-foreground text-center text-xs text-balance">
-        Нажимая "Зарегистрироваться", вы соглашаетесь с нашими{" "}
+        By clicking "Sign Up", you agree to our{" "}
         <a href="#" className="underline underline-offset-4 hover:text-primary">
-          Условиями использования
+          Terms of Service
         </a>{" "}
-        и{" "}
+        and{" "}
         <a href="#" className="underline underline-offset-4 hover:text-primary">
-          Политикой конфиденциальности
+          Privacy Policy
         </a>.
       </div>
     </div>
