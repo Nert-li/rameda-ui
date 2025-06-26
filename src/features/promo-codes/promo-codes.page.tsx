@@ -1,10 +1,9 @@
-import { usePromoCodesList } from "@/features/promo-codes/model/use-promo-codes-list";
+import { usePromoCodesListWithSorting } from "@/features/promo-codes/model/use-promo-codes-list";
 import { PromoCodesTable } from "./ui/promo-codes-table";
-import { columns } from "./ui/columns";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 
 export function Component() {
-    const { promoCodes, isLoading } = usePromoCodesList();
+    const { promoCodes, isLoading, sorting } = usePromoCodesListWithSorting();
 
     if (isLoading) {
         return (
@@ -46,7 +45,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <PromoCodesTable columns={columns} data={promoCodes} />
+            <PromoCodesTable data={promoCodes} sorting={sorting} />
         </div>
     );
 } 

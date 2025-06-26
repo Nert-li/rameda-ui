@@ -2,7 +2,7 @@ import { ROUTES } from "../shared/model/routes";
 import { createBrowserRouter, redirect } from "react-router-dom";
 import { App } from "./app";
 import { Providers } from "./providers";
-import { protectedLoader, ProtectedRoute } from "./protected-route";
+import { ProtectedRoute } from "./protected-route";
 
 export const router = createBrowserRouter([
   {

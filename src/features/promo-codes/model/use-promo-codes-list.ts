@@ -1,20 +1,53 @@
 import { rqClient } from "@/shared/api/instance";
-import { paths } from "@/shared/api/schema/generated";
+import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
 
-type PromoCodesListParams = paths["/promo_codes"]["get"]["parameters"]["query"];
+interface UsePromoCodesListParams {
+    sortParams?: Record<string, string>;
+    filters?: Record<string, string>;
+}
 
-export function usePromoCodesList(params: PromoCodesListParams = {}) {
-    const { data, isLoading } = rqClient.useQuery("get", "/promo_codes", {
-        params: {
-            query: params,
-        },
+export const usePromoCodesList = (params: UsePromoCodesListParams = {}) => {
+    const { sortParams = {}, filters = {} } = params;
+
+    // Объединяем параметры сортировки и фильтрации
+    const queryParams = {
+        ...sortParams,
+        ...filters
+    };
+
+    const { data, isLoading, isError, refetch } = rqClient.useQuery(
+        "get",
+        "/promo_codes",
+        {
+            params: {
+                query: queryParams
+            }
+        }
+    );
+
+    return {
+        promoCodes: data?.promo_codes || [],
+        isLoading,
+        isError,
+        stats: data?.stats,
+        pagination: data?.pagination,
+        sorting: data?.sorting,
+        refetch,
+    };
+};
+
+// Хук с интегрированной сортировкой
+export const usePromoCodesListWithSorting = () => {
+    const serverSorting = useServerSorting({
+        defaultSort: { field: 'created_at', direction: 'desc' }
+    });
+
+    const promoCodesQuery = usePromoCodesList({
+        sortParams: serverSorting.getSortParams()
     });
 
     return {
-        promoCodes: data?.promo_codes,
-        isLoading,
-        totalCount: data?.total_count,
-        activeCount: data?.active_count,
-        expiredCount: data?.expired_count,
+        ...promoCodesQuery,
+        sorting: serverSorting,
     };
-} 
+}; 

@@ -1,20 +1,27 @@
-import { ColumnDef } from "@tanstack/react-table"
 import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { getColumns, type Conversion } from "./columns"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+interface ConversionsTableProps {
+    data: Conversion[]
+    sorting?: {
+        handleSort: (field: string) => void
+        sorting: { field: string | null; direction: 'asc' | 'desc' }
+    }
 }
 
-export function ConversionsTable<TData, TValue>({
-    columns,
+export function ConversionsTable({
     data,
-}: DataTableProps<TData, TValue>) {
+    sorting,
+}: ConversionsTableProps) {
+    const columns = sorting
+        ? getColumns(sorting.handleSort, sorting.sorting)
+        : [];
+
     return (
         <UniversalDataTable
             columns={columns}
             data={data}
-            searchPlaceholder="Filter..."
+            searchPlaceholder="Filter conversions..."
         />
     )
 } 

@@ -1,15 +1,23 @@
-import { ColumnDef } from "@tanstack/react-table"
 import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { getColumns, type Offer } from "./columns"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+interface OffersTableProps {
+    data: Offer[]
+    sorting?: {
+        handleSort: (field: string) => void
+        sorting: { field: string | null; direction: 'asc' | 'desc' }
+    }
 }
 
-export function OffersTable<TData, TValue>({
-    columns,
+export function OffersTable({
     data,
-}: DataTableProps<TData, TValue>) {
+    sorting,
+}: OffersTableProps) {
+    // Создаем колонки с сортировкой если они переданы
+    const columns = sorting
+        ? getColumns(sorting.handleSort, sorting.sorting)
+        : [];
+
     return (
         <UniversalDataTable
             columns={columns}

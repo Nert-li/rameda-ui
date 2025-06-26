@@ -41,14 +41,14 @@ export function ProtectedRoute() {
   )
 }
 
-// export async function protectedLoader() {
-//   await enableMocking();
+export async function protectedLoader() {
+  await enableMocking();
 
-//   const token = useSession.getState().token;
+  const token = useSession.getState().token;
 
-//   if (!token) {
-//     return redirect(ROUTES.LOGIN);
-//   }
+  if (!token) {
+    return redirect(ROUTES.LOGIN);
+  }
 
-//   return null;
-// }
+  return null;
+}

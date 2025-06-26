@@ -1,22 +1,37 @@
-"use client"
+
 
 import { components } from "@/shared/api/schema/generated"
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/shared/ui/kit/badge"
+import { SortableHeader } from "@/shared/ui/sortable-header"
 
 export type Offer = components["schemas"]["OfferRecord"]
 
-export const columns: ColumnDef<Offer>[] = [
+// Тип для функции сортировки
+type SortFunction = (field: string) => void;
+type SortingState = { field: string | null; direction: 'asc' | 'desc' };
+
+export const getColumns = (onSort: SortFunction, sortingState: SortingState): ColumnDef<Offer>[] => [
     {
         accessorKey: "name",
-        header: "Name",
+        header: () => (
+            <SortableHeader field="name" sorting={sortingState} onSort={onSort}>
+                Name
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => (
             <span className="font-medium">{row.getValue("name")}</span>
         ),
     },
     {
         accessorKey: "aasm_status",
-        header: "Status",
+        header: () => (
+            <SortableHeader field="aasm_status" sorting={sortingState} onSort={onSort}>
+                Status
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const status = row.getValue("aasm_status") as string;
             const variant = status === 'active' ? 'default' : 'secondary';
@@ -25,35 +40,25 @@ export const columns: ColumnDef<Offer>[] = [
     },
     {
         accessorKey: "registrations_count",
-        header: "Reg Count",
+        header: () => (
+            <SortableHeader field="registrations_count" sorting={sortingState} onSort={onSort}>
+                Reg Count
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const count = row.getValue("registrations_count") as number;
             return <span className="font-mono">{count || 0}</span>
         },
     },
     {
-        accessorKey: "first_deposits_count",
-        header: "FD Count",
-        cell: ({ row }) => {
-            const count = row.getValue("first_deposits_count") as number;
-            return <span className="font-mono">{count || 0}</span>
-        },
-    },
-    {
-        accessorKey: "first_deposits_sum",
-        header: "FD Sum",
-        cell: ({ row }) => {
-            const sum = row.getValue("first_deposits_sum") as number;
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(sum || 0);
-            return <span className="font-mono">{formatted}</span>
-        },
-    },
-    {
         accessorKey: "revenue",
-        header: "Revenue",
+        header: () => (
+            <SortableHeader field="revenue" sorting={sortingState} onSort={onSort}>
+                Revenue
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const revenue = row.getValue("revenue") as number;
             const formatted = new Intl.NumberFormat("en-US", {
@@ -109,4 +114,4 @@ export const columns: ColumnDef<Offer>[] = [
             return <span className={`font-mono font-medium ${color}`}>{formatted}</span>
         },
     },
-] 
+];

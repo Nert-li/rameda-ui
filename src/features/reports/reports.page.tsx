@@ -1,82 +1,17 @@
-import { UniversalDataTable } from "@/shared/ui/universal-data-table";
 import { Badge } from "@/shared/ui/kit/badge";
 import { Button } from "@/shared/ui/kit/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { rqClient } from "@/shared/api/instance";
-import { ColumnDef } from "@tanstack/react-table";
-import { components } from "@/shared/api/schema/generated";
-
-type Report = components["schemas"]["ReportRecord"];
-
-const columns: ColumnDef<Report>[] = [
-    {
-        accessorKey: "id",
-        header: "ID",
-        cell: ({ row }) => {
-            const id = row.getValue("id") as string;
-            return id ? id.slice(0, 8) + "..." : "N/A";
-        },
-    },
-    {
-        accessorKey: "offer_name",
-        header: "Offer",
-        cell: ({ row }) => (
-            <span className="font-medium">{row.getValue("offer_name")}</span>
-        ),
-    },
-    {
-        accessorKey: "spend",
-        header: "Spend",
-        cell: ({ row }) => (
-            <span className="font-mono text-green-600">
-                ${Number(row.getValue("spend") || 0).toFixed(2)}
-            </span>
-        ),
-    },
-    {
-        accessorKey: "report_date",
-        header: "Date",
-        cell: ({ row }) => {
-            const date = row.getValue("report_date");
-            return date ? new Date(date as string).toLocaleDateString() : "N/A";
-        },
-    },
-    {
-        accessorKey: "created_at",
-        header: "Created",
-        cell: ({ row }) => {
-            const date = row.getValue("created_at");
-            return date ? new Date(date as string).toLocaleDateString() : "N/A";
-        },
-    },
-];
-
-function useReportsList(adsManagerId: string) {
-    const { data, isLoading, isError } = rqClient.useQuery("get", "/ads_managers/{adsManagerId}/reports", {
-        params: { path: { adsManagerId } },
-    });
-
-    return {
-        reports: data?.reports || [],
-        isLoading,
-        isError,
-    };
-}
-
-function useAdsManagersList() {
-    const { data } = rqClient.useQuery("get", "/ads_managers");
-    return {
-        adsManagers: data?.ads_managers || [],
-    };
-}
+import { useAdsManagersListWithSorting } from "@/features/ads-managers";
+import { useReportsListWithSorting } from "./model/reports-list";
+import { ReportsTable } from "./ui/reports-table";
 
 export const Component = () => {
     const navigate = useNavigate();
     const { adsManagerId } = useParams<{ adsManagerId: string }>();
-    const { adsManagers } = useAdsManagersList();
-    const { reports, isLoading, isError } = useReportsList(adsManagerId!);
 
+    const { adsManagers } = useAdsManagersListWithSorting();
+    const { reports, isLoading, isError, sorting } = useReportsListWithSorting();
     const adsManager = adsManagers.find(am => am.id === adsManagerId);
 
     if (!adsManagerId) {
@@ -142,20 +77,21 @@ export const Component = () => {
                 </div>
                 <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                        Total Spend: ${reports.reduce((sum, report) => sum + Number(report.spend || 0), 0).toFixed(2)}
+                        {/* Total Spend: ${stats?.total_spend?.toFixed(2) || '0.00'} */}
+                    </Badge>
+                    <Badge variant="outline">
+                        {/* Total Revenue: ${stats?.total_revenue?.toFixed(2) || '0.00'} */}
+                    </Badge>
+                    <Badge variant="outline">
+                        {/* Total Profit: ${stats?.total_profit?.toFixed(2) || '0.00'} */}
                     </Badge>
                 </div>
             </div>
 
             <div className="flex-1 min-h-0">
-                <UniversalDataTable
+                <ReportsTable
                     data={reports}
-                    columns={columns}
-                    searchPlaceholder="Filter reports..."
-                    enableGlobalFilter={true}
-                    enablePagination={true}
-                    enableRowSelection={false}
-                    className="h-full"
+                    sorting={sorting}
                 />
             </div>
         </div>

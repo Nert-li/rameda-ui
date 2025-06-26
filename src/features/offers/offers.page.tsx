@@ -1,10 +1,9 @@
-import { useOffersList } from "@/features/offers/model/use-offers-list";
+import { useOffersListWithSorting } from "@/features/offers/model/use-offers-list";
 import { OffersTable } from "./ui/offers-table";
-import { columns } from "./ui/columns";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 
 export function Component() {
-    const { offers, isLoading } = useOffersList();
+    const { offers, isLoading, sorting } = useOffersListWithSorting();
 
     if (isLoading) {
         return (
@@ -46,7 +45,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <OffersTable columns={columns} data={offers} />
+            <OffersTable data={offers} sorting={sorting} />
         </div>
     );
 } 

@@ -1,11 +1,10 @@
-import { useClicksList } from "@/features/clicks/model/use-clicks-list";
+import { useClicksListWithSorting } from "@/features/clicks/model/use-clicks-list";
 import { ClicksTable } from "./ui/clicks-table";
-import { columns } from "./ui/columns";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 
 export function Component() {
 
-    const { clicks, isLoading } = useClicksList();
+    const { clicks, isLoading, sorting } = useClicksListWithSorting();
 
     if (isLoading) {
         return (
@@ -47,7 +46,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <ClicksTable columns={columns} data={clicks} />
+            <ClicksTable data={clicks} sorting={sorting} />
         </div>
     );
 } 

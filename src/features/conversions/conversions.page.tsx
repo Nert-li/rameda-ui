@@ -1,10 +1,9 @@
-import { useConversionsList } from "@/features/conversions/model/use-conversions-list";
+import { useConversionsListWithSorting } from "@/features/conversions/model/use-conversions-list";
 import { ConversionsTable } from "./ui/conversions-table";
-import { columns } from "./ui/columns";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 
 export function Component() {
-    const { conversions, isLoading } = useConversionsList();
+    const { conversions, isLoading, sorting } = useConversionsListWithSorting();
 
     if (isLoading) {
         return (
@@ -46,7 +45,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <ConversionsTable columns={columns} data={conversions} />
+            <ConversionsTable data={conversions} sorting={sorting} />
         </div>
     );
 } 

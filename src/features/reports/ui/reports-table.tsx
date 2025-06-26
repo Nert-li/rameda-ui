@@ -1,20 +1,27 @@
-import { ColumnDef } from "@tanstack/react-table"
 import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { getColumns, type Report } from "./columns"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+interface ReportsTableProps {
+    data: Report[] | []
+    sorting?: {
+        handleSort: (field: string) => void
+        sorting: { field: string | null; direction: 'asc' | 'desc' }
+    }
 }
 
-export function ReportsOverviewTable<TData, TValue>({
-    columns,
+export function ReportsTable({
     data,
-}: DataTableProps<TData, TValue>) {
+    sorting,
+}: ReportsTableProps) {
+    const columns = sorting
+        ? getColumns(sorting.handleSort, sorting.sorting)
+        : [];
+
     return (
         <UniversalDataTable
             columns={columns}
             data={data}
-            searchPlaceholder="Filter by name..."
+            searchPlaceholder="Filter conversions..."
         />
     )
 } 

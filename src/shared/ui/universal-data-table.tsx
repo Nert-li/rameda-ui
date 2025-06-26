@@ -1,4 +1,4 @@
-"use client"
+
 
 import * as React from "react"
 import {
@@ -61,6 +61,14 @@ interface UniversalDataTableProps<TData, TValue> {
     pageSize?: number
     additionalFilters?: React.ReactNode
     className?: string
+    isLoading?: boolean
+    serverSide?: {
+        sorting?: {
+            enabled: boolean
+            onSortChange?: (field: string, direction: 'asc' | 'desc') => void
+            currentSort?: { field: string; direction: 'asc' | 'desc' }
+        }
+    }
 }
 
 export function UniversalDataTable<TData, TValue>({
@@ -74,6 +82,8 @@ export function UniversalDataTable<TData, TValue>({
     pageSize = 10,
     additionalFilters,
     className,
+    isLoading = false,
+    serverSide,
 }: UniversalDataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -85,11 +95,14 @@ export function UniversalDataTable<TData, TValue>({
         pageSize: pageSize,
     })
 
+    // Определяем, включена ли серверная сортировка
+    const isServerSideSortingEnabled = serverSide?.sorting?.enabled || false
+
     const table = useReactTable({
         data,
         columns,
         state: {
-            sorting,
+            sorting: isServerSideSortingEnabled ? [] : sorting, // Отключаем локальную сортировку
             columnVisibility,
             rowSelection: enableRowSelection ? rowSelection : {},
             columnFilters,
@@ -98,7 +111,7 @@ export function UniversalDataTable<TData, TValue>({
         },
         enableRowSelection: enableRowSelection,
         onRowSelectionChange: setRowSelection,
-        onSortingChange: setSorting,
+        onSortingChange: isServerSideSortingEnabled ? undefined : setSorting, // Отключаем для серверной
         onColumnFiltersChange: setColumnFilters,
         onColumnVisibilityChange: setColumnVisibility,
         onGlobalFilterChange: setGlobalFilter,
@@ -106,10 +119,11 @@ export function UniversalDataTable<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
+        getSortedRowModel: isServerSideSortingEnabled ? getCoreRowModel() : getSortedRowModel(), // Отключаем клиентскую сортировку
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         globalFilterFn: "includesString",
+        manualSorting: isServerSideSortingEnabled, // Включаем ручную сортировку для серверной
     })
 
     return (
@@ -188,7 +202,18 @@ export function UniversalDataTable<TData, TValue>({
                             ))}
                         </TableHeader>
                         <TableBody>
-                            {table.getRowModel().rows?.length ? (
+                            {isLoading ? (
+                                // Показываем скелетон при загрузке
+                                Array.from({ length: 5 }).map((_, index) => (
+                                    <TableRow key={index}>
+                                        {columns.map((_, cellIndex) => (
+                                            <TableCell key={cellIndex}>
+                                                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : table.getRowModel().rows?.length ? (
                                 table.getRowModel().rows.map((row) => (
                                     <TableRow
                                         key={row.id}

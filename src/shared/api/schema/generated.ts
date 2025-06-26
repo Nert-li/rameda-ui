@@ -554,7 +554,14 @@ export type $defs = Record<string, never>;
 export interface operations {
     getAllUsers: {
         parameters: {
-            query?: never;
+            query?: {
+                _order?: string;
+                page?: number;
+                limit?: number;
+                role?: string;
+                account_status?: string;
+                country?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -570,6 +577,27 @@ export interface operations {
                     "application/json": {
                         users?: components["schemas"]["UserRecord"][];
                         total_count?: number;
+                        pagination?: {
+                            current_page?: number;
+                            next_page?: number | null;
+                            prev_page?: number | null;
+                            total_pages?: number;
+                            total_count?: number;
+                        };
+                        stats?: {
+                            total_count?: number;
+                            by_role?: Record<string, never>;
+                            by_status?: Record<string, never>;
+                            by_country?: Record<string, never>;
+                            confirmed_count?: number;
+                            unconfirmed_count?: number;
+                        };
+                        sorting?: {
+                            field?: string | null;
+                            /** @enum {string} */
+                            direction?: "asc" | "desc";
+                            order_param?: string | null;
+                        };
                     };
                 };
             };
@@ -582,6 +610,9 @@ export interface operations {
                 offer_id?: number;
                 status?: "active" | "expired";
                 high_discount?: boolean;
+                _order?: string;
+                page?: number;
+                limit?: number;
             };
             header?: never;
             path?: never;
@@ -600,6 +631,27 @@ export interface operations {
                         total_count?: number;
                         active_count?: number;
                         expired_count?: number;
+                        pagination?: {
+                            current_page?: number;
+                            next_page?: number | null;
+                            prev_page?: number | null;
+                            total_pages?: number;
+                            total_count?: number;
+                        };
+                        stats?: {
+                            total_count?: number;
+                            active_count?: number;
+                            expired_count?: number;
+                            high_discount_count?: number;
+                            /** Format: float */
+                            average_discount?: number;
+                        };
+                        sorting?: {
+                            field?: string | null;
+                            /** @enum {string} */
+                            direction?: "asc" | "desc";
+                            order_param?: string | null;
+                        };
                     };
                 };
             };
@@ -608,7 +660,14 @@ export interface operations {
     };
     getAllOffers: {
         parameters: {
-            query?: never;
+            query?: {
+                _order?: string;
+                page?: number;
+                limit?: number;
+                status?: string;
+                offer_type?: "clo" | "no_clo";
+                buyer_id?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -623,6 +682,27 @@ export interface operations {
                 content: {
                     "application/json": {
                         offers?: components["schemas"]["OfferRecord"][];
+                        pagination?: {
+                            current_page?: number;
+                            next_page?: number | null;
+                            prev_page?: number | null;
+                            total_pages?: number;
+                            total_count?: number;
+                        };
+                        stats?: {
+                            total_count?: number;
+                            active_count?: number;
+                            inactive_count?: number;
+                            /** Format: float */
+                            total_revenue?: number;
+                            total_clicks?: number;
+                        };
+                        sorting?: {
+                            field?: string | null;
+                            /** @enum {string} */
+                            direction?: "asc" | "desc";
+                            order_param?: string | null;
+                        };
                     };
                 };
             };
@@ -759,6 +839,9 @@ export interface operations {
                 name?: string;
                 date_from?: string;
                 date_to?: string;
+                _order?: string;
+                page?: number;
+                limit?: number;
             };
             header?: never;
             path?: never;
@@ -781,7 +864,22 @@ export interface operations {
                             total_pages?: number;
                             total_count?: number;
                         };
-                        stats?: Record<string, never>;
+                        stats?: {
+                            total_count?: number;
+                            /** Format: float */
+                            total_cost?: number;
+                            /** Format: float */
+                            total_revenue?: number;
+                            by_state?: Record<string, never>;
+                            by_type?: Record<string, never>;
+                            high_value_count?: number;
+                        };
+                        sorting?: {
+                            field?: string | null;
+                            /** @enum {string} */
+                            direction?: "asc" | "desc";
+                            order_param?: string | null;
+                        };
                     };
                 };
             };
@@ -804,6 +902,8 @@ export interface operations {
                 unique?: boolean;
                 limit?: number;
                 offset?: number;
+                _order?: string;
+                page?: number;
             };
             header?: never;
             path?: never;
@@ -821,7 +921,27 @@ export interface operations {
                         clicks?: components["schemas"]["ClickRecord"][];
                         total_count?: number;
                         filtered_count?: number;
-                        stats?: Record<string, never>;
+                        pagination?: {
+                            current_page?: number;
+                            next_page?: number | null;
+                            prev_page?: number | null;
+                            total_pages?: number;
+                            total_count?: number;
+                        };
+                        stats?: {
+                            total_count?: number;
+                            leads_count?: number;
+                            seals_count?: number;
+                            unique_count?: number;
+                            by_country?: Record<string, never>;
+                            by_offer?: Record<string, never>;
+                        };
+                        sorting?: {
+                            field?: string | null;
+                            /** @enum {string} */
+                            direction?: "asc" | "desc";
+                            order_param?: string | null;
+                        };
                     };
                 };
             };
@@ -830,7 +950,11 @@ export interface operations {
     };
     getAllReportsGlobal: {
         parameters: {
-            query?: never;
+            query?: {
+                _order?: string;
+                page?: number;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -845,8 +969,29 @@ export interface operations {
                 content: {
                     "application/json": {
                         reports?: components["schemas"]["ReportRecord"][];
-                        pagination?: Record<string, never>;
-                        stats?: Record<string, never>;
+                        pagination?: {
+                            current_page?: number;
+                            next_page?: number | null;
+                            prev_page?: number | null;
+                            total_pages?: number;
+                            total_count?: number;
+                        };
+                        stats?: {
+                            /** Format: float */
+                            total_spend?: number;
+                            /** Format: float */
+                            total_revenue?: number;
+                            /** Format: float */
+                            total_profit?: number;
+                            /** Format: float */
+                            average_roi?: number;
+                        };
+                        sorting?: {
+                            field?: string | null;
+                            /** @enum {string} */
+                            direction?: "asc" | "desc";
+                            order_param?: string | null;
+                        };
                     };
                 };
             };
@@ -855,7 +1000,11 @@ export interface operations {
     };
     getAllAdsManagers: {
         parameters: {
-            query?: never;
+            query?: {
+                _order?: string;
+                page?: number;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -870,8 +1019,28 @@ export interface operations {
                 content: {
                     "application/json": {
                         ads_managers?: components["schemas"]["AdsManagerRecord"][];
-                        pagination?: Record<string, never>;
-                        stats?: Record<string, never>;
+                        pagination?: {
+                            current_page?: number;
+                            next_page?: number | null;
+                            prev_page?: number | null;
+                            total_pages?: number;
+                            total_count?: number;
+                        };
+                        stats?: {
+                            total_count?: number;
+                            with_offers?: number;
+                            without_offers?: number;
+                            /** Format: float */
+                            total_spend?: number;
+                            /** Format: float */
+                            total_revenue?: number;
+                        };
+                        sorting?: {
+                            field?: string | null;
+                            /** @enum {string} */
+                            direction?: "asc" | "desc";
+                            order_param?: string | null;
+                        };
                     };
                 };
             };
@@ -1023,7 +1192,11 @@ export interface operations {
     };
     getAllReports: {
         parameters: {
-            query?: never;
+            query?: {
+                _order?: string;
+                page?: number;
+                limit?: number;
+            };
             header?: never;
             path: {
                 adsManagerId: string;
@@ -1040,8 +1213,29 @@ export interface operations {
                 content: {
                     "application/json": {
                         reports?: components["schemas"]["ReportRecord"][];
-                        pagination?: Record<string, never>;
-                        stats?: Record<string, never>;
+                        pagination?: {
+                            current_page?: number;
+                            next_page?: number | null;
+                            prev_page?: number | null;
+                            total_pages?: number;
+                            total_count?: number;
+                        };
+                        stats?: {
+                            /** Format: float */
+                            total_spend?: number;
+                            /** Format: float */
+                            total_revenue?: number;
+                            /** Format: float */
+                            total_profit?: number;
+                            /** Format: float */
+                            average_roi?: number;
+                        };
+                        sorting?: {
+                            field?: string | null;
+                            /** @enum {string} */
+                            direction?: "asc" | "desc";
+                            order_param?: string | null;
+                        };
                     };
                 };
             };

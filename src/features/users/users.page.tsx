@@ -1,10 +1,9 @@
-import { useUsersList } from "@/features/users/model/use-users-list";
+import { useUsersListWithSorting } from "@/features/users/model/use-users-list";
 import { UsersTable } from "./ui/users-table";
-import { columns } from "./ui/columns";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 
 export function Component() {
-    const { users, isLoading } = useUsersList();
+    const { users, isLoading, sorting } = useUsersListWithSorting();
 
     if (isLoading) {
         return (
@@ -46,7 +45,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <UsersTable columns={columns} data={users} />
+            <UsersTable data={users} sorting={sorting} />
         </div>
     );
 } 

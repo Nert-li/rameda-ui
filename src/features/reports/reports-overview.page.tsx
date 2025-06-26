@@ -2,14 +2,13 @@ import { Badge } from "@/shared/ui/kit/badge";
 import { Button } from "@/shared/ui/kit/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { columns } from "./ui/columns";
-import { ReportsOverviewTable } from "./ui/reports-table";
-import { useAllReports } from "./model/reports-list";
+import { useReportsListWithSorting } from "./model/reports-list";
+import { ReportsTable } from "./ui/reports-table";
 
 
 export const Component = () => {
     const navigate = useNavigate();
-    const { reports, stats, isLoading, isError } = useAllReports();
+    const { reports, stats, isLoading, isError, sorting } = useReportsListWithSorting();
 
     if (isLoading) {
         return (
@@ -52,7 +51,7 @@ export const Component = () => {
                     <div>
                         <h1 className="text-2xl font-bold">All Reports</h1>
                         <p className="text-muted-foreground">
-                            {reports.length} reports across {stats?.ads_managers_count || 0} ads managers
+                            {/* {reports.length} reports across {stats?.ads_managers_count || 0} ads managers */}
                         </p>
                     </div>
                 </div>
@@ -61,15 +60,15 @@ export const Component = () => {
                         Total Spend: ${Number(stats?.total_spend || 0).toFixed(2)}
                     </Badge>
                     <Badge variant="secondary">
-                        This Month: ${Number(stats?.this_month_spend || 0).toFixed(2)}
+                        {/* This Month: ${Number(stats?.this_month_spend || 0).toFixed(2)} */}
                     </Badge>
                 </div>
             </div>
 
             <div className="flex-1 min-h-0">
-                <ReportsOverviewTable
-                    columns={columns}
+                <ReportsTable
                     data={reports}
+                    sorting={sorting}
                 />
             </div>
         </div>

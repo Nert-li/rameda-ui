@@ -1,20 +1,28 @@
-import { ColumnDef } from "@tanstack/react-table"
-import { UniversalDataTable } from "@/shared/ui/universal-data-table"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { getColumns, type PromoCode } from "./columns"
+
+interface PromoCodesTableProps {
+    data: PromoCode[]
+    sorting?: {
+        handleSort: (field: string) => void
+        sorting: { field: string | null; direction: 'asc' | 'desc' }
+    }
 }
 
-export function PromoCodesTable<TData, TValue>({
-    columns,
+export function PromoCodesTable({
     data,
-}: DataTableProps<TData, TValue>) {
+    sorting,
+}: PromoCodesTableProps) {
+    const columns = sorting
+        ? getColumns(sorting.handleSort, sorting.sorting)
+        : [];
+
     return (
         <UniversalDataTable
             columns={columns}
+            searchPlaceholder="Filter promo codes..."
             data={data}
-            searchPlaceholder="Filter by name..."
         />
     )
 } 

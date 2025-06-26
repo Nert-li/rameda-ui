@@ -1,74 +1,126 @@
-"use client"
-
 import { components } from "@/shared/api/schema/generated"
 import { ColumnDef } from "@tanstack/react-table"
-import { Button } from "@/shared/ui/kit/button"
-import { ArrowUpDown, CheckCircle, XCircle } from "lucide-react"
+import { CheckCircle, XCircle } from "lucide-react"
+import { SortableHeader } from "@/shared/ui/sortable-header"
 
 export type Click = components["schemas"]["ClickRecord"]
 
-export const columns: ColumnDef<Click>[] = [
+type SortFunction = (field: string) => void;
+type SortingState = { field: string | null; direction: 'asc' | 'desc' };
+
+export const getColumns = (onSort: SortFunction, sortingState: SortingState): ColumnDef<Click>[] => [
     {
         accessorKey: "subid",
-        header: "SubID",
+        header: () => (
+            <SortableHeader field="subid" sorting={sortingState} onSort={onSort}>
+                SubID
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "offer_id",
-        header: "Offer ID",
+        header: () => (
+            <SortableHeader field="offer_id" sorting={sortingState} onSort={onSort}>
+                Offer ID
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "offer_name",
-        header: "Offer",
+        header: () => (
+            <SortableHeader field="offer_name" sorting={sortingState} onSort={onSort}>
+                Offer
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "buyer_name",
-        header: "Buyer",
+        header: () => (
+            <SortableHeader field="buyer_name" sorting={sortingState} onSort={onSort}>
+                Buyer
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "ad_campaign_id",
-        header: "Campaign ID",
+        header: () => (
+            <SortableHeader field="ad_campaign_id" sorting={sortingState} onSort={onSort}>
+                Campaign ID
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "creative_id",
-        header: "Creative ID",
+        header: () => (
+            <SortableHeader field="creative_id" sorting={sortingState} onSort={onSort}>
+                Creative ID
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "source",
-        header: "Source",
+        header: () => (
+            <SortableHeader field="source" sorting={sortingState} onSort={onSort}>
+                Source
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "os",
-        header: "OS",
-    },
-    {
-        accessorKey: "country",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Country
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
+        header: () => (
+            <SortableHeader field="os" sorting={sortingState} onSort={onSort}>
+                OS
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "city",
-        header: "City",
+        header: () => (
+            <SortableHeader field="city" sorting={sortingState} onSort={onSort}>
+                City
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "ip",
-        header: "IP",
+        header: () => (
+            <SortableHeader field="ip" sorting={sortingState} onSort={onSort}>
+                IP
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "conversion_id",
-        header: "Conversion ID",
+        header: () => (
+            <SortableHeader field="conversion_id" sorting={sortingState} onSort={onSort}>
+                Conversion ID
+            </SortableHeader>
+        ),
+        enableSorting: true,
+    },
+    {
+        accessorKey: "country",
+        header: () => (
+            <SortableHeader field="country" sorting={sortingState} onSort={onSort}>
+                Country
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "is_lead",
         header: "Lead",
+        enableSorting: false,
         cell: ({ row }) => {
             const isLead = row.getValue("is_lead")
             return isLead ? <CheckCircle className="h-4 w-4 text-green-500" /> : <XCircle className="h-4 w-4 text-red-500" />
@@ -77,6 +129,7 @@ export const columns: ColumnDef<Click>[] = [
     {
         accessorKey: "is_seal",
         header: "Seal",
+        enableSorting: false,
         cell: ({ row }) => {
             const isSeal = row.getValue("is_seal")
             return isSeal ? <CheckCircle className="h-4 w-4 text-green-500" /> : <XCircle className="h-4 w-4 text-red-500" />
@@ -85,6 +138,7 @@ export const columns: ColumnDef<Click>[] = [
     {
         accessorKey: "is_uniq",
         header: "Unique",
+        enableSorting: false,
         cell: ({ row }) => {
             const isUniq = row.getValue("is_uniq")
             return isUniq ? "Yes" : "No"
@@ -92,21 +146,16 @@ export const columns: ColumnDef<Click>[] = [
     },
     {
         accessorKey: "created_at",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Date
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
+        header: () => (
+            <SortableHeader field="created_at" sorting={sortingState} onSort={onSort}>
+                Date
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const createdAt = row.getValue("created_at")
             if (!createdAt) return <span className="text-muted-foreground">-</span>
-            return new Date(createdAt as string).toLocaleString()
+            return <div className="font-mono text-sm">{new Date(createdAt as string).toLocaleString()}</div>
         },
     },
-] 
+];

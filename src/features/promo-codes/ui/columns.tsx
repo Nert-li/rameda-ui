@@ -1,41 +1,33 @@
-"use client"
+
 
 import { components } from "@/shared/api/schema/generated"
 import { ColumnDef } from "@tanstack/react-table"
-import { Button } from "@/shared/ui/kit/button"
-import { ArrowUpDown } from "lucide-react"
 import { Badge } from "@/shared/ui/kit/badge"
+import { SortableHeader } from "@/shared/ui/sortable-header"
 
 export type PromoCode = components["schemas"]["PromoCodeRecord"]
 
-export const columns: ColumnDef<PromoCode>[] = [
+type SortFunction = (field: string) => void;
+type SortingState = { field: string | null; direction: 'asc' | 'desc' };
+
+export const getColumns = (onSort: SortFunction, sortingState: SortingState): ColumnDef<PromoCode>[] => [
     {
         accessorKey: "name",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
+        header: () => (
+            <SortableHeader field="name" sorting={sortingState} onSort={onSort}>
+                Name
+            </SortableHeader>
+        ),
+        enableSorting: true,
     },
     {
         accessorKey: "discount_percent",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Discount
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
+        header: () => (
+            <SortableHeader field="discount_percent" sorting={sortingState} onSort={onSort}>
+                Discount
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("discount_percent"))
             const formatted = new Intl.NumberFormat("en-US", {
@@ -44,12 +36,17 @@ export const columns: ColumnDef<PromoCode>[] = [
                 maximumFractionDigits: 1,
             }).format(amount / 100)
 
-            return <div className="font-medium">{formatted}</div>
+            return <div>{formatted}</div>
         },
     },
     {
         accessorKey: "offer",
-        header: "Offer",
+        header: () => (
+            <SortableHeader field="offer" sorting={sortingState} onSort={onSort}>
+                Offer
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const offer = row.original.offer
             return offer ? offer.name : <span className="text-muted-foreground">-</span>
@@ -57,7 +54,12 @@ export const columns: ColumnDef<PromoCode>[] = [
     },
     {
         accessorKey: "buyer",
-        header: "Buyer",
+        header: () => (
+            <SortableHeader field="buyer" sorting={sortingState} onSort={onSort}>
+                Buyer
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const buyer = row.original.buyer
             return buyer ? (
@@ -69,7 +71,12 @@ export const columns: ColumnDef<PromoCode>[] = [
     },
     {
         accessorKey: "country",
-        header: "Country",
+        header: () => (
+            <SortableHeader field="country" sorting={sortingState} onSort={onSort}>
+                Country
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const country = row.original.country
             return country ? (
@@ -81,7 +88,12 @@ export const columns: ColumnDef<PromoCode>[] = [
     },
     {
         accessorKey: "is_active",
-        header: "Status",
+        header: () => (
+            <SortableHeader field="is_active" sorting={sortingState} onSort={onSort}>
+                Status
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const isActive = row.getValue("is_active")
             return isActive ? <Badge>Active</Badge> : <Badge variant="destructive">Inactive</Badge>
@@ -89,7 +101,12 @@ export const columns: ColumnDef<PromoCode>[] = [
     },
     {
         accessorKey: "expires_at",
-        header: "Expires At",
+        header: () => (
+            <SortableHeader field="expires_at" sorting={sortingState} onSort={onSort}>
+                Expires At
+            </SortableHeader>
+        ),
+        enableSorting: true,
         cell: ({ row }) => {
             const expiresAt = row.getValue("expires_at")
             if (!expiresAt) {
@@ -98,4 +115,4 @@ export const columns: ColumnDef<PromoCode>[] = [
             return new Date(expiresAt as string).toLocaleDateString()
         },
     },
-] 
+]

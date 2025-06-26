@@ -1,20 +1,27 @@
-import { ColumnDef } from "@tanstack/react-table"
 import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { getColumns, type User } from "./columns"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+interface UsersTableProps {
+    data: User[]
+    sorting?: {
+        handleSort: (field: string) => void
+        sorting: { field: string | null; direction: 'asc' | 'desc' }
+    }
 }
 
-export function UsersTable<TData, TValue>({
-    columns,
+export function UsersTable({
     data,
-}: DataTableProps<TData, TValue>) {
+    sorting,
+}: UsersTableProps) {
+    const columns = sorting
+        ? getColumns(sorting.handleSort, sorting.sorting)
+        : [];
+
     return (
         <UniversalDataTable
             columns={columns}
             data={data}
-            searchPlaceholder="Filter by email or buyer name..."
+            searchPlaceholder="Filter users..."
         />
     )
 } 

@@ -58,6 +58,29 @@ getAllConversions:
       schema:
         type: string
         format: date
+    - name: _order
+      in: query
+      required: false
+      schema:
+        type: string
+        description: Field to sort by with optional direction prefix. Use field name for ascending (e.g., 'created_at') or prefix with '-' for descending (e.g., '-cost')
+        examples:
+          - 'created_at'
+          - '-cost'
+          - 'email'
+          - '-revenue'
+    - name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        description: Page number for pagination
+    - name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        description: Number of items per page
   responses:
     "200":
       description: A list of conversions
@@ -87,6 +110,33 @@ getAllConversions:
                     type: integer
               stats:
                 type: object
+                properties:
+                  total_count:
+                    type: integer
+                  total_cost:
+                    type: number
+                    format: float
+                  total_revenue:
+                    type: number
+                    format: float
+                  by_state:
+                    type: object
+                  by_type:
+                    type: object
+                  high_value_count:
+                    type: integer
+              sorting:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    nullable: true
+                  direction:
+                    type: string
+                    enum: [asc, desc]
+                  order_param:
+                    type: string
+                    nullable: true
     "401":
       $ref: "../shared/responses.yaml#/UnauthorizedError"
 
