@@ -141,6 +141,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/current_user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get current user information */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Current user data */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["User"];
+                    };
+                };
+                401: components["responses"]["UnauthorizedError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get application configuration */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Application configuration */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Config"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/sign_in": {
         parameters: {
             query?: never;
@@ -477,9 +550,15 @@ export interface components {
             email: string;
             first_name?: string;
             last_name?: string;
+            name?: string;
             phone_number?: string;
             /** @enum {string} */
             role?: "buyer" | "manager" | "admin";
+            avatar?: string;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
         };
         LoginRequest: {
             /** Format: email */
@@ -514,6 +593,22 @@ export interface components {
         };
         ErrorResponse: {
             error?: string;
+        };
+        Config: {
+            app_name?: string;
+            app_version?: string;
+            features?: {
+                notifications?: boolean;
+                multi_language?: boolean;
+                dark_mode?: boolean;
+            };
+            limits?: {
+                max_campaigns?: number;
+                max_offers?: number;
+            };
+            settings?: {
+                [key: string]: unknown;
+            };
         };
         UserRecord: {
             id?: number;

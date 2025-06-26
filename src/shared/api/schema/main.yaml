@@ -15,6 +15,12 @@ paths:
   /auth/logout:
     delete:
       $ref: "endpoints/auth.yaml#/logout"
+  /auth/current_user:
+    get:
+      $ref: "endpoints/auth.yaml#/current_user"
+  /auth/config:
+    get:
+      $ref: "endpoints/auth.yaml#/config"
   
   # Devise endpoints (legacy compatibility)
   /users/sign_in:
@@ -114,6 +120,8 @@ components:
       $ref: "endpoints/auth.yaml#/schemas/AuthResponse"
     ErrorResponse:
       $ref: "endpoints/auth.yaml#/schemas/ErrorResponse"
+    Config:
+      $ref: "endpoints/auth.yaml#/schemas/Config"
     
     # Other schemas
     UserRecord:

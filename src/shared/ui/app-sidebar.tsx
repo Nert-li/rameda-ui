@@ -30,11 +30,6 @@ import {
 import { ROUTES } from "../model/routes"
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -118,7 +113,7 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: ROUTES.USERS,
+      url: ROUTES.SETTINGS,
       icon: IconSettings,
     },
   ],
@@ -160,7 +155,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

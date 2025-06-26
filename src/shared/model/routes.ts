@@ -4,6 +4,8 @@ export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   REGISTER: "/register",
+  ACCOUNT: "/account",
+  SETTINGS: "/settings",
   USERS: "/users",
   CLICKS: "/clicks",
   PROMO_CODES: "/promo-codes",
@@ -15,6 +17,8 @@ export const ROUTES = {
 } as const;
 
 export const PAGE_TITLES: Record<string, string> = {
+  [ROUTES.ACCOUNT]: "Account",
+  [ROUTES.SETTINGS]: "Settings",
   [ROUTES.USERS]: "Users",
   [ROUTES.CLICKS]: "Clicks",
   [ROUTES.PROMO_CODES]: "Promo Codes",

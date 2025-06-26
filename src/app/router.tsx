@@ -19,6 +19,14 @@ export const router = createBrowserRouter([
         ),
         children: [
           {
+            path: ROUTES.ACCOUNT,
+            lazy: () => import("@/features/account/account.page"),
+          },
+          {
+            path: ROUTES.SETTINGS,
+            lazy: () => import("@/features/settings/settings.page"),
+          },
+          {
             path: ROUTES.USERS,
             lazy: () => import("@/features/users/users.page"),
           },
