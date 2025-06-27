@@ -1,4 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
+import { useMemo } from "react"
 import { DataGrid } from "./data-grid"
 
 // Общие типы для сортировки и пагинации
@@ -41,10 +42,12 @@ export function DataTableWrapper<T>({
     sorting,
     pagination,
 }: DataTableWrapperProps<T>) {
-    // Создаем колонки только если есть сортировка
-    const columns = sorting
-        ? config.getColumns(sorting.handleSort, sorting.sorting)
-        : []
+    // Мемоизируем колонки - пересчитываются только при изменении структуры сортировки, а не значений
+    const columns = useMemo(() => {
+        return sorting
+            ? config.getColumns(sorting.handleSort, sorting.sorting)
+            : []
+    }, [config, sorting?.handleSort, sorting?.sorting.field, sorting?.sorting.direction])
 
     return (
         <DataGrid

@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useQueryParam, StringParam } from "use-query-params";
 
 export interface SortingState {
   field: string | null;
@@ -17,39 +16,51 @@ export interface UseServerSortingOptions {
   defaultDirection?: 'asc' | 'desc';
 }
 
+/**
+ * Упрощенный хук серверной сортировки с use-query-params
+ * - Автоматическая синхронизация с URL
+ * - Минимальный код
+ * - Отсутствие побочных эффектов
+ */
 export const useServerSorting = (options: UseServerSortingOptions = {}): UseServerSortingReturn => {
   const { defaultField = null, defaultDirection = 'desc' } = options;
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Инициализация из URL или дефолтов
-  const initializeSorting = useCallback((): SortingState => {
-    const urlOrder = searchParams.get('_order');
+  // use-query-params автоматически синхронизирует с URL
+  const [order, setOrder] = useQueryParam('_order', StringParam);
 
-    if (urlOrder) {
-      if (urlOrder.startsWith('-')) {
-        return { field: urlOrder.slice(1), direction: 'desc' };
-      } else {
-        return { field: urlOrder, direction: 'asc' };
-      }
+  // Парсинг текущего состояния из URL параметра
+  const getCurrentSorting = (): SortingState => {
+    if (!order) {
+      return { field: defaultField, direction: defaultDirection };
     }
 
-    return { field: defaultField, direction: defaultDirection };
-  }, [searchParams, defaultField, defaultDirection]);
+    if (order.startsWith('-')) {
+      return { field: order.slice(1), direction: 'desc' };
+    }
 
-  const [sorting, setSorting] = useState<SortingState>(initializeSorting);
+    return { field: order, direction: 'asc' };
+  };
 
-  // Обработка клика по колонке
-  const handleSort = useCallback((field: string) => {
-    setSorting(prev => {
-      const newDirection: 'asc' | 'desc' =
-        prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc';
+  const sorting = getCurrentSorting();
 
-      return { field, direction: newDirection };
-    });
-  }, []);
+  // Обработчик клика по колонке
+  const handleSort = (field: string) => {
+    const { field: currentField, direction: currentDirection } = sorting;
+
+    // Если это та же колонка - переключаем направление
+    if (currentField === field) {
+      const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+      const newOrder = newDirection === 'desc' ? `-${field}` : field;
+      setOrder(newOrder);
+    } else {
+      // Новая колонка - используем дефолтное направление
+      const newOrder = defaultDirection === 'desc' ? `-${field}` : field;
+      setOrder(newOrder);
+    }
+  };
 
   // Параметры для API
-  const getSortParams = useCallback((): Record<string, string> => {
+  const getSortParams = (): Record<string, string> => {
     if (!sorting.field) return {};
 
     const orderParam = sorting.direction === 'desc'
@@ -57,25 +68,7 @@ export const useServerSorting = (options: UseServerSortingOptions = {}): UseServ
       : sorting.field;
 
     return { _order: orderParam };
-  }, [sorting]);
-
-  // Синхронизация с URL
-  useEffect(() => {
-    const newParams = new URLSearchParams(searchParams);
-
-    if (sorting.field) {
-      const orderParam = sorting.direction === 'desc'
-        ? `-${sorting.field}`
-        : sorting.field;
-      newParams.set('_order', orderParam);
-    } else {
-      newParams.delete('_order');
-    }
-
-    if (newParams.toString() !== searchParams.toString()) {
-      setSearchParams(newParams, { replace: true });
-    }
-  }, [sorting, searchParams, setSearchParams]);
+  };
 
   return {
     sorting,
