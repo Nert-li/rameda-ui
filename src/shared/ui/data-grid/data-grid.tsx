@@ -168,7 +168,7 @@ export function DataGrid<TData>({
         globalFilterFn: 'includesString',
         initialState: {
             pagination: {
-                pageSize: 10,
+                pageSize: 25,
             },
         },
     })
