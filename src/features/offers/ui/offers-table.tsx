@@ -1,41 +1,24 @@
-import { UniversalDataTable } from "@/shared/ui/data-grid"
+import { DataTableConfig, DataTableWrapper, type SortingProps, type PaginationProps } from "@/shared/ui/data-grid"
 import { getColumns, type Offer } from "./columns"
+
+const offersTableConfig: DataTableConfig<Offer> = {
+    getColumns,
+    searchPlaceholder: "Filter by name..."
+}
 
 interface OffersTableProps {
     data: Offer[]
-    sorting?: {
-        handleSort: (field: string) => void
-        sorting: { field: string | null; direction: 'asc' | 'desc' }
-    }
-    pagination?: {
-        currentPage: number
-        totalPages: number
-        totalCount: number
-        pageSize: number
-        onPageChange: (page: number) => void
-        onPageSizeChange: (pageSize: number) => void
-    }
+    sorting?: SortingProps
+    pagination?: PaginationProps
 }
 
-export function OffersTable({
-    data,
-    sorting,
-    pagination,
-}: OffersTableProps) {
-    // Создаем колонки с сортировкой если они переданы
-    const columns = sorting
-        ? getColumns(sorting.handleSort, sorting.sorting)
-        : [];
-
+export function OffersTable(props: OffersTableProps) {
     return (
-        <UniversalDataTable
-            columns={columns}
-            data={data}
-            pagination={pagination && {
-                mode: 'server' as const,
-                ...pagination
-            }}
-            searchPlaceholder="Filter by name..."
+        <DataTableWrapper
+            data={props.data}
+            config={offersTableConfig}
+            sorting={props.sorting}
+            pagination={props.pagination}
         />
     )
 } 

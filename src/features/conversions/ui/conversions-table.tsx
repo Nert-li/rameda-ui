@@ -1,40 +1,24 @@
-import { UniversalDataTable } from "@/shared/ui/data-grid"
+import { DataTableConfig, DataTableWrapper, type SortingProps, type PaginationProps } from "@/shared/ui/data-grid"
 import { getColumns, type Conversion } from "./columns"
+
+const conversionsTableConfig: DataTableConfig<Conversion> = {
+    getColumns,
+    searchPlaceholder: "Filter conversions..."
+}
 
 interface ConversionsTableProps {
     data: Conversion[]
-    sorting?: {
-        handleSort: (field: string) => void
-        sorting: { field: string | null; direction: 'asc' | 'desc' }
-    }
-    pagination?: {
-        currentPage: number
-        totalPages: number
-        totalCount: number
-        pageSize: number
-        onPageChange: (page: number) => void
-        onPageSizeChange: (pageSize: number) => void
-    }
+    sorting?: SortingProps
+    pagination?: PaginationProps
 }
 
-export function ConversionsTable({
-    data,
-    sorting,
-    pagination,
-}: ConversionsTableProps) {
-    const columns = sorting
-        ? getColumns(sorting.handleSort, sorting.sorting)
-        : [];
-
+export function ConversionsTable(props: ConversionsTableProps) {
     return (
-        <UniversalDataTable
-            columns={columns}
-            data={data}
-            searchPlaceholder="Filter conversions..."
-            pagination={pagination && {
-                mode: 'server' as const,
-                ...pagination
-            }}
+        <DataTableWrapper
+            data={props.data}
+            config={conversionsTableConfig}
+            sorting={props.sorting}
+            pagination={props.pagination}
         />
     )
 } 

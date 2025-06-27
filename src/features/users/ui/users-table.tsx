@@ -1,40 +1,25 @@
-import { UniversalDataTable } from "@/shared/ui/data-grid"
-import { getColumns, type User } from "./columns"
+import { DataTableConfig, DataTableWrapper, type SortingProps, type PaginationProps } from "@/shared/ui/data-grid"
+import { type User } from "./columns"
+import { getColumns } from "./columns"
+
+const usersTableConfig: DataTableConfig<User> = {
+    getColumns,
+    searchPlaceholder: "Filter users..."
+}
 
 interface UsersTableProps {
     data: User[]
-    sorting?: {
-        handleSort: (field: string) => void
-        sorting: { field: string | null; direction: 'asc' | 'desc' }
-    }
-    pagination?: {
-        currentPage: number
-        totalPages: number
-        totalCount: number
-        pageSize: number
-        onPageChange: (page: number) => void
-        onPageSizeChange: (pageSize: number) => void
-    }
+    sorting?: SortingProps
+    pagination?: PaginationProps
 }
 
-export function UsersTable({
-    data,
-    sorting,
-    pagination,
-}: UsersTableProps) {
-    const columns = sorting
-        ? getColumns(sorting.handleSort, sorting.sorting)
-        : [];
-
+export function UsersTable(props: UsersTableProps) {
     return (
-        <UniversalDataTable
-            columns={columns}
-            data={data}
-            pagination={pagination && {
-                mode: 'server' as const,
-                ...pagination
-            }}
-            searchPlaceholder="Filter users..."
+        <DataTableWrapper
+            data={props.data}
+            config={usersTableConfig}
+            sorting={props.sorting}
+            pagination={props.pagination}
         />
     )
 } 

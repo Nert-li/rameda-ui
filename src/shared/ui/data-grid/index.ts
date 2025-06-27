@@ -41,4 +41,16 @@ export type {
 // ==========================================
 
 // Placeholder for future extensions
-// export { useDataGrid } from "./hooks/use-data-grid" 
+// export { useDataGrid } from "./hooks/use-data-grid"
+
+// DataTable wrapper for easy migration
+export { DataTableWrapper } from "./data-table-wrapper"
+export type {
+    DataTableConfig,
+    SortingState,
+    SortingProps,
+    PaginationProps
+} from "./data-table-wrapper"
+
+// Legacy compatibility exports
+export type { DataGridProps as UniversalDataTableProps } from "./types" 

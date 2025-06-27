@@ -1,40 +1,24 @@
-import { UniversalDataTable } from "@/shared/ui/data-grid"
+import { DataTableConfig, DataTableWrapper, type SortingProps, type PaginationProps } from "@/shared/ui/data-grid"
 import { getColumns, type Click } from "./columns"
+
+const clicksTableConfig: DataTableConfig<Click> = {
+    getColumns,
+    searchPlaceholder: "Filter clicks..."
+}
 
 interface ClicksTableProps {
     data: Click[]
-    sorting?: {
-        handleSort: (field: string) => void
-        sorting: { field: string | null; direction: 'asc' | 'desc' }
-    }
-    pagination?: {
-        currentPage: number
-        totalPages: number
-        totalCount: number
-        pageSize: number
-        onPageChange: (page: number) => void
-        onPageSizeChange: (pageSize: number) => void
-    }
+    sorting?: SortingProps
+    pagination?: PaginationProps
 }
 
-export function ClicksTable({
-    data,
-    sorting,
-    pagination,
-}: ClicksTableProps) {
-    const columns = sorting
-        ? getColumns(sorting.handleSort, sorting.sorting)
-        : [];
-
+export function ClicksTable(props: ClicksTableProps) {
     return (
-        <UniversalDataTable
-            columns={columns}
-            data={data}
-            pagination={pagination && {
-                mode: 'server' as const,
-                ...pagination
-            }}
-            searchPlaceholder="Filter clicks..."
+        <DataTableWrapper
+            data={props.data}
+            config={clicksTableConfig}
+            sorting={props.sorting}
+            pagination={props.pagination}
         />
     )
 } 

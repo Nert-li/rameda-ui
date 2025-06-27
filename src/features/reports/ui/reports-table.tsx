@@ -1,40 +1,24 @@
-import { UniversalDataTable } from "@/shared/ui/data-grid"
+import { DataTableConfig, DataTableWrapper, type SortingProps, type PaginationProps } from "@/shared/ui/data-grid"
 import { getColumns, type Report } from "./columns"
+
+const reportsTableConfig: DataTableConfig<Report> = {
+    getColumns,
+    searchPlaceholder: "Filter reports..."
+}
 
 interface ReportsTableProps {
     data: Report[] | []
-    sorting?: {
-        handleSort: (field: string) => void
-        sorting: { field: string | null; direction: 'asc' | 'desc' }
-    }
-    pagination?: {
-        currentPage: number
-        totalPages: number
-        totalCount: number
-        pageSize: number
-        onPageChange: (page: number) => void
-        onPageSizeChange: (pageSize: number) => void
-    }
+    sorting?: SortingProps
+    pagination?: PaginationProps
 }
 
-export function ReportsTable({
-    data,
-    sorting,
-    pagination,
-}: ReportsTableProps) {
-    const columns = sorting
-        ? getColumns(sorting.handleSort, sorting.sorting)
-        : [];
-
+export function ReportsTable(props: ReportsTableProps) {
     return (
-        <UniversalDataTable
-            columns={columns}
-            data={data}
-            pagination={pagination && {
-                mode: 'server' as const,
-                ...pagination
-            }}
-            searchPlaceholder="Filter conversions..."
+        <DataTableWrapper
+            data={props.data}
+            config={reportsTableConfig}
+            sorting={props.sorting}
+            pagination={props.pagination}
         />
     )
 } 
