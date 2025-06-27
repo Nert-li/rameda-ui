@@ -172,14 +172,23 @@ export function UniversalDataTable<TData, TValue>({
 
             {/* Table Container */}
             <div className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
-                <div className="overflow-hidden rounded-lg border">
-                    <Table>
-                        <TableHeader className="bg-muted sticky top-0 z-10">
+                <div className="overflow-hidden rounded-lg border bg-card/50 shadow-sm">
+                    <Table className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                        <TableHeader className="bg-muted/80 sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-muted/60">
                             {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
+                                <TableRow key={headerGroup.id} className="border-b border-border">
+                                    {headerGroup.headers.map((header, index) => {
+                                        const isEven = index % 2 === 0
+                                        const borderClass = isEven
+                                            ? "border-r-2 border-border/50"
+                                            : "border-r-2 border-border/80"
+
                                         return (
-                                            <TableHead key={header.id} colSpan={header.colSpan}>
+                                            <TableHead
+                                                key={header.id}
+                                                colSpan={header.colSpan}
+                                                className={`${borderClass} font-semibold`}
+                                            >
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
@@ -195,31 +204,65 @@ export function UniversalDataTable<TData, TValue>({
                         <TableBody>
                             {isLoading ? (
                                 // Показываем скелетон при загрузке
-                                Array.from({ length: 5 }).map((_, index) => (
-                                    <TableRow key={index}>
-                                        {columns.map((_, cellIndex) => (
-                                            <TableCell key={cellIndex}>
-                                                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
+                                Array.from({ length: 5 }).map((_, rowIndex) => {
+                                    const isEvenRow = rowIndex % 2 === 0
+                                    const rowBgClass = isEvenRow ? "bg-transparent" : "bg-muted/50"
+
+                                    return (
+                                        <TableRow
+                                            key={rowIndex}
+                                            className={`border-b border-border/60 hover:bg-muted/60 transition-colors ${rowBgClass}`}
+                                        >
+                                            {columns.map((_, cellIndex) => {
+                                                const isEven = cellIndex % 2 === 0
+                                                const borderClass = isEven
+                                                    ? "border-r-2 border-border/50"
+                                                    : "border-r-2 border-border/80"
+
+                                                return (
+                                                    <TableCell key={cellIndex} className={borderClass}>
+                                                        <div className="h-4 bg-muted/60 rounded animate-pulse"></div>
+                                                    </TableCell>
+                                                )
+                                            })}
+                                        </TableRow>
+                                    )
+                                })
                             ) : table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
+                                table.getRowModel().rows.map((row, rowIndex) => {
+                                    const isEvenRow = rowIndex % 2 === 0
+                                    const rowBgClass = isEvenRow ? "bg-transparent" : "bg-muted/50"
+
+                                    return (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                            className={`border-b border-border/60 hover:bg-muted/70 active:bg-muted/80 transition-colors duration-150 cursor-pointer ${rowBgClass}`}
+                                        >
+                                            {row.getVisibleCells().map((cell, index) => {
+                                                const isEven = index % 2 === 0
+                                                const borderClass = isEven
+                                                    ? "border-r-2 border-border/50"
+                                                    : "border-r-2 border-border/80"
+
+                                                return (
+                                                    <TableCell
+                                                        key={cell.id}
+                                                        className={`${borderClass} transition-colors duration-150`}
+                                                    >
+                                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                    </TableCell>
+                                                )
+                                            })}
+                                        </TableRow>
+                                    )
+                                })
                             ) : (
-                                <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableRow className="border-b border-border/60 bg-transparent">
+                                    <TableCell
+                                        colSpan={columns.length}
+                                        className="h-24 text-center text-muted-foreground"
+                                    >
                                         No results.
                                     </TableCell>
                                 </TableRow>
