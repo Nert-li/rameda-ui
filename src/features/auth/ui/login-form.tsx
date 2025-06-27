@@ -47,7 +47,7 @@ export function LoginForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome</CardTitle>
           <CardDescription>
-            Sign in with Google or use your account
+            Sign in with Telegram or use your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -57,11 +57,11 @@ export function LoginForm({
                 <Button variant="outline" className="w-full" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
                     <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+                      d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.568 8.16c-.169 1.858-.896 3.175-1.784 4.065-1.147 1.147-2.933 2.4-6.053 2.4C5.82 14.625 2.051 10.732 2.051 6c0-4.732 3.769-8.625 8.516-8.625 2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C16.827 -0.76 14.213-2.2 10.56-2.2 3.947-2.2-1.613 3.187-1.613 9.8s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H10.56z"
                       fill="currentColor"
                     />
                   </svg>
-                  Sign in with Google
+                  Sign in with Telegram
                 </Button>
               </div>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
