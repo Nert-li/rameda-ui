@@ -36,5 +36,9 @@ export function useCurrentUser() {
         isLoading: query.isLoading,
         error: query.error,
         refetch: query.refetch,
+        // Simple role checks
+        isAdmin: query.data?.role === "admin",
+        isManager: query.data?.role === "manager",
+        isBuyer: query.data?.role === "buyer",
     };
 } 

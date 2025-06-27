@@ -28,6 +28,7 @@ import {
   SidebarMenuItem,
 } from "@/shared/ui/kit/sidebar"
 import { ROUTES } from "../model/routes"
+import { useCurrentUser } from "../model/current-user"
 
 const data = {
   navMain: [
@@ -132,6 +133,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { isBuyer } = useCurrentUser();
+
+  const filteredNavMain = data.navMain.filter(item => {
+    if (item.title === "Users" && isBuyer) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -150,7 +160,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} label="Main" />
+        <NavMain items={filteredNavMain} label="Main" />
         <NavMain items={data.documents} label="Ads Monitoring" />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>

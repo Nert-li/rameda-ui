@@ -2,12 +2,20 @@ import { useUsersListWithSorting } from "@/features/users/model/use-users-list";
 import { UsersTable } from "./ui/users-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 import { useState } from "react";
+import { useCurrentUser } from "@/shared/model/current-user";
+import { Navigate } from "react-router-dom";
+import { ROUTES } from "@/shared/model/routes";
 
 export function Component() {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(25);
-
+    const { isBuyer, isLoading: userLoading } = useCurrentUser();
     const { users, isLoading, sorting, pagination } = useUsersListWithSorting({ page, limit });
+
+    // Redirect buyers away from users page
+    if (!userLoading && isBuyer) {
+        return <Navigate to={ROUTES.DASHBOARD} replace />;
+    }
 
     const paginationForUI = pagination ? {
         currentPage: pagination.current_page,
@@ -64,4 +72,5 @@ export function Component() {
             <UsersTable data={users} sorting={sorting} pagination={paginationForUI} />
         </div >
     );
-} 
+}
+

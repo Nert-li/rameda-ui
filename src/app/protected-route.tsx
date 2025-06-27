@@ -2,7 +2,7 @@ import { ROUTES } from "@/shared/model/routes";
 import { Outlet, redirect } from "react-router-dom";
 import { useSession } from "@/shared/model/session";
 import { Navigate } from "react-router-dom";
-import { enableMocking } from "@/shared/api/mocks";
+// import { enableMocking } from "@/shared/api/mocks";
 import { AppSidebar } from "@/shared/ui/app-sidebar"
 import { SiteHeader } from "@/shared/ui/site-header"
 import {
@@ -42,7 +42,7 @@ export function ProtectedRoute() {
 }
 
 export async function protectedLoader() {
-  await enableMocking();
+  // await enableMocking();
 
   const token = useSession.getState().token;
 
