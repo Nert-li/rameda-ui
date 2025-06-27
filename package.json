@@ -77,11 +77,13 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
     "vite": "^6.3.1",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "@types/bun": "latest"
   },
   "msw": {
     "workerDirectory": [
       "public"
     ]
-  }
+  },
+  "module": "index.ts"
 }
