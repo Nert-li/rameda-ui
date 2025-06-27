@@ -19,6 +19,10 @@ export const router = createBrowserRouter([
         ),
         children: [
           {
+            path: ROUTES.DASHBOARD,
+            lazy: () => import("@/features/dashboard/dashboard.page"),
+          },
+          {
             path: ROUTES.ACCOUNT,
             lazy: () => import("@/features/account/account.page"),
           },
@@ -71,7 +75,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTES.HOME,
-        loader: () => redirect(ROUTES.USERS),
+        loader: () => redirect(ROUTES.DASHBOARD),
       },
     ],
   },

@@ -2,6 +2,7 @@ import "react-router-dom";
 
 export const ROUTES = {
   HOME: "/",
+  DASHBOARD: "/dashboard",
   LOGIN: "/login",
   REGISTER: "/register",
   ACCOUNT: "/account",
@@ -17,6 +18,7 @@ export const ROUTES = {
 } as const;
 
 export const PAGE_TITLES: Record<string, string> = {
+  [ROUTES.DASHBOARD]: "Dashboard",
   [ROUTES.ACCOUNT]: "Account",
   [ROUTES.SETTINGS]: "Settings",
   [ROUTES.USERS]: "Users",

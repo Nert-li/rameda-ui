@@ -33,7 +33,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: ROUTES.HOME,
+      url: ROUTES.DASHBOARD,
       icon: IconDashboard,
     },
     {

@@ -1,0 +1,1 @@
+export { Component as DashboardPage } from './dashboard.page'; 
