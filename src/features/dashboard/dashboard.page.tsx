@@ -1,9 +1,10 @@
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, Pie, PieChart, Bar, BarChart, YAxis, Line, LineChart } from "recharts"
 
 import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/shared/ui/kit/card"
@@ -23,6 +24,7 @@ import {
     SelectValue,
 } from "@/shared/ui/kit/select"
 import { useState } from "react"
+import { TrendingUp } from "lucide-react"
 
 const chartData = [
     { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -261,6 +263,191 @@ function ChartAreaInteractive() {
     )
 }
 
+// Pie Chart - User Demographics
+const pieChartData = [
+    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+    { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
+    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+    { browser: "other", visitors: 90, fill: "var(--color-other)" },
+]
+
+const pieChartConfig = {
+    visitors: {
+        label: "Visitors",
+    },
+    chrome: {
+        label: "Chrome",
+        color: "var(--chart-1)",
+    },
+    safari: {
+        label: "Safari",
+        color: "var(--chart-2)",
+    },
+    firefox: {
+        label: "Firefox",
+        color: "var(--chart-3)",
+    },
+    edge: {
+        label: "Edge",
+        color: "var(--chart-4)",
+    },
+    other: {
+        label: "Other",
+        color: "var(--chart-5)",
+    },
+} satisfies ChartConfig
+
+function ChartPieUserDemographics() {
+    return (
+        <Card className="flex flex-col">
+            <CardHeader className="items-center pb-0">
+                <CardTitle>User Demographics</CardTitle>
+                <CardDescription>Browser usage statistics</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+                <ChartContainer
+                    config={pieChartConfig}
+                    className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square max-h-[250px] pb-0"
+                >
+                    <PieChart>
+                        <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                        <Pie data={pieChartData} dataKey="visitors" label nameKey="browser" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex-col gap-2 text-sm">
+                <div className="flex items-center gap-2 leading-none font-medium">
+                    Trending up by 3.7% this month <TrendingUp className="h-4 w-4" />
+                </div>
+                <div className="text-muted-foreground leading-none">
+                    Browser usage for the last 6 months
+                </div>
+            </CardFooter>
+        </Card>
+    )
+}
+
+// Bar Chart - Sales Performance
+const barChartData = [
+    { month: "Jan", sales: 186, revenue: 80 },
+    { month: "Feb", sales: 305, revenue: 200 },
+    { month: "Mar", sales: 237, revenue: 120 },
+    { month: "Apr", sales: 273, revenue: 190 },
+    { month: "May", sales: 209, revenue: 130 },
+    { month: "Jun", sales: 214, revenue: 140 },
+]
+
+const barChartConfig = {
+    sales: {
+        label: "Sales",
+        color: "var(--chart-1)",
+    },
+    revenue: {
+        label: "Revenue",
+        color: "var(--chart-2)",
+    },
+} satisfies ChartConfig
+
+function ChartBarSalesPerformance() {
+    return (
+        <Card className="flex flex-col">
+            <CardHeader className="items-center pb-0">
+                <CardTitle>Sales Performance</CardTitle>
+                <CardDescription>Monthly sales and revenue</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+                <ChartContainer
+                    config={barChartConfig}
+                    className="mx-auto aspect-square max-h-[250px] pb-0"
+                >
+                    <BarChart data={barChartData}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis
+                            dataKey="month"
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                        />
+                        <YAxis hide />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Bar dataKey="sales" fill="var(--color-sales)" radius={4} />
+                        <Bar dataKey="revenue" fill="var(--color-revenue)" radius={4} />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex-col gap-2 text-sm">
+                <div className="flex items-center gap-2 leading-none font-medium">
+                    Trending up by 8.2% this month <TrendingUp className="h-4 w-4" />
+                </div>
+                <div className="text-muted-foreground leading-none">
+                    Sales data for the last 6 months
+                </div>
+            </CardFooter>
+        </Card>
+    )
+}
+
+// Line Chart - Conversion Rate
+const lineChartData = [
+    { month: "Jan", rate: 8.2 },
+    { month: "Feb", rate: 7.9 },
+    { month: "Mar", rate: 8.5 },
+    { month: "Apr", rate: 9.1 },
+    { month: "May", rate: 8.8 },
+    { month: "Jun", rate: 9.4 },
+]
+
+const lineChartConfig = {
+    rate: {
+        label: "Conversion Rate",
+        color: "var(--chart-1)",
+    },
+} satisfies ChartConfig
+
+function ChartLineConversionRate() {
+    return (
+        <Card className="flex flex-col">
+            <CardHeader className="items-center pb-0">
+                <CardTitle>Conversion Rate Trend</CardTitle>
+                <CardDescription>Monthly conversion percentage</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+                <ChartContainer
+                    config={lineChartConfig}
+                    className="mx-auto aspect-square max-h-[250px] pb-0"
+                >
+                    <LineChart data={lineChartData}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis
+                            dataKey="month"
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                        />
+                        <YAxis hide />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Line
+                            dataKey="rate"
+                            stroke="var(--color-rate)"
+                            strokeWidth={2}
+                            dot={false}
+                        />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex-col gap-2 text-sm">
+                <div className="flex items-center gap-2 leading-none font-medium">
+                    Trending up by 1.5% this month <TrendingUp className="h-4 w-4" />
+                </div>
+                <div className="text-muted-foreground leading-none">
+                    Conversion rates for the last 6 months
+                </div>
+            </CardFooter>
+        </Card>
+    )
+}
+
 export function Component() {
     return (
         <div className="container mx-auto p-6 max-w-6xl">
@@ -325,6 +512,13 @@ export function Component() {
 
                 {/* Interactive Chart */}
                 <ChartAreaInteractive />
+
+                {/* Chart Components Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <ChartPieUserDemographics />
+                    <ChartBarSalesPerformance />
+                    <ChartLineConversionRate />
+                </div>
 
                 {/* Additional Cards Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
