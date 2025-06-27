@@ -24,8 +24,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/shared/ui/kit/sidebar"
-import { useSession } from "../model/session"
-import { useCurrentUser } from "../model/current-user"
+import { useSession } from "../model/use-session"
+import { useCurrentUser } from "../model/use-current-user"
 import { ROUTES } from "../model/routes"
 import { Link } from "react-router-dom"
 import { useLogout } from "../model/logout"

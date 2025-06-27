@@ -1,6 +1,7 @@
 import { useConversionsList } from "@/features/conversions/model/use-conversions-list";
 import { ConversionsTable } from "./ui/conversions-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
+import { Conversion } from "./ui/columns";
 
 export function Component() {
     const { conversions, isLoading, sorting, pagination } = useConversionsList();
@@ -45,7 +46,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <ConversionsTable data={conversions} sorting={sorting} pagination={pagination} />
+            <ConversionsTable data={conversions as Conversion[]} sorting={sorting} pagination={pagination} />
         </div>
     );
 } 

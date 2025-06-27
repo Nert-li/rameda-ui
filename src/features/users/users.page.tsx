@@ -1,6 +1,7 @@
 import { useUsersList } from "@/features/users/model/use-users-list";
 import { UsersTable } from "./ui/users-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
+import { User } from "./ui/columns";
 
 export function Component() {
     const { users, isLoading, sorting, pagination } = useUsersList();
@@ -16,7 +17,7 @@ export function Component() {
             </div>
 
             <UsersTable
-                data={users}
+                data={users as User[]}
                 sorting={sorting}
                 pagination={pagination}
             />

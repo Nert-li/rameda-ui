@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchClient } from "@/shared/api/instance";
 import { ApiSchemas } from "@/shared/api/schema";
-import { useSession } from "./session";
+import { useSession } from "./use-session";
 
 const getCurrentUser = async (): Promise<ApiSchemas["User"]> => {
     const response = await fetchClient.GET("/auth/current_user");

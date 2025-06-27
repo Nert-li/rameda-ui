@@ -1,4 +1,4 @@
-import { useSession } from "./session";
+import { useSession } from "./use-session";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { useMutation } from "@tanstack/react-query";

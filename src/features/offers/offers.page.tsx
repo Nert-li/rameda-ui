@@ -1,6 +1,7 @@
 import { useOffersList } from "@/features/offers/model/use-offers-list";
 import { OffersTable } from "./ui/offers-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
+import { Offer } from "./ui/columns";
 
 export function Component() {
     const { offers, isLoading, sorting, pagination } = useOffersList();
@@ -45,7 +46,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <OffersTable data={offers} sorting={sorting} pagination={pagination} />
+            <OffersTable data={offers as Offer[]} sorting={sorting} pagination={pagination} />
         </div>
     );
 } 

@@ -1,4 +1,4 @@
-import { useCurrentUser } from "@/shared/model/current-user";
+import { useCurrentUser } from "@/shared/model/use-current-user";
 import { hasRouteAccess, getAccessibleRoutes } from "@/shared/model/route-permissions";
 
 export function useRouteAccess() {

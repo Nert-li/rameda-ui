@@ -1,63 +1,15 @@
-import { rqClient } from "@/shared/api/instance";
-import { useSorting } from "@/shared/lib/react/use-sorting";
-import { usePagination } from "@/shared/lib/react/use-pagination";
+import { createListHooks } from "@/shared/api/hooks/use-list";
 
-interface UseUsersListParams {
-    sortParams?: Record<string, string>;
-    filters?: Record<string, string>;
-    page?: number;
-    limit?: number;
-}
-
-export const useUsersListDefault = (params: UseUsersListParams = {}) => {
-    const { sortParams = {}, filters = {}, page, limit } = params;
-
-    // Объединяем параметры сортировки, фильтрации и пагинации
-    const queryParams = {
-        ...sortParams,
-        ...filters,
-        ...(page && { page }),
-        ...(limit && { limit })
-    };
-
-    const { data, isLoading, isError, refetch } = rqClient.useQuery(
-        "get",
-        "/users",
-        {
-            params: {
-                query: queryParams
-            }
-        }
-    );
-
-    return {
-        users: data?.users || [],
-        isLoading,
-        isError,
-        stats: data?.stats,
-        pagination: data?.pagination,
-        sorting: data?.sorting,
-        refetch,
-    };
+// Конфигурация для users API
+const usersConfig = {
+    endpoint: "/users",
+    dataKey: "users" as const,
+    defaultSortField: "created_at",
+    defaultSortDirection: "desc" as const,
 };
 
-export const useUsersList = (initialPage = 1, initialLimit = 25) => {
-    const sorting = useSorting({
-        defaultField: 'created_at',
-        defaultDirection: 'desc'
-    });
+// Создаем специфические хуки через фабрику
+const { useEntityListDefault, useEntityList } = createListHooks(usersConfig);
 
-    const pagination = usePagination(initialPage, initialLimit);
-
-    const usersQuery = useUsersListDefault({
-        sortParams: sorting.getSortParams(),
-        page: pagination.page,
-        limit: pagination.limit
-    });
-
-    return {
-        ...usersQuery,
-        sorting,
-        pagination: pagination.formatForUI(usersQuery.pagination),
-    };
-};
+export const useUsersListDefault = useEntityListDefault;
+export const useUsersList = useEntityList;

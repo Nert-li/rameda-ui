@@ -6,8 +6,8 @@ import { Switch } from "@/shared/ui/kit/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/kit/select";
 import { Separator } from "@/shared/ui/kit/separator";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
-import { useConfig } from "@/shared/model/config";
-import { useCurrentUser } from "@/shared/model/current-user";
+import { useConfig } from "@/shared/model/use-config";
+import { useCurrentUser } from "@/shared/model/use-current-user";
 import { useTheme } from "@/shared/model/use-theme";
 import {
     IconMoon,

@@ -1,33 +1,14 @@
 import { Badge } from "@/shared/ui/kit/badge";
 import { Button } from "@/shared/ui/kit/button";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAdsManagersList } from "@/features/ads-managers";
-import { useReportsList } from "./model/reports-list";
+import { useNavigate } from "react-router-dom";
+import { useReportsList } from "./model/use-reports-list";
 import { ReportsTable } from "./ui/reports-table";
+import { Report } from "./ui/columns";
 
 export const Component = () => {
     const navigate = useNavigate();
-    const { adsManagerId } = useParams<{ adsManagerId: string }>();
-
-    const { adsManagers } = useAdsManagersList();
-    const { reports, isLoading, isError, sorting, pagination } = useReportsList();
-
-    const adsManager = adsManagers.find(am => am.id === adsManagerId);
-
-    if (!adsManagerId) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                    <p className="text-red-500 text-lg font-medium">Invalid ads manager ID</p>
-                    <Button onClick={() => navigate("/ads-managers")} className="mt-4">
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Ads Managers
-                    </Button>
-                </div>
-            </div>
-        );
-    }
+    const { reports, stats, isLoading, isError, sorting, pagination } = useReportsList();
 
     if (isLoading) {
         return (
@@ -56,7 +37,7 @@ export const Component = () => {
     }
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full" >
             <div className="flex items-center justify-between p-6 border-b">
                 <div className="flex items-center gap-4">
                     <Button
@@ -65,37 +46,32 @@ export const Component = () => {
                         onClick={() => navigate("/ads-managers")}
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back
+                        Back to Ads Managers
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold">Reports</h1>
-                        {adsManager && (
-                            <p className="text-muted-foreground">
-                                {adsManager.title} • {reports.length} reports
-                            </p>
-                        )}
+                        <h1 className="text-2xl font-bold">All Reports</h1>
+                        <p className="text-muted-foreground">
+                            {/* {reports.length} reports across {stats?.ads_managers_count || 0} ads managers */}
+                        </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                        {/* Total Spend: ${stats?.total_spend?.toFixed(2) || '0.00'} */}
+                        Total Spend: ${Number(stats?.total_spend || 0).toFixed(2)}
                     </Badge>
-                    <Badge variant="outline">
-                        {/* Total Revenue: ${stats?.total_revenue?.toFixed(2) || '0.00'} */}
-                    </Badge>
-                    <Badge variant="outline">
-                        {/* Total Profit: ${stats?.total_profit?.toFixed(2) || '0.00'} */}
+                    <Badge variant="secondary">
+                        {/* This Month: ${Number(stats?.this_month_spend || 0).toFixed(2)} */}
                     </Badge>
                 </div>
             </div>
 
             <div className="flex-1 min-h-0">
                 <ReportsTable
-                    data={reports}
+                    data={reports as Report[]}
                     sorting={sorting}
                     pagination={pagination}
                 />
             </div>
-        </div>
+        </div >
     );
 }; 

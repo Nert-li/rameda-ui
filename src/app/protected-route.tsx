@@ -1,6 +1,6 @@
 import { ROUTES } from "@/shared/model/routes";
 import { Outlet, redirect } from "react-router-dom";
-import { useSession } from "@/shared/model/session";
+import { useSession } from "@/shared/model/use-session";
 import { Navigate } from "react-router-dom";
 import { AppSidebar } from "@/shared/ui/app-sidebar"
 import { SiteHeader } from "@/shared/ui/site-header"

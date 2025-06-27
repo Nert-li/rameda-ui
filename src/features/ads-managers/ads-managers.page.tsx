@@ -266,7 +266,7 @@ export const Component = () => {
                         </div>
                     ) : (
                         <DataGrid
-                            data={adsManagers}
+                            data={adsManagers as AdsManager[]}
                             viewMode="cards"
                             renderCard={renderAdsManagerCard}
                             cardsPerRow={3}

@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect } from "react";
-import { useCurrentUser } from "./current-user";
-import { useConfig } from "./config";
-import { useSession } from "./session";
+import { useCurrentUser } from "./use-current-user";
+import { useConfig } from "./use-config";
+import { useSession } from "./use-session";
 
 /**
  * Провайдер для инициализации данных приложения.

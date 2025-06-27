@@ -6,7 +6,7 @@ import { Label } from "@/shared/ui/kit/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/kit/avatar";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 import { Separator } from "@/shared/ui/kit/separator";
-import { useCurrentUser } from "@/shared/model/current-user";
+import { useCurrentUser } from "@/shared/model/use-current-user";
 import {
     IconUser,
     IconMail,

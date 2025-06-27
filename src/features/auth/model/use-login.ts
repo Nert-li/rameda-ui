@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { publicFetchClient } from "@/shared/api/instance";
 import { ApiSchemas } from "@/shared/api/schema";
 import { ROUTES } from "@/shared/model/routes";
-import { useSession } from "@/shared/model/session";
+import { useSession } from "@/shared/model/use-session";
 import { useNavigate } from "react-router-dom";
 
 const loginRequest = async (data: ApiSchemas["DeviseLoginRequest"]["user"]) => {

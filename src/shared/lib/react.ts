@@ -12,3 +12,9 @@ export function useDebouncedValue<T>(value: T, delay: number) {
 
   return debouncedValue;
 }
+
+// Реэкспорт всех хуков из папки react
+export { useIsMobile } from './react/use-mobile';
+export { usePagination } from './react/use-pagination';
+export { useRouteAccess } from './react/use-route-access';
+export { useSorting } from './react/use-sorting';
