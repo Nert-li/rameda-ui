@@ -3,6 +3,7 @@ import { createBrowserRouter, redirect } from "react-router-dom";
 import { App } from "./app";
 import { Providers } from "./providers";
 import { protectedLoader, ProtectedRoute } from "./protected-route";
+import { RoleProtectedRoute } from "@/shared/ui/role-protected-route";
 
 export const router = createBrowserRouter([
   {
@@ -32,7 +33,16 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.USERS,
-            lazy: () => import("@/features/users/users.page"),
+            lazy: async () => {
+              const { Component } = await import("@/features/users/users.page");
+              return {
+                Component: () => (
+                  <RoleProtectedRoute allowedRoles={["admin", "manager"]}>
+                    <Component />
+                  </RoleProtectedRoute>
+                ),
+              };
+            },
           },
           {
             path: ROUTES.CLICKS,
@@ -40,7 +50,16 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.PROMO_CODES,
-            lazy: () => import("@/features/promo-codes/promo-codes.page"),
+            lazy: async () => {
+              const { Component } = await import("@/features/promo-codes/promo-codes.page");
+              return {
+                Component: () => (
+                  <RoleProtectedRoute allowedRoles={["admin", "manager"]}>
+                    <Component />
+                  </RoleProtectedRoute>
+                ),
+              };
+            },
           },
           {
             path: ROUTES.OFFERS,

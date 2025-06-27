@@ -28,7 +28,11 @@ import {
   SidebarMenuItem,
 } from "@/shared/ui/kit/sidebar"
 import { ROUTES } from "../model/routes"
+import { useRouteAccess } from "../lib/react/use-route-access"
 import { useCurrentUser } from "../model/current-user"
+import { useSession } from "../model/session"
+import { Skeleton } from "./kit/skeleton"
+import { useEffect } from "react"
 
 const data = {
   navMain: [
@@ -36,11 +40,6 @@ const data = {
       title: "Dashboard",
       url: ROUTES.DASHBOARD,
       icon: IconDashboard,
-    },
-    {
-      title: "Users",
-      url: ROUTES.USERS,
-      icon: IconUsers,
     },
     {
       title: "Offers",
@@ -53,14 +52,21 @@ const data = {
       icon: IconPointer,
     },
     {
-      title: "Promo Codes",
-      url: ROUTES.PROMO_CODES,
-      icon: IconTicket,
-    },
-    {
       title: "Conversions",
       url: ROUTES.CONVERSIONS,
       icon: IconTarget,
+    },
+  ],
+  navManagement: [
+    {
+      title: "Users",
+      url: ROUTES.USERS,
+      icon: IconUsers,
+    },
+    {
+      title: "Promo Codes",
+      url: ROUTES.PROMO_CODES,
+      icon: IconTicket,
     },
   ],
   navClouds: [
@@ -133,13 +139,61 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { isBuyer } = useCurrentUser();
+  const { hasAccess } = useRouteAccess();
+  const { isLoading, error } = useCurrentUser();
+  const { logout } = useSession();
+
+  // Если ошибка загрузки пользователя - выходим
+  useEffect(() => {
+    if (error && !error.message?.includes("401")) {
+      logout();
+    }
+  }, [error, logout]);
+
+  // Показываем скелетон пока загружается пользователь
+  if (isLoading) {
+    return (
+      <Sidebar collapsible="offcanvas" {...props}>
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <Skeleton className="h-10 w-full rounded-lg" />
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <div className="space-y-4 p-2">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-16 rounded" />
+              <Skeleton className="h-8 w-full rounded" />
+              <Skeleton className="h-8 w-full rounded" />
+              <Skeleton className="h-8 w-full rounded" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-20 rounded" />
+              <Skeleton className="h-8 w-full rounded" />
+              <Skeleton className="h-8 w-full rounded" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24 rounded" />
+              <Skeleton className="h-8 w-full rounded" />
+              <Skeleton className="h-8 w-full rounded" />
+            </div>
+          </div>
+        </SidebarContent>
+        <SidebarFooter>
+          <Skeleton className="h-12 w-full rounded-lg" />
+        </SidebarFooter>
+      </Sidebar>
+    );
+  }
 
   const filteredNavMain = data.navMain.filter(item => {
-    if (item.title === "Users" && isBuyer) {
-      return false;
-    }
-    return true;
+    return hasAccess(item.url);
+  });
+
+  const filteredNavManagement = data.navManagement.filter(item => {
+    return hasAccess(item.url);
   });
 
   return (
@@ -161,6 +215,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={filteredNavMain} label="Main" />
+        {filteredNavManagement.length > 0 && (
+          <NavMain items={filteredNavManagement} label="Management" />
+        )}
         <NavMain items={data.documents} label="Ads Monitoring" />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
