@@ -1,25 +1,9 @@
-import { useClicksListWithSorting } from "@/features/clicks/model/use-clicks-list";
+import { useClicksList } from "@/features/clicks/model/use-clicks-list";
 import { ClicksTable } from "./ui/clicks-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
-import { useState } from "react";
 
 export function Component() {
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(25);
-
-    const { clicks, isLoading, sorting, pagination } = useClicksListWithSorting({ page, limit });
-
-    const paginationForUI = pagination ? {
-        currentPage: pagination.current_page,
-        totalPages: pagination.total_pages,
-        totalCount: pagination.total_count,
-        pageSize: pagination.page_size,
-        onPageChange: setPage,
-        onPageSizeChange: (newLimit: number) => {
-            setLimit(newLimit);
-            setPage(1);
-        }
-    } : undefined;
+    const { clicks, isLoading, sorting, pagination } = useClicksList();
 
     if (isLoading) {
         return (
@@ -61,7 +45,7 @@ export function Component() {
 
     return (
         <div className="p-2">
-            <ClicksTable data={clicks} sorting={sorting} pagination={paginationForUI} />
+            <ClicksTable data={clicks} sorting={sorting} pagination={pagination} />
         </div>
     );
 } 

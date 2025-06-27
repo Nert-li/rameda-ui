@@ -1,5 +1,6 @@
 import { rqClient } from "@/shared/api/instance";
-import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
+import { useSorting } from "@/shared/lib/react/use-sorting";
+import { usePagination } from "@/shared/lib/react/use-pagination";
 
 interface UseConversionsListParams {
     sortParams?: Record<string, string>;
@@ -8,7 +9,7 @@ interface UseConversionsListParams {
     limit?: number;
 }
 
-export const useConversionsList = (params: UseConversionsListParams = {}) => {
+export const useConversionsListDefault = (params: UseConversionsListParams = {}) => {
     const { sortParams = {}, filters = {}, page, limit } = params;
 
     // Объединяем параметры сортировки, фильтрации и пагинации
@@ -40,19 +41,23 @@ export const useConversionsList = (params: UseConversionsListParams = {}) => {
     };
 };
 
-export const useConversionsListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
-    const serverSorting = useServerSorting({
+export const useConversionsList = (initialPage = 1, initialLimit = 25) => {
+    const sorting = useSorting({
         defaultField: 'created_at',
         defaultDirection: 'desc'
     });
 
-    const conversionsQuery = useConversionsList({
-        sortParams: serverSorting.getSortParams(),
-        ...paginationParams
+    const pagination = usePagination(initialPage, initialLimit);
+
+    const conversionsQuery = useConversionsListDefault({
+        sortParams: sorting.getSortParams(),
+        page: pagination.page,
+        limit: pagination.limit
     });
 
     return {
         ...conversionsQuery,
-        sorting: serverSorting,
+        sorting,
+        pagination: pagination.formatForUI(conversionsQuery.pagination),
     };
 }; 

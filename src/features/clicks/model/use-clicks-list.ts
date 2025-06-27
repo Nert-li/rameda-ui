@@ -1,5 +1,6 @@
 import { rqClient } from "@/shared/api/instance";
-import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
+import { useSorting } from "@/shared/lib/react/use-sorting";
+import { usePagination } from "@/shared/lib/react/use-pagination";
 
 interface UseClicksListParams {
     sortParams?: Record<string, string>;
@@ -8,7 +9,7 @@ interface UseClicksListParams {
     limit?: number;
 }
 
-export const useClicksList = (params: UseClicksListParams = {}) => {
+export const useClicksListDefault = (params: UseClicksListParams = {}) => {
     const { sortParams = {}, filters = {}, page, limit } = params;
 
     // Объединяем параметры сортировки, фильтрации и пагинации
@@ -40,20 +41,23 @@ export const useClicksList = (params: UseClicksListParams = {}) => {
     };
 };
 
-// Хук с интегрированной сортировкой
-export const useClicksListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
-    const serverSorting = useServerSorting({
+export const useClicksList = (initialPage = 1, initialLimit = 25) => {
+    const sorting = useSorting({
         defaultField: 'created_at',
         defaultDirection: 'desc'
     });
 
-    const clicksQuery = useClicksList({
-        sortParams: serverSorting.getSortParams(),
-        ...paginationParams
+    const pagination = usePagination(initialPage, initialLimit);
+
+    const clicksQuery = useClicksListDefault({
+        sortParams: sorting.getSortParams(),
+        page: pagination.page,
+        limit: pagination.limit
     });
 
     return {
         ...clicksQuery,
-        sorting: serverSorting,
+        sorting,
+        pagination: pagination.formatForUI(clicksQuery.pagination),
     };
 }; 

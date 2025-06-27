@@ -1,5 +1,6 @@
 import { rqClient } from "@/shared/api/instance";
-import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
+import { useSorting } from "@/shared/lib/react/use-sorting";
+import { usePagination } from "@/shared/lib/react/use-pagination";
 
 interface UsePromoCodesListParams {
     sortParams?: Record<string, string>;
@@ -8,7 +9,7 @@ interface UsePromoCodesListParams {
     limit?: number;
 }
 
-export const usePromoCodesList = (params: UsePromoCodesListParams = {}) => {
+export const usePromoCodesListDefault = (params: UsePromoCodesListParams = {}) => {
     const { sortParams = {}, filters = {}, page, limit } = params;
 
     // Объединяем параметры сортировки, фильтрации и пагинации
@@ -40,20 +41,23 @@ export const usePromoCodesList = (params: UsePromoCodesListParams = {}) => {
     };
 };
 
-// Хук с интегрированной сортировкой
-export const usePromoCodesListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
-    const serverSorting = useServerSorting({
+export const usePromoCodesList = (initialPage = 1, initialLimit = 25) => {
+    const sorting = useSorting({
         defaultField: 'created_at',
         defaultDirection: 'desc'
     });
 
-    const promoCodesQuery = usePromoCodesList({
-        sortParams: serverSorting.getSortParams(),
-        ...paginationParams
+    const pagination = usePagination(initialPage, initialLimit);
+
+    const promoCodesQuery = usePromoCodesListDefault({
+        sortParams: sorting.getSortParams(),
+        page: pagination.page,
+        limit: pagination.limit
     });
 
     return {
         ...promoCodesQuery,
-        sorting: serverSorting,
+        sorting,
+        pagination: pagination.formatForUI(promoCodesQuery.pagination),
     };
 }; 

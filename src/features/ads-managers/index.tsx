@@ -1,1 +1,1 @@
-export { useAdsManagersListWithSorting } from "./model/use-ads-managers-list";
+export { useAdsManagersList } from "./model/use-ads-managers-list";

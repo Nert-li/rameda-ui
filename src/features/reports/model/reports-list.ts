@@ -1,5 +1,6 @@
 import { rqClient } from "@/shared/api/instance";
-import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
+import { useSorting } from "@/shared/lib/react/use-sorting";
+import { usePagination } from "@/shared/lib/react/use-pagination";
 
 interface UseReportsListParams {
     sortParams?: Record<string, string>;
@@ -8,7 +9,7 @@ interface UseReportsListParams {
     limit?: number;
 }
 
-export function useReportsList(params: UseReportsListParams = {}) {
+export function useReportsListDefault(params: UseReportsListParams = {}) {
     const { sortParams = {}, filters = {}, page, limit } = params;
 
     // Объединяем параметры сортировки, фильтрации и пагинации
@@ -40,19 +41,23 @@ export function useReportsList(params: UseReportsListParams = {}) {
     };
 }
 
-export const useReportsListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
-    const serverSorting = useServerSorting({
+export const useReportsList = (initialPage = 1, initialLimit = 25) => {
+    const sorting = useSorting({
         defaultField: 'report_date',
         defaultDirection: 'desc'
     });
 
-    const reportsQuery = useReportsList({
-        sortParams: serverSorting.getSortParams(),
-        ...paginationParams
+    const pagination = usePagination(initialPage, initialLimit);
+
+    const reportsQuery = useReportsListDefault({
+        sortParams: sorting.getSortParams(),
+        page: pagination.page,
+        limit: pagination.limit
     });
 
     return {
         ...reportsQuery,
-        sorting: serverSorting,
+        sorting,
+        pagination: pagination.formatForUI(reportsQuery.pagination),
     };
 }; 

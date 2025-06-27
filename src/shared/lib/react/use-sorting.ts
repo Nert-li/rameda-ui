@@ -5,24 +5,24 @@ export interface SortingState {
   direction: 'asc' | 'desc';
 }
 
-export interface UseServerSortingReturn {
+export interface UseSortingReturn {
   sorting: SortingState;
   handleSort: (field: string) => void;
   getSortParams: () => Record<string, string>;
 }
 
-export interface UseServerSortingOptions {
+export interface UseSortingOptions {
   defaultField?: string | null;
   defaultDirection?: 'asc' | 'desc';
 }
 
 /**
- * Упрощенный хук серверной сортировки с use-query-params
+ * Хук для управления сортировкой с синхронизацией URL
  * - Автоматическая синхронизация с URL
  * - Минимальный код
  * - Отсутствие побочных эффектов
  */
-export const useServerSorting = (options: UseServerSortingOptions = {}): UseServerSortingReturn => {
+export const useSorting = (options: UseSortingOptions = {}): UseSortingReturn => {
   const { defaultField = null, defaultDirection = 'desc' } = options;
 
   // use-query-params автоматически синхронизирует с URL

@@ -2,32 +2,16 @@ import { Badge } from "@/shared/ui/kit/badge";
 import { Button } from "@/shared/ui/kit/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAdsManagersListWithSorting } from "@/features/ads-managers";
-import { useReportsListWithSorting } from "./model/reports-list";
+import { useAdsManagersList } from "@/features/ads-managers";
+import { useReportsList } from "./model/reports-list";
 import { ReportsTable } from "./ui/reports-table";
-import { useState } from "react";
 
 export const Component = () => {
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(25);
-
     const navigate = useNavigate();
     const { adsManagerId } = useParams<{ adsManagerId: string }>();
 
-    const { adsManagers } = useAdsManagersListWithSorting();
-    const { reports, isLoading, isError, sorting, pagination } = useReportsListWithSorting({ page, limit });
-
-    const paginationForUI = pagination ? {
-        currentPage: pagination.current_page,
-        totalPages: pagination.total_pages,
-        totalCount: pagination.total_count,
-        pageSize: pagination.page_size,
-        onPageChange: setPage,
-        onPageSizeChange: (newLimit: number) => {
-            setLimit(newLimit);
-            setPage(1);
-        }
-    } : undefined;
+    const { adsManagers } = useAdsManagersList();
+    const { reports, isLoading, isError, sorting, pagination } = useReportsList();
 
     const adsManager = adsManagers.find(am => am.id === adsManagerId);
 
@@ -109,7 +93,7 @@ export const Component = () => {
                 <ReportsTable
                     data={reports}
                     sorting={sorting}
-                    pagination={paginationForUI}
+                    pagination={pagination}
                 />
             </div>
         </div>

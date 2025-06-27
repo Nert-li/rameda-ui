@@ -1,5 +1,6 @@
 import { rqClient } from "@/shared/api/instance";
-import { useServerSorting } from "@/shared/lib/react/use-server-sorting";
+import { useSorting } from "@/shared/lib/react/use-sorting";
+import { usePagination } from "@/shared/lib/react/use-pagination";
 
 interface UseUsersListParams {
     sortParams?: Record<string, string>;
@@ -8,7 +9,7 @@ interface UseUsersListParams {
     limit?: number;
 }
 
-export const useUsersList = (params: UseUsersListParams = {}) => {
+export const useUsersListDefault = (params: UseUsersListParams = {}) => {
     const { sortParams = {}, filters = {}, page, limit } = params;
 
     // Объединяем параметры сортировки, фильтрации и пагинации
@@ -40,20 +41,23 @@ export const useUsersList = (params: UseUsersListParams = {}) => {
     };
 };
 
-// Хук с интегрированной сортировкой
-export const useUsersListWithSorting = (paginationParams?: { page?: number, limit?: number }) => {
-    const serverSorting = useServerSorting({
+export const useUsersList = (initialPage = 1, initialLimit = 25) => {
+    const sorting = useSorting({
         defaultField: 'created_at',
         defaultDirection: 'desc'
     });
 
-    const usersQuery = useUsersList({
-        sortParams: serverSorting.getSortParams(),
-        ...paginationParams
+    const pagination = usePagination(initialPage, initialLimit);
+
+    const usersQuery = useUsersListDefault({
+        sortParams: sorting.getSortParams(),
+        page: pagination.page,
+        limit: pagination.limit
     });
 
     return {
         ...usersQuery,
-        sorting: serverSorting,
+        sorting,
+        pagination: pagination.formatForUI(usersQuery.pagination),
     };
 };

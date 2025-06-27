@@ -1,16 +1,9 @@
-import { useUsersListWithSorting } from "@/features/users/model/use-users-list";
+import { useUsersList } from "@/features/users/model/use-users-list";
 import { UsersTable } from "./ui/users-table";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
-import { usePagination } from "@/shared/lib/react/use-pagination";
 
 export function Component() {
-    // Простое использование пагинации - без сложных store
-    const { page, limit, formatForUI } = usePagination(1, 25);
-
-    const { users, isLoading, sorting, pagination } = useUsersListWithSorting({ page, limit });
-
-    // Форматируем пагинацию для UI одной функцией
-    const paginationForUI = formatForUI(pagination);
+    const { users, isLoading, sorting, pagination } = useUsersList();
 
     if (isLoading) {
         return <Skeleton className="h-[400px] w-full" />;
@@ -25,7 +18,7 @@ export function Component() {
             <UsersTable
                 data={users}
                 sorting={sorting}
-                pagination={paginationForUI}
+                pagination={pagination}
             />
         </div>
     );
