@@ -33,6 +33,7 @@ import { useCurrentUser } from "../model/current-user"
 import { useSession } from "../model/session"
 import { Skeleton } from "./kit/skeleton"
 import { useEffect } from "react"
+import { useLogout } from "../model/logout"
 
 const data = {
   navMain: [
@@ -141,7 +142,7 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { hasAccess } = useRouteAccess();
   const { isLoading, error } = useCurrentUser();
-  const { logout } = useSession();
+  const { logout } = useLogout();
 
   // Если ошибка загрузки пользователя - выходим
   useEffect(() => {

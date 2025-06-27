@@ -28,10 +28,12 @@ import { useSession } from "../model/session"
 import { useCurrentUser } from "../model/current-user"
 import { ROUTES } from "../model/routes"
 import { Link } from "react-router-dom"
+import { useLogout } from "../model/logout"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const { session, logout } = useSession();
+  const { session } = useSession();
+  const { logout } = useLogout();
   const { user: currentUser } = useCurrentUser();
 
   if (!session || !currentUser) {

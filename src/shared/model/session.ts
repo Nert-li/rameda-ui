@@ -19,17 +19,9 @@ export const useSession = createGStore(() => {
     setToken(token);
   };
 
-  const logout = async () => {
-    try {
-      // Notify the backend about logout
-      const { publicFetchClient } = await import("@/shared/api/instance");
-      await publicFetchClient.DELETE("/users/sign_out");
-    } catch (error) {
-      console.warn("Failed to logout on server:", error);
-    } finally {
-      localStorage.removeItem(TOKEN_KEY);
-      setToken(null);
-    }
+  const logout = () => {
+    localStorage.removeItem(TOKEN_KEY);
+    setToken(null);
   };
 
   const session = token ? jwtDecode<Session>(token) : null;
