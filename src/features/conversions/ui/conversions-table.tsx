@@ -1,4 +1,4 @@
-import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { UniversalDataTable } from "@/shared/ui/data-grid"
 import { getColumns, type Conversion } from "./columns"
 
 interface ConversionsTableProps {
@@ -31,7 +31,10 @@ export function ConversionsTable({
             columns={columns}
             data={data}
             searchPlaceholder="Filter conversions..."
-            pagination={pagination}
+            pagination={pagination && {
+                mode: 'server' as const,
+                ...pagination
+            }}
         />
     )
 } 

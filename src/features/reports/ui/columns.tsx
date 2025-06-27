@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { components } from "@/shared/api/schema/generated";
-import { SortableHeader } from "@/shared/ui/sortable-header";
+import { SortableHeader } from "@/shared/ui/data-grid";
 
 export type Report = components["schemas"]["ReportRecord"];
 

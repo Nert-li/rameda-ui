@@ -1,7 +1,7 @@
 import { components } from "@/shared/api/schema/generated"
 import { ColumnDef } from "@tanstack/react-table"
 import { CheckCircle, XCircle } from "lucide-react"
-import { SortableHeader } from "@/shared/ui/sortable-header"
+import { SortableHeader } from "@/shared/ui/data-grid"
 
 export type Click = components["schemas"]["ClickRecord"]
 

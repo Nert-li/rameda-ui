@@ -1,5 +1,4 @@
-
-import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { UniversalDataTable } from "@/shared/ui/data-grid"
 import { getColumns, type PromoCode } from "./columns"
 
 interface PromoCodesTableProps {
@@ -32,7 +31,10 @@ export function PromoCodesTable({
             columns={columns}
             data={data}
             searchPlaceholder="Filter promo codes..."
-            pagination={pagination}
+            pagination={pagination && {
+                mode: 'server' as const,
+                ...pagination
+            }}
         />
     )
 } 

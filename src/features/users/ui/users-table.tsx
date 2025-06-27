@@ -1,4 +1,4 @@
-import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { UniversalDataTable } from "@/shared/ui/data-grid"
 import { getColumns, type User } from "./columns"
 
 interface UsersTableProps {
@@ -30,7 +30,10 @@ export function UsersTable({
         <UniversalDataTable
             columns={columns}
             data={data}
-            pagination={pagination}
+            pagination={pagination && {
+                mode: 'server' as const,
+                ...pagination
+            }}
             searchPlaceholder="Filter users..."
         />
     )

@@ -1,4 +1,4 @@
-import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { UniversalDataTable } from "@/shared/ui/data-grid"
 import { getColumns, type Report } from "./columns"
 
 interface ReportsTableProps {
@@ -30,7 +30,10 @@ export function ReportsTable({
         <UniversalDataTable
             columns={columns}
             data={data}
-            pagination={pagination}
+            pagination={pagination && {
+                mode: 'server' as const,
+                ...pagination
+            }}
             searchPlaceholder="Filter conversions..."
         />
     )

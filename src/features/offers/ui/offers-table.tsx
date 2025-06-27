@@ -1,4 +1,4 @@
-import { UniversalDataTable } from "@/shared/ui/universal-data-table"
+import { UniversalDataTable } from "@/shared/ui/data-grid"
 import { getColumns, type Offer } from "./columns"
 
 interface OffersTableProps {
@@ -31,7 +31,10 @@ export function OffersTable({
         <UniversalDataTable
             columns={columns}
             data={data}
-            pagination={pagination}
+            pagination={pagination && {
+                mode: 'server' as const,
+                ...pagination
+            }}
             searchPlaceholder="Filter by name..."
         />
     )

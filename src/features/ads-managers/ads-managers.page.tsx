@@ -6,6 +6,7 @@ import { CreateReportForm } from "@/features/ads-managers/ui/create-report-form"
 import { AssignOfferForm } from "@/features/ads-managers/ui/assign-offer-form";
 import { AdsManagerMetrics } from "@/features/ads-managers/ui/ads-manager-metrics";
 import { useDeleteAdsManager } from "@/features/ads-managers/model/use-delete-ads-manager";
+import { DataGrid } from "@/shared/ui/data-grid";
 import {
     Dialog,
     DialogContent,
@@ -48,6 +49,121 @@ export const Component = () => {
             navigate(`/ads-managers/${adsManager.id}/reports`);
         }
     };
+
+    // Render function for card mode
+    const renderAdsManagerCard = (adsManager: AdsManager, index: number) => (
+        <Card key={index} className="group hover:shadow-lg transition-all duration-200 bg-gradient-to-br from-background to-muted/20">
+            <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                    <div className="space-y-1 flex-1">
+                        <CardTitle className="text-lg line-clamp-1">
+                            {adsManager.title}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                            {adsManager.buyer_name} • ID: {adsManager.id_rc}
+                        </CardDescription>
+                        {adsManager.offer_name && (
+                            <CardDescription className="text-xs text-muted-foreground line-clamp-1">
+                                Offer: {adsManager.offer_name}
+                            </CardDescription>
+                        )}
+                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => setEditingAdsManager(adsManager)}>
+                                <Eye className="w-4 h-4 mr-2" />
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setAssigningOfferFor(adsManager)}>
+                                <Link className="w-4 h-4 mr-2" />
+                                Assign Offer
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setCreatingReportFor(adsManager)}>
+                                <TrendingUp className="w-4 h-4 mr-2" />
+                                Create Report
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleViewReports(adsManager)}>
+                                <FileText className="w-4 h-4 mr-2" />
+                                View Reports
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => adsManager.id && handleDelete(adsManager.id)}
+                                disabled={isDeleting || !adsManager.id}
+                                className="text-red-500"
+                            >
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {/* Daily Stats */}
+                <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                    <h4 className="text-sm font-medium mb-2 text-center">Today's Performance</h4>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div className="text-center">
+                            <p className="text-muted-foreground">Clicks</p>
+                            <p className="font-bold text-blue-600">{adsManager.daily_clicks || 0}</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-muted-foreground">Regs</p>
+                            <p className="font-bold text-green-600">{adsManager.daily_registrations || 0}</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-muted-foreground">Deposits</p>
+                            <p className="font-bold text-orange-600">{adsManager.daily_deposits || 0}</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-muted-foreground">FD Sum</p>
+                            <p className="font-bold text-purple-600">${Number(adsManager.daily_fd_sum || 0).toFixed(0)}</p>
+                        </div>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-muted text-center">
+                        <p className="text-muted-foreground text-xs">Revenue</p>
+                        <p className="font-bold text-lg text-emerald-600">
+                            ${Number(adsManager.daily_revenue || 0).toFixed(2)}
+                        </p>
+                    </div>
+                </div>
+
+                {/* General Stats */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p className="text-muted-foreground">Has Offer</p>
+                        <p className="font-medium">{adsManager.has_offer ? "Yes" : "No"}</p>
+                    </div>
+                    <div>
+                        <p className="text-muted-foreground">Reports</p>
+                        <p className="font-medium">{adsManager.reports_count || 0}</p>
+                    </div>
+                    <div className="col-span-2">
+                        <p className="text-muted-foreground">Total Spend</p>
+                        <p className="font-medium text-lg text-green-600">
+                            ${Number(adsManager.total_spend || 0).toFixed(2)}
+                        </p>
+                    </div>
+                </div>
+                <div className="mt-4 pt-3 border-t">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => handleViewReports(adsManager)}
+                    >
+                        <FileText className="w-4 h-4 mr-2" />
+                        View Reports
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
 
     if (isLoading) {
         return (
@@ -119,7 +235,7 @@ export const Component = () => {
                         />
                     </div>
 
-                    {/* Ads Managers Grid */}
+                    {/* Ads Managers Grid using DataGrid */}
                     {adsManagers.length === 0 ? (
                         <div className="text-center py-12">
                             <div className="max-w-md mx-auto">
@@ -149,121 +265,18 @@ export const Component = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="@container/cards grid gap-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-3">
-                            {adsManagers.map((adsManager) => (
-                                <Card key={adsManager.id} className="@container/card group hover:shadow-lg transition-all duration-200 bg-gradient-to-br from-background to-muted/20">
-                                    <CardHeader className="pb-3">
-                                        <div className="flex items-start justify-between">
-                                            <div className="space-y-1 flex-1">
-                                                <CardTitle className="@lg/card:text-xl text-lg line-clamp-1">
-                                                    {adsManager.title}
-                                                </CardTitle>
-                                                <CardDescription className="text-sm">
-                                                    {adsManager.buyer_name} • ID: {adsManager.id_rc}
-                                                </CardDescription>
-                                                {adsManager.offer_name && (
-                                                    <CardDescription className="text-xs text-muted-foreground line-clamp-1">
-                                                        Offer: {adsManager.offer_name}
-                                                    </CardDescription>
-                                                )}
-                                            </div>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                                        <span className="sr-only">Open menu</span>
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => setEditingAdsManager(adsManager)}>
-                                                        <Eye className="w-4 h-4 mr-2" />
-                                                        Edit
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => setAssigningOfferFor(adsManager)}>
-                                                        <Link className="w-4 h-4 mr-2" />
-                                                        Assign Offer
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => setCreatingReportFor(adsManager)}>
-                                                        <TrendingUp className="w-4 h-4 mr-2" />
-                                                        Create Report
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleViewReports(adsManager)}>
-                                                        <FileText className="w-4 h-4 mr-2" />
-                                                        View Reports
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onClick={() => adsManager.id && handleDelete(adsManager.id)}
-                                                        disabled={isDeleting || !adsManager.id}
-                                                        className="text-red-500"
-                                                    >
-                                                        Delete
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        {/* Daily Stats */}
-                                        <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-                                            <h4 className="text-sm font-medium mb-2 text-center">Today's Performance</h4>
-                                            <div className="grid grid-cols-2 gap-3 text-xs">
-                                                <div className="text-center">
-                                                    <p className="text-muted-foreground">Clicks</p>
-                                                    <p className="font-bold text-blue-600">{adsManager.daily_clicks || 0}</p>
-                                                </div>
-                                                <div className="text-center">
-                                                    <p className="text-muted-foreground">Regs</p>
-                                                    <p className="font-bold text-green-600">{adsManager.daily_registrations || 0}</p>
-                                                </div>
-                                                <div className="text-center">
-                                                    <p className="text-muted-foreground">Deposits</p>
-                                                    <p className="font-bold text-orange-600">{adsManager.daily_deposits || 0}</p>
-                                                </div>
-                                                <div className="text-center">
-                                                    <p className="text-muted-foreground">FD Sum</p>
-                                                    <p className="font-bold text-purple-600">${Number(adsManager.daily_fd_sum || 0).toFixed(0)}</p>
-                                                </div>
-                                            </div>
-                                            <div className="mt-2 pt-2 border-t border-muted text-center">
-                                                <p className="text-muted-foreground text-xs">Revenue</p>
-                                                <p className="font-bold text-lg text-emerald-600">
-                                                    ${Number(adsManager.daily_revenue || 0).toFixed(2)}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* General Stats */}
-                                        <div className="grid grid-cols-2 gap-4 text-sm">
-                                            <div>
-                                                <p className="text-muted-foreground">Has Offer</p>
-                                                <p className="font-medium">{adsManager.has_offer ? "Yes" : "No"}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-muted-foreground">Reports</p>
-                                                <p className="font-medium">{adsManager.reports_count || 0}</p>
-                                            </div>
-                                            <div className="col-span-2">
-                                                <p className="text-muted-foreground">Total Spend</p>
-                                                <p className="font-medium text-lg text-green-600">
-                                                    ${Number(adsManager.total_spend || 0).toFixed(2)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="mt-4 pt-3 border-t">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="w-full"
-                                                onClick={() => handleViewReports(adsManager)}
-                                            >
-                                                <FileText className="w-4 h-4 mr-2" />
-                                                View Reports
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+                        <DataGrid
+                            data={adsManagers}
+                            viewMode="cards"
+                            renderCard={renderAdsManagerCard}
+                            cardsPerRow={3}
+                            searchPlaceholder="Search ads managers..."
+                            emptyMessage="No ads managers found"
+                            isLoading={isLoading}
+                            loadingItemCount={6}
+                            enableGlobalFilter={true}
+                            enablePagination={true}
+                        />
                     )}
                 </div>
             </div>

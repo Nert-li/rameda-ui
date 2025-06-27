@@ -1,7 +1,7 @@
 import { components } from "@/shared/api/schema/generated"
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/shared/ui/kit/badge"
-import { SortableHeader } from "@/shared/ui/sortable-header"
+import { SortableHeader } from "@/shared/ui/data-grid"
 
 export type User = components["schemas"]["UserRecord"]
 
