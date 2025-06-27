@@ -1,12 +1,9 @@
-import * as React from "react"
 import type { CardGridProps } from "./types"
 
 function LoadingCards({
     itemCount,
-    cardsPerRow
 }: {
     itemCount: number
-    cardsPerRow: number
 }) {
     return (
         <>
@@ -42,7 +39,7 @@ export function CardsView<TData>({
             <div className={`grid ${gridCols} gap-4 ${className}`}>
                 <LoadingCards
                     itemCount={loadingItemCount}
-                    cardsPerRow={cardsPerRow}
+                // cardsPerRow={cardsPerRow}
                 />
             </div>
         )

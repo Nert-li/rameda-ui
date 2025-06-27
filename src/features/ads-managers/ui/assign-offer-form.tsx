@@ -51,6 +51,7 @@ export const AssignOfferForm: React.FC<AssignOfferFormProps> = ({
                 name: selectedOffer.name,
                 aasm_status: selectedOffer.aasm_status,
                 ads_manager_id: adsManagerId,
+                offer_type: selectedOffer.offer_type || "clo",
             },
         };
 

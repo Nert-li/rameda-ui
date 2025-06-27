@@ -1,7 +1,5 @@
-import * as React from "react"
 import { IconTable, IconLayoutGrid } from "@tabler/icons-react"
 
-import { Button } from "@/shared/ui/kit/button"
 import { ToggleGroup, ToggleGroupItem } from "@/shared/ui/kit/toggle-group"
 import type { ViewMode } from "../types"
 

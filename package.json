@@ -8,7 +8,9 @@
     "build": "bun run tsc -b && bun run vite build",
     "lint": "bun run eslint .",
     "preview": "bun run vite preview",
-    "api": "bunx openapi-typescript ./src/shared/api/schema/main.yaml -o ./src/shared/api/schema/generated.ts"
+    "api": "bunx openapi-typescript ./src/shared/api/schema/main.yaml -o ./src/shared/api/schema/generated.ts",
+    "bundle:audit": "node scripts/bundle-audit.js",
+    "bundle:analyze": "bun run build && bunx vite-bundle-analyzer dist"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

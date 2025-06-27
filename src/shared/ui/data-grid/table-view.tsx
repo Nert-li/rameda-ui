@@ -1,5 +1,5 @@
 import { useReactTable, flexRender, Row } from "@tanstack/react-table"
-import { memo, useMemo, ReactNode } from "react"
+import { useMemo } from "react"
 
 import {
     Table,
