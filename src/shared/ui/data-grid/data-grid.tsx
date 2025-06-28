@@ -29,6 +29,7 @@ import {
 import type { DataGridProps } from "./types"
 import { TableView } from "./table-view"
 import { CardsView } from "./cards-view"
+import { FiltersSkeleton, PaginationSkeleton } from "./skeletons"
 
 // Pagination controls component
 function PaginationControls<TData>({ table }: { table: ReturnType<typeof useReactTable<TData>> }) {
@@ -144,7 +145,7 @@ export function DataGrid<TData>({
 
     // Loading state
     isLoading = false,
-    loadingItemCount = 6,
+    loadingItemCount,
 
     // Callbacks
     onRowClick,
@@ -176,6 +177,9 @@ export function DataGrid<TData>({
     // Get current page data
     const currentPageData = enablePagination ? table.getRowModel().rows.map(row => row.original) : data
 
+    // Set loading item count based on view mode if not provided
+    const effectiveLoadingItemCount = loadingItemCount ?? (viewMode === 'table' ? 25 : 9)
+
     // Validate required props based on view mode
     React.useEffect(() => {
         if (viewMode === 'table' && !columns) {
@@ -188,51 +192,58 @@ export function DataGrid<TData>({
 
     return (
         <div className={className}>
-            {/* Top toolbar - одинаковый для всех режимов */}
-            <div className="flex items-center justify-between px-4 lg:px-6 pb-4 pt-2">
-                <div className="flex items-center gap-4">
-                    {enableGlobalFilter && (
-                        <Input
-                            placeholder={searchPlaceholder}
-                            value={globalFilter ?? ""}
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                            className="max-w-sm"
-                        />
+            {/* Top toolbar - фильтры и контролы */}
+            {isLoading ? (
+                <FiltersSkeleton
+                    showSearchFilter={enableGlobalFilter}
+                    showColumnButton={viewMode === 'table' && enableColumnVisibility && !!columns}
+                />
+            ) : (
+                <div className="flex items-center justify-between px-4 lg:px-6 pb-4 pt-2">
+                    <div className="flex items-center gap-4">
+                        {enableGlobalFilter && (
+                            <Input
+                                placeholder={searchPlaceholder}
+                                value={globalFilter ?? ""}
+                                onChange={(e) => setGlobalFilter(e.target.value)}
+                                className="max-w-sm"
+                            />
+                        )}
+                    </div>
+
+                    {/* Кнопка выбора колонок - только для таблицы */}
+                    {viewMode === 'table' && enableColumnVisibility && columns && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                    <IconLayoutColumns className="h-4 w-4" />
+                                    <span className="hidden lg:inline ml-2">Customize Columns</span>
+                                    <span className="lg:hidden ml-2">Columns</span>
+                                    <IconChevronDown className="h-4 w-4 ml-1" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                                {table
+                                    .getAllColumns()
+                                    .filter(
+                                        (column) =>
+                                            typeof column.accessorFn !== "undefined" && column.getCanHide()
+                                    )
+                                    .map((column) => (
+                                        <DropdownMenuCheckboxItem
+                                            key={column.id}
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                                        >
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     )}
                 </div>
-
-                {/* Кнопка выбора колонок - только для таблицы */}
-                {viewMode === 'table' && enableColumnVisibility && columns && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                                <IconLayoutColumns className="h-4 w-4" />
-                                <span className="hidden lg:inline ml-2">Customize Columns</span>
-                                <span className="lg:hidden ml-2">Columns</span>
-                                <IconChevronDown className="h-4 w-4 ml-1" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                            {table
-                                .getAllColumns()
-                                .filter(
-                                    (column) =>
-                                        typeof column.accessorFn !== "undefined" && column.getCanHide()
-                                )
-                                .map((column) => (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
-                                ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )}
-            </div>
+            )}
 
             {/* Content based on view mode */}
             {viewMode === 'table' ? (
@@ -241,7 +252,7 @@ export function DataGrid<TData>({
                         <TableView
                             table={table}
                             isLoading={isLoading}
-                            loadingRowCount={loadingItemCount}
+                            loadingRowCount={effectiveLoadingItemCount}
                             emptyMessage={emptyMessage}
                             onRowClick={onRowClick}
                         />
@@ -252,8 +263,12 @@ export function DataGrid<TData>({
                     )}
 
                     {/* Pagination - для таблицы */}
-                    {enablePagination && !isLoading && data.length > 0 && (
-                        <PaginationControls<TData> table={table} />
+                    {enablePagination && (
+                        isLoading ? (
+                            <PaginationSkeleton />
+                        ) : (
+                            data.length > 0 && <PaginationControls<TData> table={table} />
+                        )
                     )}
                 </div>
             ) : (
@@ -266,15 +281,19 @@ export function DataGrid<TData>({
                                 cardClassName={cardClassName}
                                 cardsPerRow={cardsPerRow}
                                 isLoading={isLoading}
-                                loadingItemCount={loadingItemCount}
+                                loadingItemCount={effectiveLoadingItemCount}
                                 emptyMessage={emptyMessage}
                                 onItemClick={onItemClick}
                             />
 
                             {/* Pagination - для карточек */}
-                            {enablePagination && !isLoading && data.length > 0 && (
+                            {enablePagination && (
                                 <div className="mt-4">
-                                    <PaginationControls<TData> table={table} />
+                                    {isLoading ? (
+                                        <PaginationSkeleton />
+                                    ) : (
+                                        data.length > 0 && <PaginationControls<TData> table={table} />
+                                    )}
                                 </div>
                             )}
                         </>

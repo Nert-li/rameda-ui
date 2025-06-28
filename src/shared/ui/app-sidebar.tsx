@@ -30,7 +30,6 @@ import {
 import { ROUTES } from "../model/routes"
 import { useRouteAccess } from "../lib/react/use-route-access"
 import { useCurrentUser } from "../model/use-current-user"
-import { useSession } from "../model/use-session"
 import { Skeleton } from "./kit/skeleton"
 import { useEffect } from "react"
 import { useLogout } from "../model/logout"

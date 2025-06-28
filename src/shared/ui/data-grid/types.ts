@@ -57,7 +57,7 @@ export interface DataGridProps<TData> {
 
     // Loading state
     isLoading?: boolean
-    loadingItemCount?: number
+    loadingItemCount?: number // Если не указан: 25 для таблиц, 9 для карточек
 
     // Configuration (for future server-side features)
     pagination?: PaginationConfig

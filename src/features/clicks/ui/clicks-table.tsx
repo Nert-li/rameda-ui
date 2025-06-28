@@ -10,6 +10,7 @@ interface ClicksTableProps {
     data: Click[]
     sorting?: SortingProps
     pagination?: PaginationProps
+    isLoading?: boolean
 }
 
 export function ClicksTable(props: ClicksTableProps) {
@@ -19,6 +20,7 @@ export function ClicksTable(props: ClicksTableProps) {
             config={clicksTableConfig}
             sorting={props.sorting}
             pagination={props.pagination}
+            isLoading={props.isLoading}
         />
     )
 } 

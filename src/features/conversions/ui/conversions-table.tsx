@@ -10,6 +10,7 @@ interface ConversionsTableProps {
     data: Conversion[]
     sorting?: SortingProps
     pagination?: PaginationProps
+    isLoading?: boolean
 }
 
 export function ConversionsTable(props: ConversionsTableProps) {
@@ -19,6 +20,7 @@ export function ConversionsTable(props: ConversionsTableProps) {
             config={conversionsTableConfig}
             sorting={props.sorting}
             pagination={props.pagination}
+            isLoading={props.isLoading}
         />
     )
 } 

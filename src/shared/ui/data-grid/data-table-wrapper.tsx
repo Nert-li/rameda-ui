@@ -34,6 +34,8 @@ interface DataTableWrapperProps<T> {
     config: DataTableConfig<T>
     sorting?: SortingProps
     pagination?: PaginationProps
+    isLoading?: boolean
+    loadingItemCount?: number
 }
 
 export function DataTableWrapper<T>({
@@ -41,8 +43,9 @@ export function DataTableWrapper<T>({
     config,
     sorting,
     pagination,
+    isLoading = false,
+    loadingItemCount = 25, // Таблица всегда показывает 25 строк
 }: DataTableWrapperProps<T>) {
-    // Мемоизируем колонки - пересчитываются только при изменении структуры сортировки, а не значений
     const columns = useMemo(() => {
         return sorting
             ? config.getColumns(sorting.handleSort, sorting.sorting)
@@ -58,7 +61,8 @@ export function DataTableWrapper<T>({
             enableGlobalFilter={true}
             enablePagination={!!pagination}
             enableColumnVisibility={true}
-            // Пагинация пока клиентская, но можно расширить для серверной
+            isLoading={isLoading}
+            loadingItemCount={loadingItemCount}
             className="w-full"
         />
     )

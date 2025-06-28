@@ -10,6 +10,7 @@ interface ReportsTableProps {
     data: Report[] | []
     sorting?: SortingProps
     pagination?: PaginationProps
+    isLoading?: boolean
 }
 
 export function ReportsTable(props: ReportsTableProps) {
@@ -19,6 +20,7 @@ export function ReportsTable(props: ReportsTableProps) {
             config={reportsTableConfig}
             sorting={props.sorting}
             pagination={props.pagination}
+            isLoading={props.isLoading}
         />
     )
 } 

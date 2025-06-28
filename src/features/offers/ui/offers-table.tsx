@@ -10,6 +10,7 @@ interface OffersTableProps {
     data: Offer[]
     sorting?: SortingProps
     pagination?: PaginationProps
+    isLoading?: boolean
 }
 
 export function OffersTable(props: OffersTableProps) {
@@ -19,6 +20,7 @@ export function OffersTable(props: OffersTableProps) {
             config={offersTableConfig}
             sorting={props.sorting}
             pagination={props.pagination}
+            isLoading={props.isLoading}
         />
     )
 } 

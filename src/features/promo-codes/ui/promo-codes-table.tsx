@@ -9,6 +9,7 @@ interface PromoCodesTableProps {
     data: PromoCode[]
     sorting?: SortingProps
     pagination?: PaginationProps
+    isLoading?: boolean
 }
 
 export function PromoCodesTable(props: PromoCodesTableProps) {
@@ -18,6 +19,7 @@ export function PromoCodesTable(props: PromoCodesTableProps) {
             config={promoCodesTableConfig}
             sorting={props.sorting}
             pagination={props.pagination}
+            isLoading={props.isLoading}
         />
     )
 } 

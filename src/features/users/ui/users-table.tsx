@@ -11,6 +11,7 @@ interface UsersTableProps {
     data: User[]
     sorting?: SortingProps
     pagination?: PaginationProps
+    isLoading?: boolean
 }
 
 export function UsersTable(props: UsersTableProps) {
@@ -20,6 +21,7 @@ export function UsersTable(props: UsersTableProps) {
             config={usersTableConfig}
             sorting={props.sorting}
             pagination={props.pagination}
+            isLoading={props.isLoading}
         />
     )
 } 

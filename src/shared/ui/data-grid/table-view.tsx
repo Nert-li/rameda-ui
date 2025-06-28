@@ -9,6 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/shared/ui/kit/table"
+import { Skeleton } from "@/shared/ui/kit/skeleton"
 
 interface TableViewProps<TData> {
     table: ReturnType<typeof useReactTable<TData>>
@@ -27,6 +28,15 @@ function LoadingSkeleton<TData>({
 }) {
     const columns = table.getAllColumns()
 
+    // Функция для определения ширины skeleton в зависимости от позиции колонки
+    const getSkeletonWidth = (cellIndex: number, totalColumns: number) => {
+        if (cellIndex === 0) return "w-3/4" // Первая колонка обычно название - длиннее
+        if (cellIndex === totalColumns - 1) return "w-16" // Последняя колонка обычно действия - короче
+        if (cellIndex % 3 === 0) return "w-2/3" // Каждая третья колонка средней длины
+        if (cellIndex % 2 === 0) return "w-1/2" // Четные колонки короче
+        return "w-full" // Нечетные колонки длиннее
+    }
+
     return (
         <>
             {Array.from({ length: rowCount }).map((_, rowIndex) => {
@@ -44,9 +54,11 @@ function LoadingSkeleton<TData>({
                                 ? "border-r-2 border-border/50"
                                 : "border-r-2 border-border/80"
 
+                            const skeletonWidth = getSkeletonWidth(cellIndex, columns.length)
+
                             return (
                                 <TableCell key={cellIndex} className={borderClass}>
-                                    <div className="h-4 bg-muted/60 rounded animate-pulse" />
+                                    <Skeleton className={`h-4 ${skeletonWidth}`} />
                                 </TableCell>
                             )
                         })}
@@ -56,8 +68,6 @@ function LoadingSkeleton<TData>({
         </>
     )
 }
-
-
 
 export function TableView<TData>({
     table,
