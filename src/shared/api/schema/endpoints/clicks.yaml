@@ -9,18 +9,27 @@ getAllClicks:
       required: false
       schema:
         type: integer
+    - name: campaign_id
+      in: query
+      required: false
+      schema:
+        type: integer
+    - name: stream_id
+      in: query
+      required: false
+      schema:
+        type: integer
     - name: country
       in: query
       required: false
       schema:
         type: string
-    - name: offer_type
+    - name: country_code
       in: query
       required: false
       schema:
         type: string
-        enum: [clo, no_clo]
-    - name: os
+    - name: region
       in: query
       required: false
       schema:
@@ -30,7 +39,47 @@ getAllClicks:
       required: false
       schema:
         type: string
+    - name: os
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: browser
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: device_type
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: connection_type
+      in: query
+      required: false
+      schema:
+        type: string
     - name: source
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: ts
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: campaign
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: offer
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: stream
       in: query
       required: false
       schema:
@@ -45,48 +94,111 @@ getAllClicks:
       required: false
       schema:
         type: string
-    - name: leads
+    - name: is_lead
       in: query
       required: false
       schema:
         type: boolean
-    - name: seals
+    - name: is_sale
       in: query
       required: false
       schema:
         type: boolean
-    - name: unique
+    - name: is_reg
       in: query
       required: false
       schema:
         type: boolean
+    - name: is_bot
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: is_unique_campaign
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: is_unique_global
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: is_unique_stream
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: is_rejected
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: landing_clicked
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: is_using_proxy
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: is_empty_referrer
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: sub_id
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: date_from
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+        description: Start date for filtering (YYYY-MM-DD)
+    - name: date_to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+        description: End date for filtering (YYYY-MM-DD)
     - name: limit
       in: query
       required: false
       schema:
         type: integer
+        default: 25
     - name: offset
       in: query
       required: false
       schema:
         type: integer
+        default: 0
     - name: _order
       in: query
       required: false
       schema:
         type: string
-        description: Field to sort by with optional direction prefix. Use field name for ascending (e.g., 'created_at') or prefix with '-' for descending (e.g., '-id')
+        description: Field to sort by with optional direction prefix. Use field name for ascending (e.g., 'datetime') or prefix with '-' for descending (e.g., '-datetime')
         examples:
-          - 'created_at'
-          - '-id'
+          - 'datetime'
+          - '-datetime'
           - 'country'
-          - '-offer_name'
+          - '-revenue'
+          - 'campaign'
     - name: page
       in: query
       required: false
       schema:
         type: integer
         description: Page number for pagination
+        default: 1
   responses:
     "200":
       description: A list of clicks
@@ -112,13 +224,43 @@ getAllClicks:
                     type: integer
                   leads_count:
                     type: integer
-                  seals_count:
+                  sales_count:
                     type: integer
-                  unique_count:
+                  registrations_count:
+                    type: integer
+                  total_revenue:
+                    type: number
+                  total_cost:
+                    type: number
+                  total_profit:
+                    type: number
+                  conversion_rate:
+                    type: number
+                  lead_rate:
+                    type: number
+                  sale_rate:
+                    type: number
+                  bot_rate:
+                    type: number
+                  proxy_rate:
+                    type: number
+                  unique_countries:
+                    type: integer
+                  unique_offers:
+                    type: integer
+                  unique_campaigns:
                     type: integer
                   by_country:
                     type: object
                   by_offer:
+                    type: object
+                  by_campaign:
+                    type: object
+                  by_device_type:
+                    type: object
+                  by_os:
+                    type: object
+                  by_browser:
                     type: object
               sorting:
                 type: object
@@ -135,62 +277,546 @@ getAllClicks:
     "401":
       $ref: "../shared/responses.yaml#/UnauthorizedError"
 
+getClickById:
+  summary: Get click by ID
+  operationId: getClickById
+  tags:
+    - Clicks
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    "200":
+      description: Click details
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ClickRecord"
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+getClickStats:
+  summary: Get clicks statistics
+  operationId: getClickStats
+  tags:
+    - Clicks
+  parameters:
+    - name: date_from
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+    - name: date_to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+    - name: group_by
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [hour, day, week, month]
+        default: day
+  responses:
+    "200":
+      description: Clicks statistics
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              performance_summary:
+                type: object
+                properties:
+                  total_clicks:
+                    type: integer
+                  total_leads:
+                    type: integer
+                  total_sales:
+                    type: integer
+                  total_registrations:
+                    type: integer
+                  total_revenue:
+                    type: number
+                  total_cost:
+                    type: number
+                  total_profit:
+                    type: number
+                  conversion_rate:
+                    type: number
+                  lead_rate:
+                    type: number
+                  sale_rate:
+                    type: number
+                  unique_countries:
+                    type: integer
+                  unique_offers:
+                    type: integer
+                  unique_campaigns:
+                    type: integer
+                  bot_rate:
+                    type: number
+                  proxy_rate:
+                    type: number
+              stats_by_period:
+                type: object
+              top_countries:
+                type: object
+              top_sources:
+                type: object
+              top_campaigns:
+                type: object
+              top_offers:
+                type: object
+              device_breakdown:
+                type: object
+              os_breakdown:
+                type: object
+              browser_breakdown:
+                type: object
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
 components:
   schemas:
     ClickRecord:
       type: object
+      required:
+        - id
+        - click_id
+        - datetime
+        - is_bot
+        - is_lead
+        - is_sale
+        - is_reg
+        - is_rejected
+        - is_unique_campaign
+        - is_unique_global
+        - is_unique_stream
+        - landing_clicked
+        - is_using_proxy
+        - is_empty_referrer
+        - created_at
+        - updated_at
       properties:
         id:
-          type: integer
-        subid:
+          type: string
+          format: uuid
+          description: UUID primary key
+        click_id:
+          type: string
+          description: Unique click identifier from Keitaro
+        datetime:
+          type: string
+          format: date-time
+          description: Click timestamp
+        campaign:
           type: string
           nullable: true
+          maxLength: 255
+          description: Campaign name
+        campaign_group:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Campaign group name
+        offer:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Offer name
+        stream:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Stream name
         ip:
           type: string
           nullable: true
-        user_agent:
-          type: string
-          nullable: true
+          description: IP address (IPv4 or IPv6)
         country:
           type: string
           nullable: true
-        is_lead:
-          type: boolean
-        is_seal:
-          type: boolean
-        is_uniq:
-          type: boolean
-        offer_id:
-          type: integer
-        offer_name:
-          type: string
-        offer_type:
-          type: string
-          enum: [clo, no_clo]
-        buyer_name:
+          maxLength: 255
+          description: Country name
+        country_code:
           type: string
           nullable: true
-        conversion_id:
-          type: integer
-          nullable: true
-        ad_campaign_id:
+          minLength: 2
+          maxLength: 2
+          pattern: "^[A-Z]{2}$"
+          description: 2-letter country code
+        region:
           type: string
           nullable: true
-        creative_id:
-          type: string
-          nullable: true
-        os:
-          type: string
-          nullable: true
+          maxLength: 255
+          description: Region/state name
         city:
           type: string
           nullable: true
+          maxLength: 255
+          description: City name
+        device_type:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Device type (mobile, desktop, tablet)
+        device_model:
+          type: string
+          nullable: true
+          maxLength: 500
+          description: Device model
+        os:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Operating system
+        os_version:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: OS version
+        browser:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Browser name
+        browser_version:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Browser version
+        user_agent:
+          type: string
+          nullable: true
+          description: Full user agent string
+        connection_type:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Connection type (wifi, cellular, etc.)
+        language:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Browser language
+        isp:
+          type: string
+          nullable: true
+          maxLength: 500
+          description: Internet service provider
+        operator:
+          type: string
+          nullable: true
+          maxLength: 500
+          description: Mobile operator
+        is_bot:
+          type: boolean=
+          description: Whether traffic is from bot
+        is_lead:
+          type: boolean
+          description: Whether click resulted in lead
+        is_sale:
+          type: boolean
+          description: Whether click resulted in sale
+        is_reg:
+          type: boolean
+          description: Whether click resulted in registration
+        is_rejected:
+          type: boolean
+          description: Whether click was rejected
+        is_unique_campaign:
+          type: boolean
+          description: Whether click is unique within campaign
+        is_unique_global:
+          type: boolean
+          description: Whether click is globally unique
+        is_unique_stream:
+          type: boolean
+          description: Whether click is unique within stream
+        landing_clicked:
+          type: boolean
+          description: Whether landing page was clicked
+        is_using_proxy:
+          type: boolean
+          description: Whether user is using proxy
+        is_empty_referrer:
+          type: boolean
+          description: Whether referrer is empty
+        sub_id:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Main sub ID parameter
+        sub_id_1:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_2:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_3:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_4:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_5:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_6:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_7:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_8:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_9:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_10:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_11:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_12:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_13:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_14:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_15:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_16:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_17:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_18:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_19:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_20:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_21:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_22:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_23:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_24:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_25:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_26:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_27:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_28:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_29:
+          type: string
+          nullable: true
+          maxLength: 255
+        sub_id_30:
+          type: string
+          nullable: true
+          maxLength: 255
+        external_id:
+          type: string
+          nullable: true
+          description: External identifier
+        referrer:
+          type: string
+          nullable: true
+          description: HTTP referrer
+        destination:
+          type: string
+          nullable: true
+          description: Destination URL
         source:
           type: string
           nullable: true
+          maxLength: 255
+          description: Traffic source
+        ts:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Traffic source identifier
+        creative_id:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Creative/ad creative ID
+        ad_campaign_id:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Ad campaign ID
+        visitor_code:
+          type: string
+          nullable: true
+          description: Visitor code
+        keyword:
+          type: string
+          nullable: true
+          description: Search keyword
+        search_engine:
+          type: string
+          nullable: true
+          description: Search engine name
+        # Financial fields with proper validation
+        revenue:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Total revenue
+        cost:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Traffic cost
+        profit:
+          type: number
+          nullable: true
+          description: Profit (revenue - cost), can be negative
+        sale_revenue:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Revenue from sales
+        lead_revenue:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Revenue from leads
+        reg_revenue:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Revenue from registrations
+        deposit_revenue:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Revenue from deposits
+        rejected_revenue:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Rejected revenue
+        profitability:
+          type: number
+          nullable: true
+          description: Profitability percentage, can be negative
+        # Counter fields
+        rebills:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Number of rebills
+        deposits:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Number of deposits
+        landing_clicked_period:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Landing click period in seconds
+        # ID fields
+        stream_id:
+          type: integer
+          nullable: true
+          description: Stream ID
+        ts_id:
+          type: integer
+          nullable: true
+          description: Traffic source ID
+        affiliate_network_id:
+          type: integer
+          nullable: true
+          description: Affiliate network ID
+        offer_id:
+          type: integer
+          nullable: true
+          description: Offer ID
+        landing_id:
+          type: integer
+          nullable: true
+          description: Landing page ID
+        campaign_id:
+          type: integer
+          nullable: true
+          description: Campaign ID
+        parent_campaign_id:
+          type: integer
+          nullable: true
+          description: Parent campaign ID
+        affiliate_network:
+          type: string
+          nullable: true
+          description: Affiliate network name
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
-          format: date-time 
+          format: date-time

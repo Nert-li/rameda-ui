@@ -692,29 +692,176 @@ export interface components {
             offer_type: "clo" | "no_clo";
         };
         ClickRecord: {
-            id?: number;
-            subid?: string | null;
+            /**
+             * Format: uuid
+             * @description UUID primary key
+             */
+            id: string;
+            /** @description Unique click identifier from Keitaro */
+            click_id: string;
+            /**
+             * Format: date-time
+             * @description Click timestamp
+             */
+            datetime: string;
+            /** @description Campaign name */
+            campaign?: string | null;
+            /** @description Campaign group name */
+            campaign_group?: string | null;
+            /** @description Offer name */
+            offer?: string | null;
+            /** @description Stream name */
+            stream?: string | null;
+            /** @description IP address (IPv4 or IPv6) */
             ip?: string | null;
-            user_agent?: string | null;
+            /** @description Country name */
             country?: string | null;
-            is_lead?: boolean;
-            is_seal?: boolean;
-            is_uniq?: boolean;
-            offer_id?: number;
-            offer_name?: string;
-            /** @enum {string} */
-            offer_type?: "clo" | "no_clo";
-            buyer_name?: string | null;
-            conversion_id?: number | null;
-            ad_campaign_id?: string | null;
-            creative_id?: string | null;
-            os?: string | null;
+            /** @description 2-letter country code */
+            country_code?: string | null;
+            /** @description Region/state name */
+            region?: string | null;
+            /** @description City name */
             city?: string | null;
+            /** @description Device type (mobile, desktop, tablet) */
+            device_type?: string | null;
+            /** @description Device model */
+            device_model?: string | null;
+            /** @description Operating system */
+            os?: string | null;
+            /** @description OS version */
+            os_version?: string | null;
+            /** @description Browser name */
+            browser?: string | null;
+            /** @description Browser version */
+            browser_version?: string | null;
+            /** @description Full user agent string */
+            user_agent?: string | null;
+            /** @description Connection type (wifi, cellular, etc.) */
+            connection_type?: string | null;
+            /** @description Browser language */
+            language?: string | null;
+            /** @description Internet service provider */
+            isp?: string | null;
+            /** @description Mobile operator */
+            operator?: string | null;
+            /** @description Whether traffic is from bot */
+            is_bot: boolean;
+            /** @description Whether click resulted in lead */
+            is_lead: boolean;
+            /** @description Whether click resulted in sale */
+            is_sale: boolean;
+            /** @description Whether click resulted in registration */
+            is_reg: boolean;
+            /** @description Whether click was rejected */
+            is_rejected: boolean;
+            /** @description Whether click is unique within campaign */
+            is_unique_campaign: boolean;
+            /** @description Whether click is globally unique */
+            is_unique_global: boolean;
+            /** @description Whether click is unique within stream */
+            is_unique_stream: boolean;
+            /** @description Whether landing page was clicked */
+            landing_clicked: boolean;
+            /** @description Whether user is using proxy */
+            is_using_proxy: boolean;
+            /** @description Whether referrer is empty */
+            is_empty_referrer: boolean;
+            /** @description Main sub ID parameter */
+            sub_id?: string | null;
+            sub_id_1?: string | null;
+            sub_id_2?: string | null;
+            sub_id_3?: string | null;
+            sub_id_4?: string | null;
+            sub_id_5?: string | null;
+            sub_id_6?: string | null;
+            sub_id_7?: string | null;
+            sub_id_8?: string | null;
+            sub_id_9?: string | null;
+            sub_id_10?: string | null;
+            sub_id_11?: string | null;
+            sub_id_12?: string | null;
+            sub_id_13?: string | null;
+            sub_id_14?: string | null;
+            sub_id_15?: string | null;
+            sub_id_16?: string | null;
+            sub_id_17?: string | null;
+            sub_id_18?: string | null;
+            sub_id_19?: string | null;
+            sub_id_20?: string | null;
+            sub_id_21?: string | null;
+            sub_id_22?: string | null;
+            sub_id_23?: string | null;
+            sub_id_24?: string | null;
+            sub_id_25?: string | null;
+            sub_id_26?: string | null;
+            sub_id_27?: string | null;
+            sub_id_28?: string | null;
+            sub_id_29?: string | null;
+            sub_id_30?: string | null;
+            /** @description External identifier */
+            external_id?: string | null;
+            /** @description HTTP referrer */
+            referrer?: string | null;
+            /** @description Destination URL */
+            destination?: string | null;
+            /** @description Traffic source */
             source?: string | null;
+            /** @description Traffic source identifier */
+            ts?: string | null;
+            /** @description Creative/ad creative ID */
+            creative_id?: string | null;
+            /** @description Ad campaign ID */
+            ad_campaign_id?: string | null;
+            /** @description Visitor code */
+            visitor_code?: string | null;
+            /** @description Search keyword */
+            keyword?: string | null;
+            /** @description Search engine name */
+            search_engine?: string | null;
+            /** @description Total revenue */
+            revenue?: number | null;
+            /** @description Traffic cost */
+            cost?: number | null;
+            /** @description Profit (revenue - cost), can be negative */
+            profit?: number | null;
+            /** @description Revenue from sales */
+            sale_revenue?: number | null;
+            /** @description Revenue from leads */
+            lead_revenue?: number | null;
+            /** @description Revenue from registrations */
+            reg_revenue?: number | null;
+            /** @description Revenue from deposits */
+            deposit_revenue?: number | null;
+            /** @description Rejected revenue */
+            rejected_revenue?: number | null;
+            /** @description Profitability percentage, can be negative */
+            profitability?: number | null;
+            /** @description Number of rebills */
+            rebills?: number | null;
+            /** @description Number of deposits */
+            deposits?: number | null;
+            /** @description Landing click period in seconds */
+            landing_clicked_period?: number | null;
+            /** @description Stream ID */
+            stream_id?: number | null;
+            /** @description Traffic source ID */
+            ts_id?: number | null;
+            /** @description Affiliate network ID */
+            affiliate_network_id?: number | null;
+            /** @description Offer ID */
+            offer_id?: number | null;
+            /** @description Landing page ID */
+            landing_id?: number | null;
+            /** @description Campaign ID */
+            campaign_id?: number | null;
+            /** @description Parent campaign ID */
+            parent_campaign_id?: number | null;
+            /** @description Affiliate network name */
+            affiliate_network?: string | null;
             /** Format: date-time */
-            created_at?: string;
+            created_at: string;
             /** Format: date-time */
-            updated_at?: string;
+            updated_at: string;
         };
         ConversionRecord: {
             id?: number;
@@ -1248,16 +1395,37 @@ export interface operations {
         parameters: {
             query?: {
                 offer_id?: number;
+                campaign_id?: number;
+                stream_id?: number;
                 country?: string;
-                offer_type?: "clo" | "no_clo";
-                os?: string;
+                country_code?: string;
+                region?: string;
                 city?: string;
+                os?: string;
+                browser?: string;
+                device_type?: string;
+                connection_type?: string;
                 source?: string;
+                ts?: string;
+                campaign?: string;
+                offer?: string;
+                stream?: string;
                 ad_campaign_id?: string;
                 creative_id?: string;
-                leads?: boolean;
-                seals?: boolean;
-                unique?: boolean;
+                is_lead?: boolean;
+                is_sale?: boolean;
+                is_reg?: boolean;
+                is_bot?: boolean;
+                is_unique_campaign?: boolean;
+                is_unique_global?: boolean;
+                is_unique_stream?: boolean;
+                is_rejected?: boolean;
+                landing_clicked?: boolean;
+                is_using_proxy?: boolean;
+                is_empty_referrer?: boolean;
+                sub_id?: string;
+                date_from?: string;
+                date_to?: string;
                 limit?: number;
                 offset?: number;
                 _order?: string;
@@ -1283,10 +1451,25 @@ export interface operations {
                         stats?: {
                             total_count?: number;
                             leads_count?: number;
-                            seals_count?: number;
-                            unique_count?: number;
+                            sales_count?: number;
+                            registrations_count?: number;
+                            total_revenue?: number;
+                            total_cost?: number;
+                            total_profit?: number;
+                            conversion_rate?: number;
+                            lead_rate?: number;
+                            sale_rate?: number;
+                            bot_rate?: number;
+                            proxy_rate?: number;
+                            unique_countries?: number;
+                            unique_offers?: number;
+                            unique_campaigns?: number;
                             by_country?: Record<string, never>;
                             by_offer?: Record<string, never>;
+                            by_campaign?: Record<string, never>;
+                            by_device_type?: Record<string, never>;
+                            by_os?: Record<string, never>;
+                            by_browser?: Record<string, never>;
                         };
                         sorting?: {
                             field?: string | null;
