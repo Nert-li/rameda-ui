@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from "@/shared/ui/kit/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/kit/card";

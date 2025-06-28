@@ -1,4 +1,3 @@
-import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useCreateReport } from "@/features/ads-managers/model/use-create-report";
 import { useAdsManagerOffer } from "@/features/ads-managers/model/use-ads-manager-offer";

@@ -1,4 +1,3 @@
-import * as React from "react"
 import {
     IconLayoutColumns,
     IconChevronDown,
@@ -30,6 +29,7 @@ import type { DataGridProps } from "./types"
 import { TableView } from "./table-view"
 import { CardsView } from "./cards-view"
 import { FiltersSkeleton, PaginationSkeleton } from "./skeletons"
+import { useEffect, useState } from "react"
 
 // Pagination controls component
 function PaginationControls<TData>({ table }: { table: ReturnType<typeof useReactTable<TData>> }) {
@@ -152,7 +152,7 @@ export function DataGrid<TData>({
     onItemClick,
 }: DataGridProps<TData>) {
     // Global filter state
-    const [globalFilter, setGlobalFilter] = React.useState("")
+    const [globalFilter, setGlobalFilter] = useState("")
 
     // Table setup for both modes (для пагинации и фильтрации)
     const table = useReactTable({
@@ -181,7 +181,7 @@ export function DataGrid<TData>({
     const effectiveLoadingItemCount = loadingItemCount ?? (viewMode === 'table' ? 25 : 9)
 
     // Validate required props based on view mode
-    React.useEffect(() => {
+    useEffect(() => {
         if (viewMode === 'table' && !columns) {
             console.warn('DataGrid: columns prop is required when viewMode is "table"')
         }
@@ -199,7 +199,7 @@ export function DataGrid<TData>({
                     showColumnButton={viewMode === 'table' && enableColumnVisibility && !!columns}
                 />
             ) : (
-                <div className="flex items-center justify-between px-4 lg:px-6 pb-4 pt-2">
+                <div className="flex items-center justify-between px-4 lg:px-6 p-4">
                     <div className="flex items-center gap-4">
                         {enableGlobalFilter && (
                             <Input

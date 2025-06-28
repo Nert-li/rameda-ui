@@ -1,11 +1,9 @@
-import React from 'react';
-import { useAdsManagersList } from "@/features/ads-managers/model/use-ads-managers-list";
+import { useAdsManagersList, useDeleteAdsManager } from "@/features/ads-managers/model/use-ads-manager";
 import { CreateAdsManagerForm } from "@/features/ads-managers/ui/create-ads-manager-form";
 import { UpdateAdsManagerForm } from "@/features/ads-managers/ui/update-ads-manager-form";
 import { CreateReportForm } from "@/features/ads-managers/ui/create-report-form";
 import { AssignOfferForm } from "@/features/ads-managers/ui/assign-offer-form";
 import { AdsManagerMetrics } from "@/features/ads-managers/ui/ads-manager-metrics";
-import { useDeleteAdsManager } from "@/features/ads-managers/model/use-delete-ads-manager";
 import { DataGrid } from "@/shared/ui/data-grid";
 import {
     Dialog,
@@ -25,23 +23,22 @@ import {
     DropdownMenuTrigger,
 } from "@/shared/ui/kit/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 type AdsManager = components["schemas"]["AdsManagerRecord"];
 
 export const Component = () => {
     const navigate = useNavigate();
     const { adsManagers, isLoading, isError } = useAdsManagersList();
-    const { deleteAdsManager, isPending: isDeleting } = useDeleteAdsManager();
+    const { deleteEntity, isLoading: isDeleting } = useDeleteAdsManager();
 
-    const [editingAdsManager, setEditingAdsManager] = React.useState<AdsManager | null>(null);
-    const [creatingReportFor, setCreatingReportFor] = React.useState<AdsManager | null>(null);
-    const [assigningOfferFor, setAssigningOfferFor] = React.useState<AdsManager | null>(null);
-    const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
+    const [editingAdsManager, setEditingAdsManager] = useState<AdsManager | null>(null);
+    const [creatingReportFor, setCreatingReportFor] = useState<AdsManager | null>(null);
+    const [assigningOfferFor, setAssigningOfferFor] = useState<AdsManager | null>(null);
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
     const handleDelete = async (id: string) => {
-        if (confirm("Are you sure you want to delete this ads manager?")) {
-            deleteAdsManager({ params: { path: { adsManagerId: id } } });
-        }
+        deleteEntity({ id });
     };
 
     const handleViewReports = (adsManager: AdsManager) => {

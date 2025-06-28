@@ -1,6 +1,5 @@
-import React from "react";
 import { useForm } from "react-hook-form";
-import { useUpdateAdsManager } from "@/features/ads-managers/model/use-update-ads-manager";
+import { useUpdateAdsManager } from "@/features/ads-managers/model/use-ads-manager";
 import { Button } from "@/shared/ui/kit/button";
 import { Input } from "@/shared/ui/kit/input";
 import { Label } from "@/shared/ui/kit/label";
@@ -23,7 +22,7 @@ export const UpdateAdsManagerForm: React.FC<UpdateAdsManagerFormProps> = ({
     adsManager,
     onSuccess
 }) => {
-    const { updateAdsManager, isPending } = useUpdateAdsManager();
+    const { updateEntity, isLoading: isPending } = useUpdateAdsManager();
     const {
         register,
         handleSubmit,
@@ -36,7 +35,7 @@ export const UpdateAdsManagerForm: React.FC<UpdateAdsManagerFormProps> = ({
         },
     });
 
-    const onSubmit = (data: AdsManagerFormData) => {
+    const onSubmit = async (data: AdsManagerFormData) => {
         const formattedData = {
             ads_manager: {
                 title: data.title,
@@ -44,17 +43,15 @@ export const UpdateAdsManagerForm: React.FC<UpdateAdsManagerFormProps> = ({
             },
         };
 
-        updateAdsManager(
-            {
-                params: { path: { adsManagerId: adsManager.id! } },
-                body: formattedData,
-            },
-            {
-                onSuccess: () => {
-                    onSuccess();
-                },
-            }
-        );
+        try {
+            await updateEntity({
+                id: adsManager.id!,
+                data: formattedData
+            });
+            onSuccess();
+        } catch (error) {
+            console.error('Failed to update ads manager:', error);
+        }
     };
 
     return (

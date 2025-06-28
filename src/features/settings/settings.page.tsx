@@ -8,7 +8,7 @@ import { Separator } from "@/shared/ui/kit/separator";
 import { Skeleton } from "@/shared/ui/kit/skeleton";
 import { useConfig } from "@/shared/model/use-config";
 import { useCurrentUser } from "@/shared/model/use-current-user";
-import { useTheme } from "@/shared/model/use-theme";
+import { useTheme } from "@/shared/lib/react/use-theme";
 import {
     IconMoon,
     IconSun,

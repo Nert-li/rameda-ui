@@ -9,15 +9,15 @@ export function FiltersSkeleton({
     showSearchFilter?: boolean
 }) {
     return (
-        <div className="flex items-center justify-between px-4 lg:px-6 pb-4 pt-2">
+        <div className="flex items-center justify-between px-4 lg:px-6 p-4">
             <div className="flex items-center gap-4">
                 {showSearchFilter && (
-                    <Skeleton className="h-10 w-72 max-w-sm bg-slate-300 dark:bg-slate-600" />
+                    <Skeleton className="h-10 w-72 max-w-sm" />
                 )}
             </div>
 
             {showColumnButton && (
-                <Skeleton className="h-9 w-36 bg-slate-300 dark:bg-slate-600" />
+                <Skeleton className="h-9 w-36 bg-slate-300" />
             )}
         </div>
     )

@@ -1,4 +1,4 @@
-import * as React from "react"
+
 import { IconChevronDown, IconChevronUp, IconArrowsSort } from "@tabler/icons-react"
 import { Column } from "@tanstack/react-table"
 

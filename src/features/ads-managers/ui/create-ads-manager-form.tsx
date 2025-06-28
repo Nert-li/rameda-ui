@@ -1,6 +1,5 @@
-import React from "react";
 import { useForm } from "react-hook-form";
-import { useCreateAdsManager } from "@/features/ads-managers/model/use-create-ads-manager";
+import { useCreateAdsManager } from "@/features/ads-managers/model/use-ads-manager";
 import { Button } from "@/shared/ui/kit/button";
 import { Input } from "@/shared/ui/kit/input";
 import { Label } from "@/shared/ui/kit/label";
@@ -16,7 +15,7 @@ interface CreateAdsManagerFormProps {
 }
 
 export const CreateAdsManagerForm: React.FC<CreateAdsManagerFormProps> = ({ onSuccess }) => {
-    const { createAdsManager, isPending } = useCreateAdsManager();
+    const { createEntity, isLoading: isPending } = useCreateAdsManager();
     const {
         register,
         handleSubmit,
@@ -24,7 +23,7 @@ export const CreateAdsManagerForm: React.FC<CreateAdsManagerFormProps> = ({ onSu
         reset,
     } = useForm<AdsManagerFormData>();
 
-    const onSubmit = (data: AdsManagerFormData) => {
+    const onSubmit = async (data: AdsManagerFormData) => {
         const formattedData = {
             ads_manager: {
                 title: data.title,
@@ -32,15 +31,13 @@ export const CreateAdsManagerForm: React.FC<CreateAdsManagerFormProps> = ({ onSu
             },
         };
 
-        createAdsManager(
-            { body: formattedData },
-            {
-                onSuccess: () => {
-                    reset();
-                    onSuccess();
-                },
-            }
-        );
+        try {
+            await createEntity(formattedData);
+            reset();
+            onSuccess();
+        } catch (error) {
+            console.error('Failed to create ads manager:', error);
+        }
     };
 
     return (
