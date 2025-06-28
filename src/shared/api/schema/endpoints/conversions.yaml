@@ -4,48 +4,37 @@ getAllConversions:
   tags:
     - Conversions
   parameters:
-    - name: aasm_state
+    - name: status
       in: query
       required: false
       schema:
         type: string
-        enum: [register, sell, rebill, cancel]
-    - name: convertible_type
-      in: query
-      required: false
-      schema:
-        type: string
-        enum: [Click, PromoCode]
-    - name: convertible_id
-      in: query
-      required: false
-      schema:
-        type: integer
-    - name: min_cost
-      in: query
-      required: false
-      schema:
-        type: number
-    - name: max_cost
-      in: query
-      required: false
-      schema:
-        type: number
-    - name: high_value
+        enum: [approved, pending, rejected, trash, hold]
+    - name: approved
       in: query
       required: false
       schema:
         type: boolean
-    - name: email
+    - name: pending
       in: query
       required: false
       schema:
-        type: string
-    - name: name
+        type: boolean
+    - name: rejected
       in: query
       required: false
       schema:
-        type: string
+        type: boolean
+    - name: trash
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: hold
+      in: query
+      required: false
+      schema:
+        type: boolean
     - name: date_from
       in: query
       required: false
@@ -58,17 +47,63 @@ getAllConversions:
       schema:
         type: string
         format: date
+    - name: period
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [today, yesterday, this_week, this_month, recent]
+    - name: with_sale
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: quick_conversions
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: slow_conversions
+      in: query
+      required: false
+      schema:
+        type: boolean
+    - name: min_sale_period
+      in: query
+      required: false
+      schema:
+        type: integer
+    - name: max_sale_period
+      in: query
+      required: false
+      schema:
+        type: integer
+    - name: campaign
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: offer
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: country
+      in: query
+      required: false
+      schema:
+        type: string
     - name: _order
       in: query
       required: false
       schema:
         type: string
-        description: Field to sort by with optional direction prefix. Use field name for ascending (e.g., 'created_at') or prefix with '-' for descending (e.g., '-cost')
+        description: Field to sort by with optional direction prefix. Use field name for ascending (e.g., 'postback_datetime') or prefix with '-' for descending (e.g., '-postback_datetime')
         examples:
-          - 'created_at'
-          - '-cost'
-          - 'email'
-          - '-revenue'
+          - 'postback_datetime'
+          - '-postback_datetime'
+          - 'status'
+          - 'sale_period'
     - name: page
       in: query
       required: false
@@ -100,18 +135,18 @@ getAllConversions:
                 properties:
                   total_count:
                     type: integer
-                  total_cost:
-                    type: number
-                    format: float
-                  total_revenue:
-                    type: number
-                    format: float
-                  by_state:
-                    type: object
-                  by_type:
-                    type: object
-                  high_value_count:
+                  approved_count:
                     type: integer
+                  pending_count:
+                    type: integer
+                  rejected_count:
+                    type: integer
+                  approval_rate:
+                    type: number
+                    format: float
+                  rejection_rate:
+                    type: number
+                    format: float
               sorting:
                 type: object
                 properties:
@@ -127,103 +162,425 @@ getAllConversions:
     "401":
       $ref: "../shared/responses.yaml#/UnauthorizedError"
 
+getConversionById:
+  summary: Get conversion by ID
+  operationId: getConversionById
+  tags:
+    - Conversions
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    "200":
+      description: Conversion details
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              conversion:
+                $ref: "#/components/schemas/ConversionRecord"
+    "404":
+      $ref: "../shared/responses.yaml#/NotFoundError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+getConversionStats:
+  summary: Get conversion statistics
+  operationId: getConversionStats
+  tags:
+    - Conversions
+  responses:
+    "200":
+      description: Conversion statistics
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              stats:
+                type: object
+                properties:
+                  total_conversions:
+                    type: integer
+                  approved_conversions:
+                    type: integer
+                  pending_conversions:
+                    type: integer
+                  rejected_conversions:
+                    type: integer
+                  approval_rate:
+                    type: number
+                    format: float
+                  rejection_rate:
+                    type: number
+                    format: float
+                  average_sale_period:
+                    type: number
+                    format: float
+                  quick_conversions:
+                    type: integer
+                  slow_conversions:
+                    type: integer
+                  conversions_with_sale:
+                    type: integer
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
+getConversionStatusStats:
+  summary: Get conversion status statistics
+  operationId: getConversionStatusStats
+  tags:
+    - Conversions
+  responses:
+    "200":
+      description: Conversion status statistics
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status_breakdown:
+                type: object
+              approved_count:
+                type: integer
+              pending_count:
+                type: integer
+              rejected_count:
+                type: integer
+              trash_count:
+                type: integer
+              hold_count:
+                type: integer
+              approval_rate:
+                type: number
+                format: float
+              rejection_rate:
+                type: number
+                format: float
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
 components:
   schemas:
     ConversionRecord:
       type: object
+      required:
+        - id
+        - conversion_id
+        - status
+        - postback_datetime
+        - created_at
+        - updated_at
       properties:
         id:
-          type: integer
-        aasm_state:
           type: string
-          enum: [register, sell, rebill, cancel]
-        cost:
-          type: number
-          format: float
-        convertible_type:
+          format: uuid
+          description: UUID primary key
+        conversion_id:
           type: string
-          enum: [Click, PromoCode]
-        convertible_id:
-          type: integer
-        first_name:
+          description: Unique conversion identifier from Keitaro
+        status:
           type: string
-        last_name:
-          type: string
-        email:
-          type: string
-        phone:
+          enum: [approved, pending, rejected, trash, hold]
+          description: Conversion status
+        original_status:
           type: string
           nullable: true
-        full_name:
+          description: Original status from Keitaro
+        previous_status:
           type: string
-        convertible_info:
+          nullable: true
+          description: Previous status before current one
+        postback_datetime:
+          type: string
+          format: date-time
+          description: When the conversion postback was received
+        click_datetime:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the original click occurred
+        sale_datetime:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the sale was completed
+        sale_period:
+          type: integer
+          nullable: true
+          description: Time between click and sale in seconds
+        sale_period_formatted:
+          type: string
+          nullable: true
+          description: Human-readable sale period (e.g., "2.5h", "30m")
+        params:
           type: object
-        buyer_id:
+          nullable: true
+          description: Additional parameters from conversion
+        status_color:
           type: string
-          nullable: true
-        offer_name:
-          type: string
-          nullable: true
-        # Click-specific fields (only present when convertible_type is Click)
-        click_subid:
-          type: string
-          nullable: true
-        click_country:
-          type: string
-          nullable: true
-        click_city:
-          type: string
-          nullable: true
-        click_ad_campaign_id:
-          type: string
-          nullable: true
-        click_creative_id:
-          type: string
-          nullable: true
-        click_offer_type:
-          type: string
-          nullable: true
-        click_os:
-          type: string
-          nullable: true
-        click_source:
-          type: string
-          nullable: true
-        # PromoCode-specific fields (only present when convertible_type is PromoCode)
-        promo_code_name:
-          type: string
-          nullable: true
-        promo_code_discount:
-          type: number
-          format: float
-          nullable: true
-        promo_code_expires_at:
-          type: string
-          format: date
-          nullable: true
-        promo_code_offer_type:
-          type: string
-          nullable: true
-        # Common fields
-        offer_id:
-          type: string
-        time_to_sell:
-          type: number
-          format: float
-          nullable: true
-        time_to_rebill:
-          type: number
-          format: float
-          nullable: true
-        revenue:
-          type: number
-          format: float
-          nullable: true
-        is_high_value:
-          type: boolean
+          description: Color associated with status
+        # Click information
+        click_info:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            click_id:
+              type: string
+              nullable: true
+            datetime:
+              type: string
+              format: date-time
+              nullable: true
+            # Campaign and offer information
+            campaign:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Campaign name
+            campaign_group:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Campaign group name
+            offer:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Offer name
+            stream:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Stream name
+            # Geographic data
+            ip:
+              type: string
+              nullable: true
+              description: IP address
+            country:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Country name
+            country_code:
+              type: string
+              nullable: true
+              minLength: 2
+              maxLength: 2
+              pattern: "^[A-Z]{2}$"
+              description: 2-letter country code
+            region:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Region/state name
+            city:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: City name
+            # Device and browser information
+            device_type:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Device type (mobile, desktop, tablet)
+            device_model:
+              type: string
+              nullable: true
+              maxLength: 500
+              description: Device model
+            os:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Operating system
+            os_version:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: OS version
+            browser:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Browser name
+            browser_version:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Browser version
+            user_agent:
+              type: string
+              nullable: true
+              description: Full user agent string
+            language:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Browser language
+            # Network information
+            isp:
+              type: string
+              nullable: true
+              maxLength: 500
+              description: Internet service provider
+            operator:
+              type: string
+              nullable: true
+              maxLength: 500
+              description: Mobile operator
+            connection_type:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Connection type (wifi, cellular, etc.)
+            # Sub IDs
+            sub_id:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Main sub ID parameter
+            sub_id_1:
+              type: string
+              nullable: true
+              maxLength: 255
+            sub_id_2:
+              type: string
+              nullable: true
+              maxLength: 255
+            sub_id_3:
+              type: string
+              nullable: true
+              maxLength: 255
+            sub_id_4:
+              type: string
+              nullable: true
+              maxLength: 255
+            sub_id_5:
+              type: string
+              nullable: true
+              maxLength: 255
+            # Financial data
+            revenue:
+              type: number
+              nullable: true
+              description: Revenue from this click
+            cost:
+              type: number
+              nullable: true
+              description: Cost of this click
+            profit:
+              type: number
+              nullable: true
+              description: Profit (revenue - cost)
+            profitability:
+              type: number
+              nullable: true
+              description: Profitability percentage
+            # Boolean flags
+            is_bot:
+              type: boolean
+              description: Whether traffic is from bot
+            is_lead:
+              type: boolean
+              description: Whether click resulted in lead
+            is_sale:
+              type: boolean
+              description: Whether click resulted in sale
+            is_reg:
+              type: boolean
+              description: Whether click resulted in registration
+            is_rejected:
+              type: boolean
+              description: Whether click was rejected
+            is_unique_campaign:
+              type: boolean
+              description: Whether click is unique within campaign
+            is_unique_global:
+              type: boolean
+              description: Whether click is globally unique
+            is_unique_stream:
+              type: boolean
+              description: Whether click is unique within stream
+            landing_clicked:
+              type: boolean
+              description: Whether landing page was clicked
+            is_using_proxy:
+              type: boolean
+              description: Whether user is using proxy
+            is_empty_referrer:
+              type: boolean
+              description: Whether referrer is empty
+            # Additional identifiers
+            external_id:
+              type: string
+              nullable: true
+              description: External identifier
+            referrer:
+              type: string
+              nullable: true
+              description: HTTP referrer
+            source:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Traffic source
+            keyword:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Search keyword
+            search_engine:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Search engine name
+            creative_id:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Creative identifier
+            ad_campaign_id:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Ad campaign identifier
+            visitor_code:
+              type: string
+              nullable: true
+              maxLength: 255
+              description: Visitor tracking code
+            # System IDs
+            stream_id:
+              type: integer
+              nullable: true
+              description: Stream ID in Keitaro
+            campaign_id:
+              type: integer
+              nullable: true
+              description: Campaign ID in Keitaro
+            offer_id:
+              type: integer
+              nullable: true
+              description: Offer ID in Keitaro
+            affiliate_network_id:
+              type: integer
+              nullable: true
+              description: Affiliate network ID in Keitaro
         created_at:
           type: string
           format: date-time
+          description: When the conversion was created in database
         updated_at:
           type: string
-          format: date-time 
+          format: date-time
+          description: When the conversion was last updated 

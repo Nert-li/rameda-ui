@@ -745,7 +745,7 @@ export interface components {
             /** @description Mobile operator */
             operator?: string | null;
             /** @description Whether traffic is from bot */
-            is_bot: boolean;
+            is_bot: Record<string, never>;
             /** @description Whether click resulted in lead */
             is_lead: boolean;
             /** @description Whether click resulted in sale */
@@ -864,48 +864,163 @@ export interface components {
             updated_at: string;
         };
         ConversionRecord: {
-            id?: number;
-            /** @enum {string} */
-            aasm_state?: "register" | "sell" | "rebill" | "cancel";
-            /** Format: float */
-            cost?: number;
-            /** @enum {string} */
-            convertible_type?: "Click" | "PromoCode";
-            convertible_id?: number;
-            first_name?: string;
-            last_name?: string;
-            email?: string;
-            phone?: string | null;
-            full_name?: string;
-            convertible_info?: Record<string, never>;
-            buyer_id?: string | null;
-            offer_name?: string | null;
-            click_subid?: string | null;
-            click_country?: string | null;
-            click_city?: string | null;
-            click_ad_campaign_id?: string | null;
-            click_creative_id?: string | null;
-            click_offer_type?: string | null;
-            click_os?: string | null;
-            click_source?: string | null;
-            promo_code_name?: string | null;
-            /** Format: float */
-            promo_code_discount?: number | null;
-            /** Format: date */
-            promo_code_expires_at?: string | null;
-            promo_code_offer_type?: string | null;
-            offer_id?: string;
-            /** Format: float */
-            time_to_sell?: number | null;
-            /** Format: float */
-            time_to_rebill?: number | null;
-            /** Format: float */
-            revenue?: number | null;
-            is_high_value?: boolean;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
+            /**
+             * Format: uuid
+             * @description UUID primary key
+             */
+            id: string;
+            /** @description Unique conversion identifier from Keitaro */
+            conversion_id: string;
+            /**
+             * @description Conversion status
+             * @enum {string}
+             */
+            status: "approved" | "pending" | "rejected" | "trash" | "hold";
+            /** @description Original status from Keitaro */
+            original_status?: string | null;
+            /** @description Previous status before current one */
+            previous_status?: string | null;
+            /**
+             * Format: date-time
+             * @description When the conversion postback was received
+             */
+            postback_datetime: string;
+            /**
+             * Format: date-time
+             * @description When the original click occurred
+             */
+            click_datetime?: string | null;
+            /**
+             * Format: date-time
+             * @description When the sale was completed
+             */
+            sale_datetime?: string | null;
+            /** @description Time between click and sale in seconds */
+            sale_period?: number | null;
+            /** @description Human-readable sale period (e.g., "2.5h", "30m") */
+            sale_period_formatted?: string | null;
+            /** @description Additional parameters from conversion */
+            params?: Record<string, never> | null;
+            /** @description Color associated with status */
+            status_color?: string;
+            click_info?: {
+                /** Format: uuid */
+                id?: string;
+                click_id?: string | null;
+                /** Format: date-time */
+                datetime?: string | null;
+                /** @description Campaign name */
+                campaign?: string | null;
+                /** @description Campaign group name */
+                campaign_group?: string | null;
+                /** @description Offer name */
+                offer?: string | null;
+                /** @description Stream name */
+                stream?: string | null;
+                /** @description IP address */
+                ip?: string | null;
+                /** @description Country name */
+                country?: string | null;
+                /** @description 2-letter country code */
+                country_code?: string | null;
+                /** @description Region/state name */
+                region?: string | null;
+                /** @description City name */
+                city?: string | null;
+                /** @description Device type (mobile, desktop, tablet) */
+                device_type?: string | null;
+                /** @description Device model */
+                device_model?: string | null;
+                /** @description Operating system */
+                os?: string | null;
+                /** @description OS version */
+                os_version?: string | null;
+                /** @description Browser name */
+                browser?: string | null;
+                /** @description Browser version */
+                browser_version?: string | null;
+                /** @description Full user agent string */
+                user_agent?: string | null;
+                /** @description Browser language */
+                language?: string | null;
+                /** @description Internet service provider */
+                isp?: string | null;
+                /** @description Mobile operator */
+                operator?: string | null;
+                /** @description Connection type (wifi, cellular, etc.) */
+                connection_type?: string | null;
+                /** @description Main sub ID parameter */
+                sub_id?: string | null;
+                sub_id_1?: string | null;
+                sub_id_2?: string | null;
+                sub_id_3?: string | null;
+                sub_id_4?: string | null;
+                sub_id_5?: string | null;
+                /** @description Revenue from this click */
+                revenue?: number | null;
+                /** @description Cost of this click */
+                cost?: number | null;
+                /** @description Profit (revenue - cost) */
+                profit?: number | null;
+                /** @description Profitability percentage */
+                profitability?: number | null;
+                /** @description Whether traffic is from bot */
+                is_bot?: boolean;
+                /** @description Whether click resulted in lead */
+                is_lead?: boolean;
+                /** @description Whether click resulted in sale */
+                is_sale?: boolean;
+                /** @description Whether click resulted in registration */
+                is_reg?: boolean;
+                /** @description Whether click was rejected */
+                is_rejected?: boolean;
+                /** @description Whether click is unique within campaign */
+                is_unique_campaign?: boolean;
+                /** @description Whether click is globally unique */
+                is_unique_global?: boolean;
+                /** @description Whether click is unique within stream */
+                is_unique_stream?: boolean;
+                /** @description Whether landing page was clicked */
+                landing_clicked?: boolean;
+                /** @description Whether user is using proxy */
+                is_using_proxy?: boolean;
+                /** @description Whether referrer is empty */
+                is_empty_referrer?: boolean;
+                /** @description External identifier */
+                external_id?: string | null;
+                /** @description HTTP referrer */
+                referrer?: string | null;
+                /** @description Traffic source */
+                source?: string | null;
+                /** @description Search keyword */
+                keyword?: string | null;
+                /** @description Search engine name */
+                search_engine?: string | null;
+                /** @description Creative identifier */
+                creative_id?: string | null;
+                /** @description Ad campaign identifier */
+                ad_campaign_id?: string | null;
+                /** @description Visitor tracking code */
+                visitor_code?: string | null;
+                /** @description Stream ID in Keitaro */
+                stream_id?: number | null;
+                /** @description Campaign ID in Keitaro */
+                campaign_id?: number | null;
+                /** @description Offer ID in Keitaro */
+                offer_id?: number | null;
+                /** @description Affiliate network ID in Keitaro */
+                affiliate_network_id?: number | null;
+            };
+            /**
+             * Format: date-time
+             * @description When the conversion was created in database
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description When the conversion was last updated
+             */
+            updated_at: string;
         };
         AdsManagerRecord: {
             id?: string;
@@ -1340,16 +1455,23 @@ export interface operations {
     getAllConversions: {
         parameters: {
             query?: {
-                aasm_state?: "register" | "sell" | "rebill" | "cancel";
-                convertible_type?: "Click" | "PromoCode";
-                convertible_id?: number;
-                min_cost?: number;
-                max_cost?: number;
-                high_value?: boolean;
-                email?: string;
-                name?: string;
+                status?: "approved" | "pending" | "rejected" | "trash" | "hold";
+                approved?: boolean;
+                pending?: boolean;
+                rejected?: boolean;
+                trash?: boolean;
+                hold?: boolean;
                 date_from?: string;
                 date_to?: string;
+                period?: "today" | "yesterday" | "this_week" | "this_month" | "recent";
+                with_sale?: boolean;
+                quick_conversions?: boolean;
+                slow_conversions?: boolean;
+                min_sale_period?: number;
+                max_sale_period?: number;
+                campaign?: string;
+                offer?: string;
+                country?: string;
                 _order?: string;
                 page?: number;
                 limit?: number;
@@ -1371,13 +1493,13 @@ export interface operations {
                         pagination?: components["schemas"]["Pagination"];
                         stats?: {
                             total_count?: number;
+                            approved_count?: number;
+                            pending_count?: number;
+                            rejected_count?: number;
                             /** Format: float */
-                            total_cost?: number;
+                            approval_rate?: number;
                             /** Format: float */
-                            total_revenue?: number;
-                            by_state?: Record<string, never>;
-                            by_type?: Record<string, never>;
-                            high_value_count?: number;
+                            rejection_rate?: number;
                         };
                         sorting?: {
                             field?: string | null;
