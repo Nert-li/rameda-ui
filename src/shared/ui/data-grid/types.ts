@@ -6,9 +6,8 @@ import type { ColumnDef, Row } from "@tanstack/react-table"
 
 export type ViewMode = 'table' | 'cards'
 
-// Pagination configuration
+// Pagination configuration - только серверная пагинация
 export interface PaginationConfig {
-    mode: 'client' | 'server'
     currentPage: number
     totalPages: number
     totalCount: number
@@ -18,9 +17,8 @@ export interface PaginationConfig {
     onPageSizeChange: (pageSize: number) => void
 }
 
-// Sorting configuration
+// Sorting configuration - только серверная сортировка
 export interface SortingConfig {
-    mode: 'client' | 'server'
     onSortChange?: (field: string, direction: 'asc' | 'desc') => void
 }
 
@@ -36,7 +34,7 @@ export interface DataGridProps<TData> {
     // View configuration - режим задается в коде, не через UI
     viewMode?: ViewMode
 
-    // Table mode props3
+    // Table mode props
     columns?: ColumnDef<TData>[]
 
     // Card mode props
@@ -59,7 +57,7 @@ export interface DataGridProps<TData> {
     isLoading?: boolean
     loadingItemCount?: number // Если не указан: 25 для таблиц, 9 для карточек
 
-    // Configuration (for future server-side features)
+    // Server-side configuration
     pagination?: PaginationConfig
     sorting?: SortingConfig
 

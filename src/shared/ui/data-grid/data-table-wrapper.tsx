@@ -44,7 +44,7 @@ export function DataTableWrapper<T>({
     sorting,
     pagination,
     isLoading = false,
-    loadingItemCount = 25, // Таблица всегда показывает 25 строк
+    loadingItemCount = 25,
 }: DataTableWrapperProps<T>) {
     const columns = useMemo(() => {
         return sorting
@@ -63,6 +63,7 @@ export function DataTableWrapper<T>({
             enableColumnVisibility={true}
             isLoading={isLoading}
             loadingItemCount={loadingItemCount}
+            pagination={pagination}
             className="w-full"
         />
     )

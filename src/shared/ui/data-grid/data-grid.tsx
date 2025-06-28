@@ -6,7 +6,7 @@ import {
     IconChevronsLeft,
     IconChevronsRight,
 } from "@tabler/icons-react"
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel } from "@tanstack/react-table"
+import { useReactTable, getCoreRowModel } from "@tanstack/react-table"
 
 import { Input } from "@/shared/ui/kit/input"
 import { Button } from "@/shared/ui/kit/button"
@@ -31,12 +31,53 @@ import { CardsView } from "./cards-view"
 import { FiltersSkeleton, PaginationSkeleton } from "./skeletons"
 import { useEffect, useState } from "react"
 
-// Pagination controls component
-function PaginationControls<TData>({ table }: { table: ReturnType<typeof useReactTable<TData>> }) {
-    const currentPage = table.getState().pagination.pageIndex + 1
-    const totalPages = table.getPageCount()
-    const pageSize = table.getState().pagination.pageSize
-    const totalCount = table.getRowCount()
+// Server-side pagination controls component
+function PaginationControls({
+    pagination
+}: {
+    pagination: {
+        currentPage: number
+        totalPages: number
+        totalCount: number
+        pageSize: number
+        onPageChange: (page: number) => void
+        onPageSizeChange: (pageSize: number) => void
+    }
+}) {
+    const { currentPage, totalPages, totalCount, pageSize, onPageChange, onPageSizeChange } = pagination
+
+    // Функция для генерации номеров страниц для отображения
+    const getPageNumbers = () => {
+        if (totalPages <= 7) {
+            // Если страниц мало, показываем все
+            return Array.from({ length: totalPages }, (_, i) => i + 1)
+        }
+
+        const pages = new Set<number>()
+
+        // Добавляем первые 2 страницы
+        pages.add(1)
+        if (totalPages > 1) {
+            pages.add(2)
+        }
+
+        // Добавляем текущую страницу и соседние (только если они не пересекаются с первыми 2)
+        if (currentPage > 3) {
+            for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) {
+                pages.add(i)
+            }
+        }
+
+        // Добавляем последние 2 страницы
+        if (totalPages > 2) {
+            pages.add(totalPages - 1)
+        }
+        pages.add(totalPages)
+
+        return Array.from(pages).sort((a, b) => a - b)
+    }
+
+    const pageNumbers = getPageNumbers()
 
     return (
         <div className="flex items-center justify-between px-4">
@@ -53,7 +94,7 @@ function PaginationControls<TData>({ table }: { table: ReturnType<typeof useReac
                     </Label>
                     <Select
                         value={`${pageSize}`}
-                        onValueChange={(value) => table.setPageSize(Number(value))}
+                        onValueChange={(value) => onPageSizeChange(Number(value))}
                     >
                         <SelectTrigger className="w-20" id="rows-per-page">
                             <SelectValue placeholder={pageSize} />
@@ -68,46 +109,73 @@ function PaginationControls<TData>({ table }: { table: ReturnType<typeof useReac
                     </Select>
                 </div>
 
-                <div className="flex w-fit items-center justify-center text-sm font-medium">
-                    Page {currentPage} of {totalPages}
-                </div>
-
-                <div className="ml-auto flex items-center gap-2 lg:ml-0">
+                <div className="flex items-center gap-1">
+                    {/* Первая страница */}
                     <Button
                         variant="outline"
                         className="hidden h-8 w-8 p-0 lg:flex"
-                        onClick={() => table.setPageIndex(0)}
-                        disabled={!table.getCanPreviousPage()}
+                        onClick={() => onPageChange(1)}
+                        disabled={currentPage <= 1}
                     >
                         <span className="sr-only">Go to first page</span>
                         <IconChevronsLeft />
                     </Button>
+
+                    {/* Предыдущая страница */}
                     <Button
                         variant="outline"
                         className="size-8"
                         size="icon"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
+                        onClick={() => onPageChange(currentPage - 1)}
+                        disabled={currentPage <= 1}
                     >
                         <span className="sr-only">Go to previous page</span>
                         <IconChevronLeft />
                     </Button>
+
+                    {/* Номера страниц с троеточиями */}
+                    {pageNumbers.map((page, index) => {
+                        const isLast = index === pageNumbers.length - 1
+                        const nextPage = pageNumbers[index + 1]
+
+                        return (
+                            <div key={page} className="flex items-center gap-1">
+                                <Button
+                                    variant={page === currentPage ? "default" : "outline"}
+                                    className="h-8 min-w-8 px-2"
+                                    size="icon"
+                                    onClick={() => onPageChange(page)}
+                                >
+                                    {page}
+                                </Button>
+
+                                {/* Троеточие после этой страницы, если есть разрыв */}
+                                {!isLast && nextPage && nextPage - page > 1 && (
+                                    <span className="px-2 text-muted-foreground">...</span>
+                                )}
+                            </div>
+                        )
+                    })}
+
+                    {/* Следующая страница */}
                     <Button
                         variant="outline"
                         className="size-8"
                         size="icon"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        onClick={() => onPageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages}
                     >
                         <span className="sr-only">Go to next page</span>
                         <IconChevronRight />
                     </Button>
+
+                    {/* Последняя страница */}
                     <Button
                         variant="outline"
                         className="hidden size-8 lg:flex"
                         size="icon"
-                        onClick={() => table.setPageIndex(totalPages - 1)}
-                        disabled={!table.getCanNextPage()}
+                        onClick={() => onPageChange(totalPages)}
+                        disabled={currentPage >= totalPages}
                     >
                         <span className="sr-only">Go to last page</span>
                         <IconChevronsRight />
@@ -147,35 +215,26 @@ export function DataGrid<TData>({
     isLoading = false,
     loadingItemCount,
 
+    // Server-side pagination
+    pagination,
+
     // Callbacks
     onRowClick,
     onItemClick,
 }: DataGridProps<TData>) {
-    // Global filter state
+    // Global filter state - для серверного поиска
     const [globalFilter, setGlobalFilter] = useState("")
 
-    // Table setup for both modes (для пагинации и фильтрации)
+    // Простая настройка таблицы только для отображения - без клиентской обработки
     const table = useReactTable({
         data,
         columns: columns || [],
-        state: {
-            globalFilter,
-        },
-        onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        globalFilterFn: 'includesString',
-        initialState: {
-            pagination: {
-                pageSize: 25,
-            },
-        },
+        // Убираем всю клиентскую логику - только отображение данных
+        manualPagination: true,
+        manualSorting: true,
+        manualFiltering: true,
     })
-
-    // Get current page data
-    const currentPageData = enablePagination ? table.getRowModel().rows.map(row => row.original) : data
 
     // Set loading item count based on view mode if not provided
     const effectiveLoadingItemCount = loadingItemCount ?? (viewMode === 'table' ? 25 : 9)
@@ -262,12 +321,14 @@ export function DataGrid<TData>({
                         </div>
                     )}
 
-                    {/* Pagination - для таблицы */}
-                    {enablePagination && (
+                    {/* Серверная пагинация */}
+                    {enablePagination && pagination && (
                         isLoading ? (
                             <PaginationSkeleton />
                         ) : (
-                            data.length > 0 && <PaginationControls<TData> table={table} />
+                            data.length > 0 && (
+                                <PaginationControls pagination={pagination} />
+                            )
                         )
                     )}
                 </div>
@@ -276,7 +337,7 @@ export function DataGrid<TData>({
                     {renderCard ? (
                         <>
                             <CardsView
-                                data={currentPageData}
+                                data={data}
                                 renderCard={renderCard}
                                 cardClassName={cardClassName}
                                 cardsPerRow={cardsPerRow}
@@ -286,13 +347,15 @@ export function DataGrid<TData>({
                                 onItemClick={onItemClick}
                             />
 
-                            {/* Pagination - для карточек */}
-                            {enablePagination && (
+                            {/* Серверная пагинация для карточек */}
+                            {enablePagination && pagination && (
                                 <div className="mt-4">
                                     {isLoading ? (
                                         <PaginationSkeleton />
                                     ) : (
-                                        data.length > 0 && <PaginationControls<TData> table={table} />
+                                        data.length > 0 && (
+                                            <PaginationControls pagination={pagination} />
+                                        )
                                     )}
                                 </div>
                             )}
