@@ -92,6 +92,39 @@ getAllPromoCodes:
     "401":
       $ref: "../shared/responses.yaml#/UnauthorizedError"
 
+createPromoCode:
+  summary: Create a new promo code
+  operationId: createPromoCode
+  tags:
+    - PromoCodes
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            promo_code:
+              $ref: "#/components/schemas/PromoCodeInput"
+          required:
+            - promo_code
+  responses:
+    "201":
+      description: Promo code created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              promo_code:
+                $ref: "#/components/schemas/PromoCodeRecord"
+              message:
+                type: string
+    "422":
+      $ref: "../shared/responses.yaml#/ValidationError"
+    "401":
+      $ref: "../shared/responses.yaml#/UnauthorizedError"
+
 components:
   schemas:
     PromoCodeRecord:
@@ -140,4 +173,31 @@ components:
           format: date-time
         updated_at:
           type: string
-          format: date-time 
+          format: date-time
+
+    PromoCodeInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        discount_percent:
+          type: number
+          format: float
+        is_active:
+          type: boolean
+        offer_id:
+          type: integer
+          nullable: true
+        country:
+          type: string
+          nullable: true
+      required:
+        - name
+        - discount_percent 

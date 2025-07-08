@@ -3,7 +3,7 @@ import type { components } from "@/shared/api/schema/generated";
 
 // Типы для ads-managers из OpenAPI схемы
 export type AdsManager = components["schemas"]["AdsManagerRecord"];
-export type CreateAdsManagerData = components["schemas"]["CreateAdsManagerRequest"];
+export type CreateAdsManagerData = components["schemas"]["AdsManagerInput"];
 
 // Создаем полный набор CRUD хуков для ads-managers
 const {

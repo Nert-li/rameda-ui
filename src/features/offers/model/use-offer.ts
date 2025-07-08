@@ -3,7 +3,7 @@ import type { components } from "@/shared/api/schema/generated";
 
 // Типы для offers из OpenAPI схемы
 export type Offer = components["schemas"]["OfferRecord"];
-export type CreateOfferData = components["schemas"]["CreateOfferRequest"];
+export type CreateOfferData = components["schemas"]["OfferInput"];
 
 // Создаем полный набор CRUD хуков для offers
 const {

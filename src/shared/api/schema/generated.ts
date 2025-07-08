@@ -354,7 +354,8 @@ export interface paths {
         /** Get all promo codes */
         get: operations["getAllPromoCodes"];
         put?: never;
-        post?: never;
+        /** Create a new promo code */
+        post: operations["createPromoCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -656,6 +657,17 @@ export interface components {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
+        };
+        PromoCodeInput: {
+            name: string;
+            description?: string | null;
+            /** Format: date-time */
+            expires_at?: string | null;
+            /** Format: float */
+            discount_percent: number;
+            is_active?: boolean;
+            offer_id?: number | null;
+            country?: string | null;
         };
         OfferRecord: {
             id?: string;
@@ -1288,6 +1300,37 @@ export interface operations {
                 };
             };
             401: components["responses"]["UnauthorizedError"];
+        };
+    };
+    createPromoCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    promo_code: components["schemas"]["PromoCodeInput"];
+                };
+            };
+        };
+        responses: {
+            /** @description Promo code created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        promo_code?: components["schemas"]["PromoCodeRecord"];
+                        message?: string;
+                    };
+                };
+            };
+            401: components["responses"]["UnauthorizedError"];
+            422: components["responses"]["ValidationError"];
         };
     };
     getAllOffers: {

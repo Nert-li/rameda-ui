@@ -25,7 +25,7 @@ export const AssignOfferForm: React.FC<AssignOfferFormProps> = ({
     onSuccess
 }) => {
     const { offers, isLoading: isOffersLoading } = useOffersList();
-    const { updateOffer, isPending } = useUpdateOffer();
+    const { updateEntity, isLoading: isPending } = useUpdateOffer();
 
     const {
         handleSubmit,
@@ -54,10 +54,10 @@ export const AssignOfferForm: React.FC<AssignOfferFormProps> = ({
             },
         };
 
-        updateOffer(
+        updateEntity(
             {
-                params: { path: { offerId: data.offerId } },
-                body: updateData,
+                id: data.offerId,
+                data: updateData,
             },
             {
                 onSuccess: () => {

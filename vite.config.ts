@@ -5,6 +5,9 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Настройка базового пути для развертывания
+  base: process.env.VITE_BASE_URL || '/',
+
   plugins: [react(), tsconfigPaths(), tailwindcss()],
   build: {
     // Улучшенный tree-shaking

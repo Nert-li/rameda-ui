@@ -9,72 +9,19 @@ import {
     TableHeader,
     TableRow,
 } from "@/shared/ui/kit/table"
-import { Skeleton } from "@/shared/ui/kit/skeleton"
 
 interface TableViewProps<TData> {
     table: ReturnType<typeof useReactTable<TData>>
-    isLoading?: boolean
-    loadingRowCount?: number
     emptyMessage?: string
     onRowClick?: (row: Row<TData>) => void
-}
-
-function LoadingSkeleton<TData>({
-    table,
-    rowCount
-}: {
-    table: ReturnType<typeof useReactTable<TData>>
-    rowCount: number
-}) {
-    const columns = table.getAllColumns()
-
-    // Функция для определения ширины skeleton в зависимости от позиции колонки
-    const getSkeletonWidth = (cellIndex: number, totalColumns: number) => {
-        if (cellIndex === 0) return "w-3/4" // Первая колонка обычно название - длиннее
-        if (cellIndex === totalColumns - 1) return "w-16" // Последняя колонка обычно действия - короче
-        if (cellIndex % 3 === 0) return "w-2/3" // Каждая третья колонка средней длины
-        if (cellIndex % 2 === 0) return "w-1/2" // Четные колонки короче
-        return "w-full" // Нечетные колонки длиннее
-    }
-
-    return (
-        <>
-            {Array.from({ length: rowCount }).map((_, rowIndex) => {
-                const isEvenRow = rowIndex % 2 === 0
-                const rowBgClass = isEvenRow ? "bg-transparent" : "bg-muted/50"
-
-                return (
-                    <TableRow
-                        key={`skeleton-${rowIndex}`}
-                        className={`border-b border-border/60 hover:bg-muted/60 transition-colors ${rowBgClass}`}
-                    >
-                        {columns.map((_, cellIndex) => {
-                            const isEven = cellIndex % 2 === 0
-                            const borderClass = isEven
-                                ? "border-r-2 border-border/50"
-                                : "border-r-2 border-border/80"
-
-                            const skeletonWidth = getSkeletonWidth(cellIndex, columns.length)
-
-                            return (
-                                <TableCell key={cellIndex} className={borderClass}>
-                                    <Skeleton className={`h-4 ${skeletonWidth}`} />
-                                </TableCell>
-                            )
-                        })}
-                    </TableRow>
-                )
-            })}
-        </>
-    )
+    className?: string
 }
 
 export function TableView<TData>({
     table,
-    isLoading = false,
-    loadingRowCount = 5,
     emptyMessage = "No results.",
     onRowClick,
+    className = "",
 }: TableViewProps<TData>) {
     const columns = table.getAllColumns()
 
@@ -111,14 +58,6 @@ export function TableView<TData>({
 
     // Тело таблицы - пересчитывается при изменении данных
     const tableBody = useMemo(() => {
-        if (isLoading) {
-            return (
-                <TableBody>
-                    <LoadingSkeleton table={table} rowCount={loadingRowCount} />
-                </TableBody>
-            )
-        }
-
         const rows = table.getRowModel().rows
 
         if (!rows?.length) {
@@ -172,10 +111,10 @@ export function TableView<TData>({
                 })}
             </TableBody>
         )
-    }, [table.getRowModel().rows, isLoading, loadingRowCount, emptyMessage, columns.length, onRowClick]) // Зависит от данных
+    }, [table.getRowModel().rows, emptyMessage, columns.length, onRowClick]) // Зависит от данных
 
     return (
-        <div className="overflow-hidden rounded-lg border bg-card/50 shadow-sm">
+        <div className={`overflow-auto rounded-lg border bg-card/50 shadow-sm ${className}`}>
             <Table className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 {tableHeader}
                 {tableBody}

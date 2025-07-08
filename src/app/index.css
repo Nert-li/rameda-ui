@@ -118,6 +118,8 @@ html,
 body,
 #root {
   background-color: oklch(0.2 0 0);
+  height: 100vh;
+  overflow: hidden;
 }
 
 @layer base {

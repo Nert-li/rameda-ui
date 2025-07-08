@@ -54,7 +54,7 @@ export function CreatePromoCodeForm({ onSuccess, onCancel }: CreatePromoCodeForm
     };
 
     const handleChange = (field: keyof CreatePromoCodeData, value: string | number | boolean) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+        setFormData((prev: CreatePromoCodeData) => ({ ...prev, [field]: value }));
     };
 
     return (

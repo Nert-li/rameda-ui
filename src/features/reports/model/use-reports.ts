@@ -3,7 +3,7 @@ import type { components } from "@/shared/api/schema/generated";
 
 // Типы для reports из OpenAPI схемы
 export type Report = components["schemas"]["ReportRecord"];
-export type CreateReportData = components["schemas"]["CreateReportRequest"];
+export type CreateReportData = components["schemas"]["ReportInput"];
 
 // Создаем полный набор CRUD хуков для reports
 const {

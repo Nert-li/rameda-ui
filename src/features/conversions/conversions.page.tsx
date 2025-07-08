@@ -6,11 +6,13 @@ export function Component() {
     const { conversions, isLoading, sorting, pagination } = useConversionsList();
 
     return (
-        <ConversionsTable
-            data={conversions as Conversion[]}
-            sorting={sorting}
-            pagination={pagination}
-            isLoading={isLoading}
-        />
+        <div className="flex flex-col h-full p-4 gap-4">
+            <ConversionsTable
+                data={conversions as Conversion[]}
+                sorting={sorting}
+                pagination={pagination}
+                isLoading={isLoading}
+            />
+        </div>
     );
 } 

@@ -3,7 +3,7 @@ import type { components } from "@/shared/api/schema/generated";
 
 // Типы для promo-codes из OpenAPI схемы
 export type PromoCode = components["schemas"]["PromoCodeRecord"];
-export type CreatePromoCodeData = components["schemas"]["CreatePromoCodeRequest"];
+export type CreatePromoCodeData = components["schemas"]["PromoCodeInput"];
 
 // Создаем полный набор CRUD хуков для promo-codes
 const {

@@ -26,7 +26,7 @@ export function Component() {
     };
 
     return (
-        <>
+        <div className="flex flex-col h-full p-4 gap-4">
             <HeaderContent>
                 <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                     <DialogTrigger asChild>
@@ -52,6 +52,6 @@ export function Component() {
                 onOfferUpdated={handleOfferUpdated}
                 onOfferDeleted={handleOfferDeleted}
             />
-        </>
+        </div>
     );
 } 

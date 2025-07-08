@@ -6,11 +6,13 @@ export function Component() {
     const { clicks, isLoading, sorting, pagination } = useClicksList();
 
     return (
-        <ClicksTable
-            data={clicks as Click[]}
-            sorting={sorting}
-            pagination={pagination}
-            isLoading={isLoading}
-        />
+        <div className="flex flex-col h-full p-4 gap-4">
+            <ClicksTable
+                data={clicks as Click[]}
+                sorting={sorting}
+                pagination={pagination}
+                isLoading={isLoading}
+            />
+        </div>
     );
 } 

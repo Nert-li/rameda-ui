@@ -10,10 +10,9 @@ export { DataGrid } from "./data-grid"
 
 export { TableView } from "./table-view"
 export { CardsView } from "./cards-view"
-export { ViewToggle } from "./components/view-toggle"
 
 // Skeleton components
-export { FiltersSkeleton, PaginationSkeleton, CompactPaginationSkeleton } from "./skeletons"
+export { FiltersSkeleton, PaginationSkeleton, TableSkeleton, CompactPaginationSkeleton } from "./skeletons"
 
 // ==========================================
 // LEGACY SUPPORT (for backwards compatibility)

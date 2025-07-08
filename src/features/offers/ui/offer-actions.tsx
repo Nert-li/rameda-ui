@@ -29,10 +29,15 @@ export function OfferActions({ offer, onOfferUpdated, onOfferDeleted }: OfferAct
     };
 
     const handleDelete = async () => {
-        const confirmed = await deleteWithConfirm(offer.id!, offer.name || 'Offer');
-        if (confirmed) {
-            onOfferDeleted?.();
-        }
+        deleteWithConfirm(
+            { id: offer.id! },
+            {
+                confirmMessage: `Вы уверены, что хотите удалить оффер "${offer.name || 'Offer'}"?`,
+                onSuccess: () => {
+                    onOfferDeleted?.();
+                }
+            }
+        );
     };
 
     const handleEditSuccess = () => {

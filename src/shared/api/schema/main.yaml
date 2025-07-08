@@ -41,6 +41,8 @@ paths:
   /promo_codes:
     get:
       $ref: "endpoints/promo-codes.yaml#/getAllPromoCodes"
+    post:
+      $ref: "endpoints/promo-codes.yaml#/createPromoCode"
 
   # Offers endpoints
   /offers:
@@ -128,6 +130,8 @@ components:
       $ref: "endpoints/users.yaml#/components/schemas/UserRecord"
     PromoCodeRecord:
       $ref: "endpoints/promo-codes.yaml#/components/schemas/PromoCodeRecord"
+    PromoCodeInput:
+      $ref: "endpoints/promo-codes.yaml#/components/schemas/PromoCodeInput"
     OfferRecord:
       $ref: "endpoints/offers.yaml#/components/schemas/OfferRecord"
     OfferInput:
