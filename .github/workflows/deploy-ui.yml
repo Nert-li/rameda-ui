@@ -33,6 +33,7 @@ jobs:
   bump-version:
     name: 🔢 Bump Version
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     outputs:
       new_version: ${{ steps.bump-version.outputs.new_version }}
@@ -97,37 +98,44 @@ jobs:
         run: |
           git push origin HEAD
 
-  # Job 2: Run Tests & Linting
+  # Job 2: Run Tests & Linting (always runs, but can skip actual tests)
   test:
     name: 🧪 Run Tests & Linting
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: bump-version
-    if: ${{ !github.event.inputs.skip_tests }}
+    outputs:
+      tests_skipped: ${{ steps.test-result.outputs.tests_skipped }}
     steps:
-      - name: 📦 Checkout repository
+      - name: 📦 Checkout repository (latest)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: main
+          fetch-depth: 0
 
       - name: 🟨 Setup Bun
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
       - name: 📚 Install dependencies
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
         run: |
           bun install --frozen-lockfile
 
       - name: 🔍 Type checking
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
         run: |
           bun run tsc --noEmit
 
       - name: 🧹 Lint check
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
         run: |
           bun run lint
 
       - name: 🧪 Run tests
-        if: always()
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
         run: |
           # Only run if test script exists in package.json
           if bun run --silent test --help >/dev/null 2>&1; then
@@ -138,6 +146,7 @@ jobs:
           fi
 
       - name: 🏗️ Build check
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
         run: |
           # Test build to ensure it works
           VITE_BASE_URL="https://storage.googleapis.com/rameda-ui-static/static/test/" bun run build
@@ -151,7 +160,7 @@ jobs:
           echo "✅ Build successful!"
 
       - name: 📊 Upload build artifacts
-        if: always()
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: build-check-artifacts
@@ -159,19 +168,36 @@ jobs:
             dist/
           retention-days: 1
 
+      - name: ⏭️ Skip tests notification
+        if: ${{ github.event.inputs.skip_tests == 'true' }}
+        run: |
+          echo "⚠️ Tests were skipped by user request"
+
+      - name: 📝 Set test result
+        id: test-result
+        run: |
+          SKIP_TESTS="${{ github.event.inputs.skip_tests }}"
+          if [[ "$SKIP_TESTS" == "true" ]]; then
+            echo "tests_skipped=true" >> $GITHUB_OUTPUT
+          else
+            echo "tests_skipped=false" >> $GITHUB_OUTPUT
+          fi
+
   # Job 3: Build and Push Docker Image
   build-and-push:
     name: 🐳 Build & Push Docker Image
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [bump-version, test]
-    if: always() && (needs.test.result == 'success' || github.event.inputs.skip_tests == 'true')
+    if: needs.test.result == 'success'
     outputs:
-      image_tag: ${{ env.IMAGE_NAME }}:${{ needs.bump-version.outputs.new_version }}
+      image_tag: ${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}
     steps:
-      - name: 📦 Checkout repository
+      - name: 📦 Checkout repository (latest)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: main
+          fetch-depth: 0
 
       - name: 🟨 Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -204,6 +230,7 @@ jobs:
           VITE_BASE_URL="${PUBLIC_URL}/" bun run build
 
       - name: ☁️ Upload static assets to GCS
+        timeout-minutes: 10
         run: |
           VERSION="${{ needs.bump-version.outputs.new_version }}"
           STATIC_PATH="static/v${VERSION}"
@@ -239,6 +266,7 @@ jobs:
           gsutil -m setmeta -h "Cache-Control:public,max-age=31536000,immutable" "gs://${{ env.BUCKET }}/${STATIC_PATH}/**" 2>/dev/null || echo "⚠️ Warning: could not set cache headers"
 
       - name: 🐳 Build and push Docker image
+        timeout-minutes: 15
         run: |
           VERSION="${{ needs.bump-version.outputs.new_version }}"
           IMAGE_TAG="${{ env.IMAGE_NAME }}:v${VERSION}"
@@ -286,8 +314,9 @@ jobs:
   deploy:
     name: 🚀 Deploy to Kubernetes
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [bump-version, build-and-push]
-    if: always() && needs.build-and-push.result == 'success'
+    if: needs.build-and-push.result == 'success'
     steps:
       - name: 📦 Checkout repository
         uses: actions/checkout@v4
@@ -321,13 +350,16 @@ jobs:
   release:
     name: 📋 Create GitHub Release
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [bump-version, build-and-push, deploy]
-    if: always() && needs.deploy.result == 'success'
+    if: needs.deploy.result == 'success'
     steps:
       - name: 📦 Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GIT_ACCESS_TOKEN }}
+          ref: main
+          fetch-depth: 0
 
       - name: 🏷️ Create Git tag
         run: |
@@ -358,6 +390,7 @@ jobs:
   notify:
     name: 📢 Notify & Summary
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [bump-version, test, build-and-push, deploy, release]
     if: always()
     steps:
@@ -367,13 +400,13 @@ jobs:
           echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Version Bump | ${{ needs.bump-version.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests & Linting | ${{ github.event.inputs.skip_tests == 'true' && '⏭️ Skipped' || (needs.test.result == 'success' && '✅' || '❌') }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Build & Push | ${{ needs.build-and-push.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Deploy | ${{ needs.deploy.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Release | ${{ needs.release.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests & Linting | ${{ needs.test.outputs.tests_skipped == 'true' && '⏭️ Skipped' || (needs.test.result == 'success' && '✅' || '❌') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build & Push | ${{ needs.build-and-push.result == 'success' && '✅' || (needs.build-and-push.result == 'failure' && '❌' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy | ${{ needs.deploy.result == 'success' && '✅' || (needs.deploy.result == 'failure' && '❌' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Release | ${{ needs.release.result == 'success' && '✅' || (needs.release.result == 'failure' && '❌' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** v${{ needs.bump-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** \`${{ env.IMAGE_NAME }}:${{ needs.bump-version.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Static URL:** https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/" >> $GITHUB_STEP_SUMMARY
           echo "**App URL:** https://rameda.pro" >> $GITHUB_STEP_SUMMARY
 
@@ -387,10 +420,10 @@ jobs:
             🚀 *Rameda UI Successfully Deployed!*
             
             📦 *Version:* v${{ needs.bump-version.outputs.new_version }}
-            🐳 *Image:* `${{ env.IMAGE_NAME }}:${{ needs.bump-version.outputs.new_version }}`
+            🐳 *Image:* `${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}`
             🌍 *App:* https://rameda.pro
             📍 *Static:* https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/
-            🧪 *Tests:* ${{ github.event.inputs.skip_tests == 'true' && 'Skipped' || 'Passed' }}
+            🧪 *Tests:* ${{ needs.test.outputs.tests_skipped == 'true' && 'Skipped' || 'Passed' }}
             
             [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           format: markdown
