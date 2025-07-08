@@ -36,8 +36,8 @@ if [ "$CURRENT_PROJECT" != "$PROJECT_ID" ]; then
     gcloud config set project "$PROJECT_ID"
 fi
 
-# Переключаемся на основной аккаунт для работы с GCS (если сейчас используется сервисный)
-if [[ "$CURRENT_ACCOUNT" == *"@rameda-465221.iam.gserviceaccount.com" ]]; then
+# Переключаемся на основной аккаунт для работы с GCS (если используется k8s-artifact-registry)
+if [[ "$CURRENT_ACCOUNT" == "k8s-artifact-registry@rameda-465221.iam.gserviceaccount.com" ]]; then
     echo "🔧 Переключаюсь на основной аккаунт для работы с GCS..."
     # Находим основной аккаунт пользователя (не сервисный)
     USER_ACCOUNT=$(gcloud auth list --format="value(account)" | grep -v "@rameda-465221.iam.gserviceaccount.com" | head -1)
@@ -48,6 +48,10 @@ if [[ "$CURRENT_ACCOUNT" == *"@rameda-465221.iam.gserviceaccount.com" ]]; then
         echo "❌ Основной аккаунт пользователя не найден! Авторизуйтесь: gcloud auth login"
         exit 1
     fi
+elif [[ "$CURRENT_ACCOUNT" == "github@rameda-465221.iam.gserviceaccount.com" ]]; then
+    echo "✅ Используется GitHub CI/CD аккаунт с полными правами"
+else
+    echo "✅ Используется основной аккаунт: $CURRENT_ACCOUNT"
 fi
 
 # Настраиваем Docker для работы с Artifact Registry
