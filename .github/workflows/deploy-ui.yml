@@ -328,7 +328,7 @@ jobs:
           echo "**Static Assets:** https://storage.googleapis.com/${{ env.BUCKET }}/static/v${VERSION}/" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
-          echo "- Manually deploy to Kubernetes: \`kubectl rollout restart deployment rameda-ui -n rameda-ui\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Manually deploy to Kubernetes: \`kubectl rollout restart deployment rameda-ui -n production\`" >> $GITHUB_STEP_SUMMARY
           echo "- App will be available at: https://crm.rameda.pro" >> $GITHUB_STEP_SUMMARY
 
   # Job 4: Notifications and Summary
