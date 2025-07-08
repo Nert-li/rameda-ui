@@ -408,7 +408,7 @@ jobs:
           echo "**Version:** v${{ needs.bump-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "**Image:** \`${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Static URL:** https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/" >> $GITHUB_STEP_SUMMARY
-          echo "**App URL:** https://rameda.pro" >> $GITHUB_STEP_SUMMARY
+          echo "**App URL:** https://ui.rameda.pro" >> $GITHUB_STEP_SUMMARY
 
       - name: 🔔 Send success notification
         if: ${{ needs.deploy.result == 'success' }}
@@ -421,7 +421,7 @@ jobs:
             
             📦 *Version:* v${{ needs.bump-version.outputs.new_version }}
             🐳 *Image:* `${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}`
-            🌍 *App:* https://rameda.pro
+            🌍 *App:* https://ui.rameda.pro
             📍 *Static:* https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/
             🧪 *Tests:* ${{ needs.test.outputs.tests_skipped == 'true' && 'Skipped' || 'Passed' }}
             
