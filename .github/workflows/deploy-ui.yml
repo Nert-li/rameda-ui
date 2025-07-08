@@ -236,6 +236,8 @@ jobs:
           STATIC_PATH="static/v${VERSION}"
           
           echo "🚀 Uploading to GCS: $STATIC_PATH"
+          echo "📊 Bucket: ${{ env.BUCKET }}"
+          echo "📂 Full path: gs://${{ env.BUCKET }}/${STATIC_PATH}/"
           
           # Check if build directory exists
           if [ ! -d "dist" ]; then
@@ -272,8 +274,14 @@ jobs:
           IMAGE_TAG="${{ env.IMAGE_NAME }}:v${VERSION}"
           IMAGE_LATEST="${{ env.IMAGE_NAME }}:latest"
           
+          echo "🐳 Docker build starting..."
+          echo "📦 Version: v${VERSION}"
+          echo "🏷️ Image tag: ${IMAGE_TAG}"
+          echo "🏷️ Latest tag: ${IMAGE_LATEST}"
+          
           # Create temporary directory for Docker build
           TMPDIR=$(mktemp -d)
+          echo "📁 Temp dir: $TMPDIR"
           mkdir -p "$TMPDIR/app"
           
           # Check that index.html exists
@@ -310,100 +318,35 @@ jobs:
           
           echo "✅ Docker image built and pushed successfully!"
 
-  # Job 4: Deploy to Kubernetes
-  deploy:
-    name: 🚀 Deploy to Kubernetes
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [bump-version, build-and-push]
-    if: needs.build-and-push.result == 'success'
-    steps:
-      - name: 📦 Checkout repository
-        uses: actions/checkout@v4
-
-      - name: 🔐 Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: ⚙️ Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-
-      - name: 🎯 Get GKE credentials
-        run: |
-          gcloud container clusters get-credentials autopilot-cluster-1 --region=europe-west3
-
-      - name: 🔄 Restart deployment
-        run: |
-          kubectl rollout restart deployment rameda-ui -n rameda-ui
-          kubectl rollout status deployment rameda-ui -n rameda-ui --timeout=300s
-
-      - name: ✅ Verify deployment
-        run: |
-          echo "🔍 Checking deployment status..."
-          kubectl get pods -n rameda-ui
-          kubectl get svc -n rameda-ui
-
-  # Job 5: Create Release
-  release:
-    name: 📋 Create GitHub Release
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [bump-version, build-and-push, deploy]
-    if: needs.deploy.result == 'success'
-    steps:
-      - name: 📦 Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GIT_ACCESS_TOKEN }}
-          ref: main
-          fetch-depth: 0
-
-      - name: 🏷️ Create Git tag
+      - name: 📝 Output build info
         run: |
           VERSION="${{ needs.bump-version.outputs.new_version }}"
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+          echo "## 🚀 Build Completed Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "**Docker Image:** \`${{ env.IMAGE_NAME }}:v${VERSION}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Static Assets:** https://storage.googleapis.com/${{ env.BUCKET }}/static/v${VERSION}/" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
+          echo "- Manually deploy to Kubernetes: \`kubectl rollout restart deployment rameda-ui -n rameda-ui\`" >> $GITHUB_STEP_SUMMARY
+          echo "- App will be available at: https://ui.rameda.pro" >> $GITHUB_STEP_SUMMARY
 
-      - name: 📋 Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
-        with:
-          tag_name: v${{ needs.bump-version.outputs.new_version }}
-          release_name: Release v${{ needs.bump-version.outputs.new_version }}
-          body: |
-            🚀 Deployed version v${{ needs.bump-version.outputs.new_version }}
-            
-            📍 **Static assets:** https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/
-            🐳 **Docker image:** ${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}
-            📦 **All images:** ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/gcr/
-            
-            ### Changes
-            - Automated deployment from commit ${{ github.sha }}
-          draft: false
-          prerelease: false
-
-  # Job 6: Notifications and Summary
+  # Job 4: Notifications and Summary
   notify:
     name: 📢 Notify & Summary
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [bump-version, test, build-and-push, deploy, release]
+    needs: [bump-version, test, build-and-push]
     if: always()
     steps:
       - name: 📊 Prepare summary
         run: |
-          echo "## 🚀 Rameda UI Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚀 Rameda UI Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Version Bump | ${{ needs.bump-version.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Tests & Linting | ${{ needs.test.outputs.tests_skipped == 'true' && '⏭️ Skipped' || (needs.test.result == 'success' && '✅' || '❌') }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build & Push | ${{ needs.build-and-push.result == 'success' && '✅' || (needs.build-and-push.result == 'failure' && '❌' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Deploy | ${{ needs.deploy.result == 'success' && '✅' || (needs.deploy.result == 'failure' && '❌' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Release | ${{ needs.release.result == 'success' && '✅' || (needs.release.result == 'failure' && '❌' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** v${{ needs.bump-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "**Image:** \`${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
@@ -411,34 +354,46 @@ jobs:
           echo "**App URL:** https://ui.rameda.pro" >> $GITHUB_STEP_SUMMARY
 
       - name: 🔔 Send success notification
-        if: ${{ needs.deploy.result == 'success' }}
+        if: ${{ needs.build-and-push.result == 'success' }}
+        continue-on-error: true
+        run: |
+          echo "📱 Sending Telegram notification..."
+          echo "📊 Build completed successfully"
+          echo "🚀 Ready for manual deployment"
+          
+      - name: 📱 Telegram notification
+        if: ${{ needs.build-and-push.result == 'success' }}
+        continue-on-error: true
         uses: appleboy/telegram-action@v0.1.1
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: |
-            🚀 *Rameda UI Successfully Deployed!*
+            🚀 *Rameda UI Build Completed!*
             
             📦 *Version:* v${{ needs.bump-version.outputs.new_version }}
             🐳 *Image:* `${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}`
-            🌍 *App:* https://ui.rameda.pro
             📍 *Static:* https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/
             🧪 *Tests:* ${{ needs.test.outputs.tests_skipped == 'true' && 'Skipped' || 'Passed' }}
+            
+            💡 *Next:* Manual deploy with \`kubectl rollout restart deployment rameda-ui -n rameda-ui\`
+            🌍 *App:* https://ui.rameda.pro
             
             [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           format: markdown
 
       - name: 🚨 Send failure notification
-        if: ${{ needs.build-and-push.result == 'failure' || needs.deploy.result == 'failure' || needs.test.result == 'failure' }}
+        if: ${{ needs.build-and-push.result == 'failure' || needs.test.result == 'failure' }}
+        continue-on-error: true
         uses: appleboy/telegram-action@v0.1.1
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: |
-            ❌ *Rameda UI Deployment Failed!*
+            ❌ *Rameda UI Build Failed!*
             
             📦 *Version:* v${{ needs.bump-version.outputs.new_version }}
-            🚫 *Failed Step:* ${{ needs.test.result == 'failure' && 'Tests' || (needs.build-and-push.result == 'failure' && 'Build & Push' || 'Deploy') }}
+            🚫 *Failed Step:* ${{ needs.test.result == 'failure' && 'Tests' || 'Build & Push' }}
             
             [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           format: markdown 
