@@ -329,7 +329,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
           echo "- Manually deploy to Kubernetes: \`kubectl rollout restart deployment rameda-ui -n rameda-ui\`" >> $GITHUB_STEP_SUMMARY
-          echo "- App will be available at: https://ui.rameda.pro" >> $GITHUB_STEP_SUMMARY
+          echo "- App will be available at: https://crm.rameda.pro" >> $GITHUB_STEP_SUMMARY
 
   # Job 4: Notifications and Summary
   notify:
@@ -351,7 +351,7 @@ jobs:
           echo "**Version:** v${{ needs.bump-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "**Image:** \`${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Static URL:** https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/" >> $GITHUB_STEP_SUMMARY
-          echo "**App URL:** https://ui.rameda.pro" >> $GITHUB_STEP_SUMMARY
+          echo "**App URL:** https://crm.rameda.pro" >> $GITHUB_STEP_SUMMARY
 
       - name: 🔔 Send success notification
         if: ${{ needs.build-and-push.result == 'success' }}
@@ -372,12 +372,6 @@ jobs:
             🚀 *Rameda UI Build Completed!*
             
             📦 *Version:* v${{ needs.bump-version.outputs.new_version }}
-            🐳 *Image:* `${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}`
-            📍 *Static:* https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/
-            🧪 *Tests:* ${{ needs.test.outputs.tests_skipped == 'true' && 'Skipped' || 'Passed' }}
-            
-            💡 *Next:* Manual deploy with \`kubectl rollout restart deployment rameda-ui -n rameda-ui\`
-            🌍 *App:* https://ui.rameda.pro
             
             [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           format: markdown
