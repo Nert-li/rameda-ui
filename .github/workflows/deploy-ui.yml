@@ -149,7 +149,7 @@ jobs:
         if: ${{ github.event.inputs.skip_tests != 'true' }}
         run: |
           # Test build to ensure it works
-          VITE_BASE_URL="https://storage.googleapis.com/rameda-ui-static/static/test/" bun run build
+          VITE_BASE_URL="https://storage.googleapis.com/rameda-ui-static/static/test/" VITE_API_BASE_URL="https://api.rameda.pro" bun run build
           
           # Check if build artifacts exist
           if [ ! -f "dist/index.html" ]; then
@@ -227,7 +227,7 @@ jobs:
           VERSION="${{ needs.bump-version.outputs.new_version }}"
           PUBLIC_URL="https://storage.googleapis.com/${{ env.BUCKET }}/static/v${VERSION}"
           echo "🔧 Building UI with VITE_BASE_URL=${PUBLIC_URL}/"
-          VITE_BASE_URL="${PUBLIC_URL}/" bun run build
+          VITE_BASE_URL="${PUBLIC_URL}/" VITE_API_BASE_URL="https://api.rameda.pro" bun run build
 
       - name: ☁️ Upload static assets to GCS
         timeout-minutes: 10
