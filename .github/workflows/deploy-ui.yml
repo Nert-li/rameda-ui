@@ -1,15 +1,26 @@
-name: Deploy Rameda UI
+name: Rameda UI - Complete CI/CD Pipeline
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
-      bump_version:
-        description: 'Bump version before deploy'
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      skip_tests:
+        description: 'Skip tests (use with caution)'
         required: false
-        default: true
+        default: false
         type: boolean
+
+# Grant TOKEN write permissions for version commits
+permissions:
+  contents: write
 
 env:
   PROJECT_ID: rameda-465221
@@ -18,72 +29,383 @@ env:
   IMAGE_NAME: europe-west3-docker.pkg.dev/rameda-465221/gcr/rameda-ui
 
 jobs:
-  deploy:
+  # Job 1: Bump Version
+  bump-version:
+    name: 🔢 Bump Version
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: write
-      id-token: write
-    
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    outputs:
+      new_version: ${{ steps.bump-version.outputs.new_version }}
+      version_changed: ${{ steps.bump-version.outputs.version_changed }}
     steps:
-      - name: Checkout code
+      - name: 📦 Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GIT_ACCESS_TOKEN }}
+          fetch-depth: 0
 
-      - name: Setup Bun
+      - name: 🔢 Bump version
+        id: bump-version
+        run: |
+          # Read current version or create if doesn't exist
+          if [[ -f VERSION ]]; then
+            CURRENT_VERSION=$(cat VERSION | tr -d '\n\r')
+            echo "Current version: $CURRENT_VERSION"
+          else
+            echo "VERSION file not found, creating with initial version 0.1.0"
+            CURRENT_VERSION="0.1.0"
+            echo "$CURRENT_VERSION" > VERSION
+          fi
+
+          # Split version into parts
+          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+
+          # Increment version based on input
+          case "${{ github.event.inputs.version_type }}" in
+            "major")
+              NEW_MAJOR=$((MAJOR + 1))
+              NEW_VERSION="$NEW_MAJOR.0.0"
+              ;;
+            "minor")
+              NEW_MINOR=$((MINOR + 1))
+              NEW_VERSION="$MAJOR.$NEW_MINOR.0"
+              ;;
+            "patch"|*)
+              NEW_PATCH=$((PATCH + 1))
+              NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+              ;;
+          esac
+
+          echo "New version: $NEW_VERSION"
+          echo "$NEW_VERSION" > VERSION
+          
+          # Set outputs
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "version_changed=true" >> $GITHUB_OUTPUT
+
+      - name: 📝 Commit version changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add VERSION
+          git commit -m "🔖 Bump ${{ github.event.inputs.version_type }} version to v${{ steps.bump-version.outputs.new_version }}"
+
+      - name: 📤 Push changes
+        run: |
+          git push origin HEAD
+
+  # Job 2: Run Tests & Linting
+  test:
+    name: 🧪 Run Tests & Linting
+    runs-on: ubuntu-latest
+    needs: bump-version
+    if: ${{ !github.event.inputs.skip_tests }}
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: 🟨 Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Install dependencies
-        run: bun install
-
-      - name: Bump version
-        if: github.event.inputs.bump_version != 'false'
+      - name: 📚 Install dependencies
         run: |
-          chmod +x bump.sh
-          ./bump.sh
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add VERSION
-          git commit -m "🔖 Bump version to $(cat VERSION)" || exit 0
-          git push
+          bun install --frozen-lockfile
 
-      - name: Authenticate to Google Cloud
+      - name: 🔍 Type checking
+        run: |
+          bun run tsc --noEmit
+
+      - name: 🧹 Lint check
+        run: |
+          bun run lint
+
+      - name: 🧪 Run tests
+        if: always()
+        run: |
+          # Only run if test script exists in package.json
+          if bun run --silent test --help >/dev/null 2>&1; then
+            echo "Running tests..."
+            bun run test
+          else
+            echo "No test script found, skipping tests"
+          fi
+
+      - name: 🏗️ Build check
+        run: |
+          # Test build to ensure it works
+          VITE_BASE_URL="https://storage.googleapis.com/rameda-ui-static/static/test/" bun run build
+          
+          # Check if build artifacts exist
+          if [ ! -f "dist/index.html" ]; then
+            echo "❌ Build failed: index.html not found!"
+            exit 1
+          fi
+          
+          echo "✅ Build successful!"
+
+      - name: 📊 Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-check-artifacts
+          path: |
+            dist/
+          retention-days: 1
+
+  # Job 3: Build and Push Docker Image
+  build-and-push:
+    name: 🐳 Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: [bump-version, test]
+    if: always() && (needs.test.result == 'success' || github.event.inputs.skip_tests == 'true')
+    outputs:
+      image_tag: ${{ env.IMAGE_NAME }}:${{ needs.bump-version.outputs.new_version }}
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: 🟨 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🔐 Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Set up Cloud SDK
+      - name: ⚙️ Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
 
-      - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
-
-      - name: Build and deploy
+      - name: 🐳 Configure Docker for Artifact Registry
         run: |
-          chmod +x deploy-ui.sh
-          ./deploy-ui.sh
+          gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev --quiet
 
-      - name: Create GitHub Release
-        if: github.ref == 'refs/heads/main'
+      - name: 📚 Install dependencies
+        run: |
+          bun install --frozen-lockfile
+
+      - name: 🏗️ Build UI project
+        run: |
+          VERSION="${{ needs.bump-version.outputs.new_version }}"
+          PUBLIC_URL="https://storage.googleapis.com/${{ env.BUCKET }}/static/v${VERSION}"
+          echo "🔧 Building UI with VITE_BASE_URL=${PUBLIC_URL}/"
+          VITE_BASE_URL="${PUBLIC_URL}/" bun run build
+
+      - name: ☁️ Upload static assets to GCS
+        run: |
+          VERSION="${{ needs.bump-version.outputs.new_version }}"
+          STATIC_PATH="static/v${VERSION}"
+          
+          echo "🚀 Uploading to GCS: $STATIC_PATH"
+          
+          # Check if build directory exists
+          if [ ! -d "dist" ]; then
+            echo "❌ dist directory not found!"
+            exit 1
+          fi
+          
+          # Upload assets if they exist
+          if [ -d "dist/assets" ]; then
+            echo "📦 Uploading assets..."
+            gsutil -m cp -r "dist/assets" "gs://${{ env.BUCKET }}/${STATIC_PATH}/"
+          fi
+          
+          # Upload JS files
+          if ls dist/*.js 1> /dev/null 2>&1; then
+            echo "📦 Uploading JS files..."
+            gsutil -m cp dist/*.js "gs://${{ env.BUCKET }}/${STATIC_PATH}/"
+          fi
+          
+          # Upload CSS files
+          if ls dist/*.css 1> /dev/null 2>&1; then
+            echo "📦 Uploading CSS files..."
+            gsutil -m cp dist/*.css "gs://${{ env.BUCKET }}/${STATIC_PATH}/"
+          fi
+          
+          # Set caching headers
+          echo "⚙️ Setting cache headers..."
+          gsutil -m setmeta -h "Cache-Control:public,max-age=31536000,immutable" "gs://${{ env.BUCKET }}/${STATIC_PATH}/**" 2>/dev/null || echo "⚠️ Warning: could not set cache headers"
+
+      - name: 🐳 Build and push Docker image
+        run: |
+          VERSION="${{ needs.bump-version.outputs.new_version }}"
+          IMAGE_TAG="${{ env.IMAGE_NAME }}:v${VERSION}"
+          IMAGE_LATEST="${{ env.IMAGE_NAME }}:latest"
+          
+          # Create temporary directory for Docker build
+          TMPDIR=$(mktemp -d)
+          mkdir -p "$TMPDIR/app"
+          
+          # Check that index.html exists
+          if [ ! -f "dist/index.html" ]; then
+            echo "❌ dist/index.html not found!"
+            rm -rf "$TMPDIR"
+            exit 1
+          fi
+          
+          # Copy index.html to temp directory
+          cp "dist/index.html" "$TMPDIR/app/"
+          
+          # Create Dockerfile
+          cat > "$TMPDIR/Dockerfile" <<EOF
+          FROM nginx:1.25-alpine
+          COPY app/index.html /usr/share/nginx/html/index.html
+          RUN rm -rf /etc/nginx/conf.d/* && \\
+              echo 'server { listen 8080; root /usr/share/nginx/html; index index.html; location / { try_files \$uri /index.html; } }' > /etc/nginx/conf.d/default.conf
+          EXPOSE 8080
+          EOF
+          
+          echo "🐳 Building Docker image: $IMAGE_TAG"
+          docker build -t "$IMAGE_TAG" "$TMPDIR"
+          
+          echo "🚀 Pushing Docker image to Artifact Registry..."
+          docker push "$IMAGE_TAG"
+          
+          echo "🏷️ Creating latest tag..."
+          docker tag "$IMAGE_TAG" "$IMAGE_LATEST"
+          docker push "$IMAGE_LATEST"
+          
+          # Cleanup
+          rm -rf "$TMPDIR"
+          
+          echo "✅ Docker image built and pushed successfully!"
+
+  # Job 4: Deploy to Kubernetes
+  deploy:
+    name: 🚀 Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: [bump-version, build-and-push]
+    if: always() && needs.build-and-push.result == 'success'
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: ⚙️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: 🎯 Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials autopilot-cluster-1 --region=europe-west3
+
+      - name: 🔄 Restart deployment
+        run: |
+          kubectl rollout restart deployment rameda-ui -n rameda-ui
+          kubectl rollout status deployment rameda-ui -n rameda-ui --timeout=300s
+
+      - name: ✅ Verify deployment
+        run: |
+          echo "🔍 Checking deployment status..."
+          kubectl get pods -n rameda-ui
+          kubectl get svc -n rameda-ui
+
+  # Job 5: Create Release
+  release:
+    name: 📋 Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [bump-version, build-and-push, deploy]
+    if: always() && needs.deploy.result == 'success'
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_ACCESS_TOKEN }}
+
+      - name: 🏷️ Create Git tag
+        run: |
+          VERSION="${{ needs.bump-version.outputs.new_version }}"
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+
+      - name: 📋 Create GitHub Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         with:
-          tag_name: v$(cat VERSION)
-          release_name: Release v$(cat VERSION)
+          tag_name: v${{ needs.bump-version.outputs.new_version }}
+          release_name: Release v${{ needs.bump-version.outputs.new_version }}
           body: |
-            🚀 Deployed version v$(cat VERSION)
+            🚀 Deployed version v${{ needs.bump-version.outputs.new_version }}
             
-            📍 **Static assets:** https://storage.googleapis.com/rameda-ui-static/static/v$(cat VERSION)/
-            🐳 **Docker image:** ${{ env.IMAGE_NAME }}:v$(cat VERSION)
-            📦 **All images:** europe-west3-docker.pkg.dev/${{ env.PROJECT_ID }}/gcr/
+            📍 **Static assets:** https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/
+            🐳 **Docker image:** ${{ env.IMAGE_NAME }}:v${{ needs.bump-version.outputs.new_version }}
+            📦 **All images:** ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/gcr/
             
             ### Changes
             - Automated deployment from commit ${{ github.sha }}
           draft: false
-          prerelease: false 
+          prerelease: false
+
+  # Job 6: Notifications and Summary
+  notify:
+    name: 📢 Notify & Summary
+    runs-on: ubuntu-latest
+    needs: [bump-version, test, build-and-push, deploy, release]
+    if: always()
+    steps:
+      - name: 📊 Prepare summary
+        run: |
+          echo "## 🚀 Rameda UI Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version Bump | ${{ needs.bump-version.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests & Linting | ${{ github.event.inputs.skip_tests == 'true' && '⏭️ Skipped' || (needs.test.result == 'success' && '✅' || '❌') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build & Push | ${{ needs.build-and-push.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy | ${{ needs.deploy.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Release | ${{ needs.release.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** v${{ needs.bump-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.IMAGE_NAME }}:${{ needs.bump-version.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Static URL:** https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/" >> $GITHUB_STEP_SUMMARY
+          echo "**App URL:** https://rameda.pro" >> $GITHUB_STEP_SUMMARY
+
+      - name: 🔔 Send success notification
+        if: ${{ needs.deploy.result == 'success' }}
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🚀 *Rameda UI Successfully Deployed!*
+            
+            📦 *Version:* v${{ needs.bump-version.outputs.new_version }}
+            🐳 *Image:* `${{ env.IMAGE_NAME }}:${{ needs.bump-version.outputs.new_version }}`
+            🌍 *App:* https://rameda.pro
+            📍 *Static:* https://storage.googleapis.com/${{ env.BUCKET }}/static/v${{ needs.bump-version.outputs.new_version }}/
+            🧪 *Tests:* ${{ github.event.inputs.skip_tests == 'true' && 'Skipped' || 'Passed' }}
+            
+            [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          format: markdown
+
+      - name: 🚨 Send failure notification
+        if: ${{ needs.build-and-push.result == 'failure' || needs.deploy.result == 'failure' || needs.test.result == 'failure' }}
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            ❌ *Rameda UI Deployment Failed!*
+            
+            📦 *Version:* v${{ needs.bump-version.outputs.new_version }}
+            🚫 *Failed Step:* ${{ needs.test.result == 'failure' && 'Tests' || (needs.build-and-push.result == 'failure' && 'Build & Push' || 'Deploy') }}
+            
+            [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          format: markdown 
