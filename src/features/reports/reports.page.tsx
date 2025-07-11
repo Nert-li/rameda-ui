@@ -2,7 +2,7 @@ import { useReportsList } from "./model/use-reports";
 import { ReportsTable } from "./ui/reports-table";
 import { Report } from "./ui/columns";
 
-export const Component = () => {
+function ReportsPage() {
     const { reports, isLoading, sorting, pagination } = useReportsList();
 
     return (
@@ -15,4 +15,6 @@ export const Component = () => {
             />
         </div>
     );
-}; 
+};
+
+export const Component = ReportsPage;

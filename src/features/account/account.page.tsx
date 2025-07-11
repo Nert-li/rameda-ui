@@ -51,7 +51,7 @@ const sidebarItems: SidebarItem[] = [
     },
 ];
 
-export function Component() {
+function AccountPage() {
     const { user: currentUser, isLoading, error } = useCurrentUser();
     const [activeSection, setActiveSection] = useState<AccountSection>('profile');
 
@@ -556,4 +556,6 @@ export function Component() {
             </div>
         </div>
     );
-} 
+}
+
+export const Component = AccountPage;

@@ -1,8 +1,7 @@
 import { useUsersList } from "@/features/users/model/use-user";
 import { UsersTable } from "./ui/users-table";
 import { User } from "./ui/columns";
-
-export function Component() {
+function UsersPage() {
     const { users, isLoading, sorting, pagination } = useUsersList();
 
     return (
@@ -16,3 +15,5 @@ export function Component() {
         </div>
     );
 }
+
+export const Component = UsersPage;

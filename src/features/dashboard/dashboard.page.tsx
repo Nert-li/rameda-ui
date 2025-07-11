@@ -1,4 +1,5 @@
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { useState } from "react"
 
 import {
     Card,
@@ -22,7 +23,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/shared/ui/kit/select"
-import { useState } from "react"
 
 const chartData = [
     { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -260,7 +260,7 @@ function ChartAreaInteractive() {
         </Card>
     )
 }
-export function Component() {
+function DashboardPage() {
     return (
         <div className="container mx-auto p-6 max-w-6xl">
             <div className="space-y-6">
@@ -320,4 +320,6 @@ export function Component() {
             </div>
         </div>
     )
-} 
+}
+
+export const Component = DashboardPage;

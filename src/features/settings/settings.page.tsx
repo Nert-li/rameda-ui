@@ -49,7 +49,7 @@ const sidebarItems: SidebarItem[] = [
     { id: 'application', label: 'Application', icon: IconDatabase, adminOnly: true },
 ];
 
-export function Component() {
+function SettingsPage() {
     const { config, isLoading: configLoading } = useConfig();
     const { user: currentUser, isLoading: userLoading } = useCurrentUser();
     const { theme, setTheme } = useTheme();
@@ -614,3 +614,5 @@ export function Component() {
         </div>
     );
 }
+
+export const Component = SettingsPage;

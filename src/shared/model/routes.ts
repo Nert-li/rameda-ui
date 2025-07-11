@@ -29,6 +29,8 @@ export const PAGE_TITLES: Record<string, string> = {
   [ROUTES.ADS_MANAGERS]: "Ads Managers",
   [ROUTES.REPORTS]: "Reports",
   [ROUTES.ADS_MANAGER_REPORTS]: "Ads Manager Reports",
+  [ROUTES.LOGIN]: "Login",
+  [ROUTES.REGISTER]: "Register",
 };
 
 export type PathParams = {
@@ -55,5 +57,8 @@ export type PathParams = {
 declare module "react-router-dom" {
   interface Register {
     params: PathParams;
+  }
+  interface RouteHandle {
+    title?: string;
   }
 }

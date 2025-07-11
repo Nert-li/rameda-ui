@@ -1,4 +1,4 @@
-import { ROUTES } from "../shared/model/routes";
+import { ROUTES, PAGE_TITLES } from "../shared/model/routes";
 import { createBrowserRouter, redirect } from "react-router-dom";
 import { App } from "./app";
 import { Providers } from "./providers";
@@ -19,14 +19,17 @@ const addProtectedChildren = [
       {
         path: ROUTES.DASHBOARD,
         lazy: () => import("@/features/dashboard/dashboard.page"),
+        handle: { title: PAGE_TITLES[ROUTES.DASHBOARD] },
       },
       {
         path: ROUTES.ACCOUNT,
         lazy: () => import("@/features/account/account.page"),
+        handle: { title: PAGE_TITLES[ROUTES.ACCOUNT] },
       },
       {
         path: ROUTES.SETTINGS,
         lazy: () => import("@/features/settings/settings.page"),
+        handle: { title: PAGE_TITLES[ROUTES.SETTINGS] },
       },
       {
         path: ROUTES.USERS,
@@ -40,10 +43,12 @@ const addProtectedChildren = [
             ),
           };
         },
+        handle: { title: PAGE_TITLES[ROUTES.USERS] },
       },
       {
         path: ROUTES.CLICKS,
         lazy: () => import("@/features/clicks/clicks.page"),
+        handle: { title: PAGE_TITLES[ROUTES.CLICKS] },
       },
       {
         path: ROUTES.PROMO_CODES,
@@ -57,22 +62,27 @@ const addProtectedChildren = [
             ),
           };
         },
+        handle: { title: PAGE_TITLES[ROUTES.PROMO_CODES] },
       },
       {
         path: ROUTES.OFFERS,
         lazy: () => import("@/features/offers/offers.page"),
+        handle: { title: PAGE_TITLES[ROUTES.OFFERS] },
       },
       {
         path: ROUTES.CONVERSIONS,
         lazy: () => import("@/features/conversions/conversions.page"),
+        handle: { title: PAGE_TITLES[ROUTES.CONVERSIONS] },
       },
       {
         path: ROUTES.ADS_MANAGERS,
         lazy: () => import("@/features/ads-managers/ads-managers.page"),
+        handle: { title: PAGE_TITLES[ROUTES.ADS_MANAGERS] },
       },
       {
         path: ROUTES.REPORTS,
         lazy: () => import("@/features/reports/reports.page"),
+        handle: { title: PAGE_TITLES[ROUTES.REPORTS] },
       }
     ],
   },
@@ -80,10 +90,12 @@ const addProtectedChildren = [
   {
     path: ROUTES.LOGIN,
     lazy: () => import("@/features/auth/login.page"),
+    handle: { title: PAGE_TITLES[ROUTES.LOGIN] },
   },
   {
     path: ROUTES.REGISTER,
     lazy: () => import("@/features/auth/register.page"),
+    handle: { title: PAGE_TITLES[ROUTES.REGISTER] },
   },
   {
     path: ROUTES.HOME,

@@ -17,3 +17,4 @@ export function useDebouncedValue<T>(value: T, delay: number) {
 export { usePagination } from './react/use-pagination';
 export { useRouteAccess } from './react/use-route-access';
 export { useSorting } from './react/use-sorting';
+export { useAutoTitle } from './react/use-auto-title';

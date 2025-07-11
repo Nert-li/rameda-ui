@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/shared/ui/kit/dialog";
 import { HeaderContent } from "@/shared/model/use-header-content";
 import { Plus } from "lucide-react";
 
-export function Component() {
+function OffersPage() {
     const { offers, isLoading, sorting, pagination, refetch } = useOffersList();
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
@@ -54,4 +54,6 @@ export function Component() {
             />
         </div>
     );
-} 
+}
+
+export const Component = OffersPage;

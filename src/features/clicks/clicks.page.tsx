@@ -2,7 +2,7 @@ import { useClicksList } from "@/features/clicks/model/use-click";
 import { ClicksTable } from "./ui/clicks-table";
 import { Click } from "./ui/columns";
 
-export function Component() {
+function ClickPage() {
     const { clicks, isLoading, sorting, pagination } = useClicksList();
 
     return (
@@ -15,4 +15,6 @@ export function Component() {
             />
         </div>
     );
-} 
+}
+
+export const Component = ClickPage;

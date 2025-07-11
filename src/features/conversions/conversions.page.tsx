@@ -2,7 +2,7 @@ import { useConversionsList } from "@/features/conversions/model/use-conversion"
 import { ConversionsTable } from "./ui/conversions-table";
 import { Conversion } from "./ui/columns";
 
-export function Component() {
+function ConversionPage() {
     const { conversions, isLoading, sorting, pagination } = useConversionsList();
 
     return (
@@ -15,4 +15,6 @@ export function Component() {
             />
         </div>
     );
-} 
+}
+
+export const Component = ConversionPage;

@@ -27,7 +27,7 @@ import { useState } from "react";
 
 type AdsManager = components["schemas"]["AdsManagerRecord"];
 
-export const Component = () => {
+function AdsManagerPage() {
     const navigate = useNavigate();
     const { adsManagers, isLoading, isError } = useAdsManagersList();
     const { deleteEntity, isLoading: isDeleting } = useDeleteAdsManager();
@@ -322,4 +322,6 @@ export const Component = () => {
             </Dialog>
         </div>
     );
-}; 
+};
+
+export const Component = AdsManagerPage;
