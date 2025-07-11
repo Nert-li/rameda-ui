@@ -5,7 +5,6 @@ import {
   IconFileAi,
   IconFileDescription,
   IconFileText,
-  IconInnerShadowTop,
   IconSettings,
   IconUsers,
   IconGift,
@@ -13,6 +12,9 @@ import {
   IconTicket,
   IconTarget,
 } from "@tabler/icons-react"
+
+import IconBlack from "public/icon-black.svg"
+import IconWhite from "public/icon-white.svg"
 
 import { NavMain } from "@/shared/ui/nav-main"
 import { NavSecondary } from "@/shared/ui/nav-secondary"
@@ -32,6 +34,7 @@ import { useCurrentUser } from "../model/use-current-user"
 import { Skeleton } from "./kit/skeleton"
 import { useEffect } from "react"
 import { useLogout } from "../model/logout"
+import { useTheme } from "../lib/react/use-theme"
 
 const data = {
   navMain: [
@@ -141,6 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { hasAccess } = useRouteAccess();
   const { isLoading, error } = useCurrentUser();
   const { logout } = useLogout();
+  const { theme } = useTheme();
 
   // Если ошибка загрузки пользователя - выходим
   useEffect(() => {
@@ -205,7 +209,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <IconInnerShadowTop className="!size-5" />
+                <img
+                  src={theme === "dark" ? IconWhite : IconBlack}
+                  alt="Rameda"
+                  className="w-6 h-6"
+                />
                 <span className="text-base font-semibold">Rameda</span>
               </a>
             </SidebarMenuButton>
